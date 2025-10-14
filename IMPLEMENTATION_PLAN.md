@@ -58,6 +58,17 @@ lib/
 │       └── auth_service.dart        # (Shared auth logic)
 │
 ├── features/                        # Major app features (modular, scalable)
+│   ├── onboarding/
+│   │   ├── onboarding_route.dart     # Routes for onboarding steps
+│   │   ├── domain/
+│   │   │   └── providers.dart        # Riverpod providers: onboarding progress/state
+│   │   ├── presentation/
+│   │   │   ├── step_add_classes_page.dart        # Step 1: Add classes
+│   │   │   ├── step_add_subjects_page.dart       # Step 2: Add subjects
+│   │   │   ├── step_add_schemes_page.dart        # Step 3: Add/upload scheme of work
+│   │   │   ├── step_add_curriculum_page.dart     # Step 4: Add/upload/select curriculum
+│   │   │   └── congratulations_page.dart         # Final congrats/finish screen
+│   │
 │   ├── auth/
 │   │   ├── data/
 │   │   │   ├── auth_repository.dart # Logic for API or Convex calls
@@ -147,7 +158,44 @@ features/file_upload/
 
 ---
 
-## 3. Implementation Tasks (Frontend & Backend)
+## 3. Teacher Onboarding Flow (Progressive, After Account Signup)
+
+### Flow Overview
+- After creating a new account, every teacher completes a 4-step onboarding workflow:
+  1. **Add Classes**: Create one or more classes that the teacher manages.
+  2. **Add Subjects**: Add subjects to each class (e.g. Math, Science per class).
+  3. **Add Schemes of Work**: Upload/select a scheme of work for each subject.
+  4. **Add/Select Curriculum**: Upload or select curriculum file for the teacher (optional or required).
+- After steps 1–4, show a **Congratulations page** (completion state, next steps/options to explore app).
+- Steps are progressive (user cannot skip ahead), and the flow is reformatted for UX on mobile/web/desktop.
+
+### Frontend Implementation
+- All onboarding screens/pages live under a new feature folder:
+  - `features/onboarding/presentation/step_add_classes_page.dart`
+  - `features/onboarding/presentation/step_add_subjects_page.dart`
+  - `features/onboarding/presentation/step_add_schemes_page.dart`
+  - `features/onboarding/presentation/step_add_curriculum_page.dart`
+  - `features/onboarding/presentation/congratulations_page.dart`
+  - Shared onboarding logic/state in `features/onboarding/domain/providers.dart` (Riverpod AsyncNotifier etc.)
+- Navigation through steps happens via named routes (`app/router.dart`). Step guards ensure steps completed in order.
+- UX: Each step has inline validation and progress indicator/steps bar.
+- For file uploads (scheme, curriculum), use Flutter file picker and connect to backend API.
+
+### Backend Implementation
+- Endpoints required:
+  - Add class (mutation)
+  - Add subject (mutation, must include class linkage)
+  - Upload scheme of work (mutation + file upload, linked to subject)
+  - Upload/select curriculum (mutation + file upload)
+- Must allow creation/association of credentials strictly related to the onboarding session for initial population.
+- All onboarding data (classes, subjects, schemes, curriculum) must be available to teacher account at app home.
+
+#### Todo
+- [ ] **onboarding-flow:** Implement a progressive 4-step onboarding flow (add classes → add subjects → add scheme(s) of work → add/select curriculum → Congratulations) with guards, progress, and backend/API connectivity.
+
+---
+
+## 4. Implementation Tasks (Frontend & Backend)
 
 ### Backend
 - [ ] **auth-setup:** Implement authentication mutation and query functions (email/pass/Google)
@@ -166,10 +214,10 @@ features/file_upload/
 
 ---
 
-## 4. References
+## 5. References
 - [Flutter scalable folder structure guides 2024–2025](https://www.pravux.com/best-practices-for-folder-structure-in-large-flutter-projects-2025-guide/)
 - [Convex Dev Best Practices](https://docs.convex.dev/understanding/best-practices/)
 
-## 5. Notes
+## 6. Notes
 - All team code must conform to these conventions for maintainability.
 - Review and refactor folder placement as the app grows.
