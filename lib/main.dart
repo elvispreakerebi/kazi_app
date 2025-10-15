@@ -64,7 +64,7 @@ class _RegistrationTestScreenState extends State<RegistrationTestScreen> {
     });
     try {
       final res = await http.post(
-        Uri.parse('$convexBackend/api/auth/signIn'),
+        Uri.parse('$convexBackend/api/auth/crate-account'),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'provider': 'password',

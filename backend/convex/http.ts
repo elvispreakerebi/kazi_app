@@ -5,7 +5,7 @@ import { api } from "./_generated/api";
 const http = httpRouter();
 
 http.route({
-  path: "/api/auth/signIn",
+  path: "/api/auth/crate-account",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
     try {
@@ -17,8 +17,8 @@ http.route({
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
-      // Correct function reference usage
-      const result = await ctx.runMutation(api.functions.auth.registerDemo.registerDemo, { email, password, name });
+      // Use createAccountAction for registration
+      const result = await ctx.runAction(api.functions.auth.createAccountAction.createAccountAction, { email, password, name });
       return new Response(
         JSON.stringify({ result }),
         { status: 201, headers: { "Content-Type": "application/json" } }
