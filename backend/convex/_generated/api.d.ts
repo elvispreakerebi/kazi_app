@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as functions_auth_registerDemo from "../functions/auth/registerDemo.js";
+import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_text from "../utils/text.js";
 
@@ -26,6 +28,8 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "functions/auth/registerDemo": typeof functions_auth_registerDemo;
+  http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/text": typeof utils_text;
 }>;
