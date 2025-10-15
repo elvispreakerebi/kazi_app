@@ -1,6 +1,7 @@
 import { mutation } from "../../_generated/server";
 import { v } from "convex/values";
 import bcrypt from "bcryptjs";
+import { capitalizeWords } from "../../utils/text";
 
 export const register = mutation({
   args: {
@@ -19,10 +20,11 @@ export const register = mutation({
     const passwordHash = await bcrypt.hash(args.password, 10);
     const now = Date.now();
     const language = "english";
+    const capitalizedName = capitalizeWords(args.name);
     const teacherId = await ctx.db.insert("teachers", {
       email: args.email,
       passwordHash,
-      name: args.name,
+      name: capitalizedName,
       createdAt: now,
       language,
     });
