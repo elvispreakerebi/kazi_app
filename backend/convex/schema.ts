@@ -13,7 +13,11 @@ export default defineSchema({
     name: v.optional(v.string()),
     createdAt: v.number(),
     lastLogin: v.optional(v.number()),
-    language: v.string(), // 'english' | 'french' | 'kiryanwanda' (default: 'english')
+    language: v.union(
+      v.literal("english"),
+      v.literal("french"),
+      v.literal("kiryanwanda")
+    ), // enum, default is 'english'
   }).index("by_email", ["email"])
     .index("by_googleId", ["googleId"]),
 
@@ -56,7 +60,6 @@ export default defineSchema({
     schemeId: v.optional(v.id("schemeOfWork")),
     title: v.string(),
     content: v.any(),       // structured lesson plan
-    language: v.string(),   // 'en', 'fr', 'rw', etc.
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
     status: v.optional(v.string()), // draft, complete, etc.
