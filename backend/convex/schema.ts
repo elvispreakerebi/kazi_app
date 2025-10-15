@@ -4,12 +4,13 @@
 
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
-  teachers: defineTable({
+  ...authTables,
+  users: defineTable({
+    // Basic/profile fields
     email: v.string(),
-    passwordHash: v.optional(v.string()),    // For email/password auth
-    googleId: v.optional(v.string()),        // For Google auth
     name: v.optional(v.string()),
     createdAt: v.number(),
     lastLogin: v.optional(v.number()),
@@ -17,59 +18,61 @@ export default defineSchema({
       v.literal("english"),
       v.literal("french"),
       v.literal("kiryanwanda")
-    ), // enum, default is 'english'
+    ),
+    googleId: v.optional(v.string()),
+    // Other fields from previous teachers table can go here
   }).index("by_email", ["email"])
     .index("by_googleId", ["googleId"]),
 
   classes: defineTable({
-    teacherId: v.id("teachers"),
+    userId: v.id("users"),
     name: v.string(),
-    gradeLevel: v.string(), // Added: each class has a grade level
+    gradeLevel: v.string(),
     academicYear: v.optional(v.string()),
     createdAt: v.number(),
-  }).index("by_teacherId", ["teacherId"]),
+  }).index("by_userId", ["userId"]),
 
   subjects: defineTable({
     classId: v.id("classes"),
-    teacherId: v.id("teachers"),
+    userId: v.id("users"),
     name: v.string(),
     createdAt: v.number(),
   }).index("by_classId", ["classId"])
-    .index("by_teacherId", ["teacherId"]),
+    .index("by_userId", ["userId"]),
 
   curriculum: defineTable({
-    teacherId: v.id("teachers"),
+    userId: v.id("users"),
     name: v.string(),
     createdAt: v.number(),
-    fileId: v.optional(v.id("files")), // Uploaded curriculum file
-    parsedContent: v.optional(v.any()), // Added: structured/parsed curriculum content
-  }).index("by_teacherId", ["teacherId"]),
+    fileId: v.optional(v.id("files")),
+    parsedContent: v.optional(v.any()),
+  }).index("by_userId", ["userId"]),
 
   schemeOfWork: defineTable({
     subjectId: v.id("subjects"),
-    teacherId: v.id("teachers"),
-    fileId: v.optional(v.id("files")), // Uploaded scheme file
-    parsedContent: v.optional(v.any()), // e.g. extracted topics/structure
+    userId: v.id("users"),
+    fileId: v.optional(v.id("files")),
+    parsedContent: v.optional(v.any()),
     uploadedAt: v.number(),
   }).index("by_subjectId", ["subjectId"])
-    .index("by_teacherId", ["teacherId"]),
+    .index("by_userId", ["userId"]),
 
   lessonPlans: defineTable({
     subjectId: v.id("subjects"),
-    teacherId: v.id("teachers"),
+    userId: v.id("users"),
     schemeId: v.optional(v.id("schemeOfWork")),
     title: v.string(),
-    content: v.any(),       // structured lesson plan
+    content: v.any(),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
-    status: v.optional(v.string()), // draft, complete, etc.
+    status: v.optional(v.string()),
   }).index("by_subjectId", ["subjectId"])
-    .index("by_teacherId", ["teacherId"]),
+    .index("by_userId", ["userId"]),
 
   files: defineTable({
-    ownerId: v.id("teachers"),
-    path: v.string(), // File storage path or key
-    type: v.string(), // e.g. 'curriculum' | 'scheme'
+    ownerId: v.id("users"),
+    path: v.string(),
+    type: v.string(),
     uploadedAt: v.number(),
-  }).index("by_ownerId", ["ownerId"])
+  }).index("by_ownerId", ["ownerId"]),
 });
