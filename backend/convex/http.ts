@@ -14,16 +14,35 @@ http.route({
       const { email, password, name } = body;
       if (!email || !password || !name) {
         return new Response(
-          JSON.stringify({ message: "Missing required fields." }),
+          JSON.stringify({ error: "All fields are required." }),
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       // Use createAccountAction for registration
       const result = await ctx.runAction(api.functions.auth.createAccountAction.createAccountAction, { email, password, name });
       if (result?.error) {
+        // Validation error (password or email) or duplicate account
+        // catch common case: duplicate email vs. validation error
+        if (result.error.toLowerCase().includes('already exists')) {
+          return new Response(
+            JSON.stringify({ error: "An account with this email already exists." }),
+            { status: 409, headers: { "Content-Type": "application/json" } }
+          );
+        } else if (result.error.toLowerCase().includes('invalid email')) {
+          return new Response(
+            JSON.stringify({ error: "Invalid email address." }),
+            { status: 422, headers: { "Content-Type": "application/json" } }
+          );
+        } else if (result.error.toLowerCase().includes('password')) {
+          return new Response(
+            JSON.stringify({ error: result.error }),
+            { status: 422, headers: { "Content-Type": "application/json" } }
+          );
+        }
+        // Fallback: forward any other error
         return new Response(
-          JSON.stringify({ result }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
+          JSON.stringify({ error: result.error }),
+          { status: 422, headers: { "Content-Type": "application/json" } }
         );
       }
       // Trigger verification email after success, only for email/pw
@@ -37,7 +56,7 @@ http.route({
       );
     } catch (err) {
       return new Response(
-        JSON.stringify({ message: err instanceof Error ? err.message : String(err) }),
+        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
@@ -53,16 +72,40 @@ http.route({
       const { email, password } = body;
       if (!email || !password) {
         return new Response(
-          JSON.stringify({ message: "Missing required fields." }),
+          JSON.stringify({ error: "Email and password are required." }),
           { status: 400, headers: { "Content-Type": "application/json" } }
         );
       }
       // Call login logic via an action to allow bcrypt and JWT
       const result = await ctx.runAction(api.functions.auth.loginAccountAction.loginAccountAction, { email, password });
       if (!result || !result.token) {
-        // Forward a specific error if present
+        // Run a direct query to check for 'no user' error for best error copy
+        const user = await ctx.runQuery(api.functions.auth.findTeacherByEmail.findTeacherByEmail, { email });
+        if (!user) {
+          return new Response(
+            JSON.stringify({ error: "No account found for this email." }),
+            { status: 401, headers: { "Content-Type": "application/json" } }
+          );
+        }
+        // Custom handling for error copy returned from action
+        if (result.error === 'Please enter a valid email and password.') {
+          return new Response(
+            JSON.stringify({ error: "Invalid email or password format." }),
+            { status: 422, headers: { "Content-Type": "application/json" } }
+          );
+        } else if (result.error && result.error.toLowerCase().includes('google')) {
+          return new Response(
+            JSON.stringify({ error: "This account uses Google sign in only." }),
+            { status: 422, headers: { "Content-Type": "application/json" } }
+          );
+        } else if (result.error) {
+          return new Response(
+            JSON.stringify({ error: result.error }),
+            { status: 401, headers: { "Content-Type": "application/json" } }
+          );
+        }
         return new Response(
-          JSON.stringify({ error: result?.error || "Invalid credentials." }),
+          JSON.stringify({ error: "Invalid credentials." }),
           { status: 401, headers: { "Content-Type": "application/json" } }
         );
       }
@@ -72,7 +115,7 @@ http.route({
       );
     } catch (err) {
       return new Response(
-        JSON.stringify({ message: err instanceof Error ? err.message : String(err) }),
+        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
         { status: 500, headers: { "Content-Type": "application/json" } }
       );
     }
