@@ -60,8 +60,9 @@ http.route({
       // Call login logic via an action to allow bcrypt and JWT
       const result = await ctx.runAction(api.functions.auth.loginAccountAction.loginAccountAction, { email, password });
       if (!result || !result.token) {
+        // Forward a specific error if present
         return new Response(
-          JSON.stringify({ message: "Invalid credentials." }),
+          JSON.stringify({ error: result?.error || "Invalid credentials." }),
           { status: 401, headers: { "Content-Type": "application/json" } }
         );
       }

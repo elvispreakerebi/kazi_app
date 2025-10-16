@@ -35,18 +35,21 @@ export const loginAccountAction = action({
     }
     const user: TeacherDoc | null = await ctx.runQuery(api.functions.auth.findTeacherByEmail.findTeacherByEmail, { email: args.email });
     if (!user) {
-      // Security: do not reveal if account exists
       return { token: null, error: 'Incorrect email or password.' };
     }
     if (!user.hashedPassword) {
       return { token: null, error: 'This account was registered with Google. Please sign in with Google instead.' };
     }
-    if (!user.verified) {
+    // First check: do email/password match for an existing user?
+    const passwordOk: boolean = await bcrypt.compare(args.password, user.hashedPassword);
+    if (passwordOk && !user.verified) {
       return { token: null, error: 'Please verify your email first. Check your inbox for the code.' };
     }
-    const passwordOk: boolean = await bcrypt.compare(args.password, user.hashedPassword);
     if (!passwordOk) {
       return { token: null, error: 'Incorrect email or password.' };
+    }
+    if (!user.verified) {
+      return { token: null, error: 'Please verify your email first. Check your inbox for the code.' };
     }
     const payload: Record<string, any> = {
       teacherId: user._id,

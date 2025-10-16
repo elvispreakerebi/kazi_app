@@ -475,6 +475,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _loading = true;
       _message = null;
+      _showVerifyBtn = false; // Always reset at new login attempt.
     });
     try {
       final res = await http.post(
@@ -488,25 +489,31 @@ class _LoginScreenState extends State<LoginScreen> {
       final json = jsonDecode(res.body);
       if (res.statusCode == 200 && json['token'] != null) {
         widget.onLoggedIn(json['token']);
-      } else if (json['error'] ==
-          'Please verify your email first. Check your inbox for the code.') {
-        setState(() {
-          _message = json['error'];
-          _showVerifyBtn = true;
-        });
-        return;
-      } else if (json['error'] != null) {
-        setState(() {
-          _message = json['error'];
-        });
-      } else if (json['message'] != null) {
-        setState(() {
-          _message = json['message'];
-        });
       } else {
-        setState(() {
-          _message = 'Login failed.';
-        });
+        final backendError = json['error'] ?? json['message'];
+        if (backendError != null &&
+            backendError.toString().toLowerCase().contains('verify')) {
+          setState(() {
+            _message = backendError;
+            _showVerifyBtn = true;
+          });
+          return;
+        } else if (json['error'] != null) {
+          setState(() {
+            _message = json['error'];
+            _showVerifyBtn = false;
+          });
+        } else if (json['message'] != null) {
+          setState(() {
+            _message = json['message'];
+            _showVerifyBtn = false;
+          });
+        } else {
+          setState(() {
+            _message = 'Login failed.';
+            _showVerifyBtn = false;
+          });
+        }
       }
     } catch (e) {
       setState(() {
