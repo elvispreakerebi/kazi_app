@@ -28,17 +28,21 @@ export const loginAccountAction = action({
       validatePassword(args.password);
     } catch (err: any) {
       if (err instanceof ValidationError) {
-        return { token: null, error: err.message };
+        return { token: null, error: 'Please enter a valid email and password.' };
       }
-      throw err;
+      return { token: null, error: 'Something went wrong. Please try again.' };
     }
     const user: TeacherDoc | null = await ctx.runQuery(api.functions.auth.findTeacherByEmail.findTeacherByEmail, { email: args.email });
-    if (!user || !user.hashedPassword) {
-      return { token: null };
+    if (!user) {
+      // Security: do not reveal if account exists
+      return { token: null, error: 'Incorrect email or password.' };
+    }
+    if (!user.hashedPassword) {
+      return { token: null, error: 'This account was registered with Google. Please sign in with Google instead.' };
     }
     const passwordOk: boolean = await bcrypt.compare(args.password, user.hashedPassword);
     if (!passwordOk) {
-      return { token: null };
+      return { token: null, error: 'Incorrect email or password.' };
     }
     const payload: Record<string, any> = {
       teacherId: user._id,
@@ -46,8 +50,8 @@ export const loginAccountAction = action({
       name: user.name,
       language: user.language,
     };
-    const secret: string = process.env.JWT_SECRET || "FAKE_SECRET_MUST_REPLACE";
-    const token: string = jwt.sign(payload, secret, { expiresIn: "7d" });
+    const secret: string = process.env.JWT_SECRET || 'FAKE_SECRET_MUST_REPLACE';
+    const token: string = jwt.sign(payload, secret, { expiresIn: '7d' });
     return { token };
   },
 });

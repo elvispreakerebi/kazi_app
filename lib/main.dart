@@ -583,6 +583,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : 'Password must be at least 8 chars',
                   ),
+                  if (_message != null && _message!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _message!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   const SizedBox(height: 24),
                   Center(
                     child: ElevatedButton(
@@ -617,19 +644,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         widget.onGoogleError!,
                         style: TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
-                  if (_message != null) ...[
-                    const SizedBox(height: 24),
-                    Center(
-                      child: Text(
-                        _message!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.deepPurple,
-                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
