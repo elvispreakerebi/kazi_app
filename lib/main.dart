@@ -57,6 +57,7 @@ class _KaziAppState extends State<KaziApp> {
   String? _jwt;
   StreamSubscription? _sub;
   String? _googleError;
+  bool _needsEmailVerification = false;
 
   @override
   void initState() {
@@ -70,7 +71,10 @@ class _KaziAppState extends State<KaziApp> {
     super.dispose();
   }
 
-  void onRegistered(String email) => setState(() => _registeredEmail = email);
+  void onRegistered(String email) => setState(() {
+    _registeredEmail = email;
+    _needsEmailVerification = true;
+  });
   void onLoggedIn(String jwt) => setState(() {
     _jwt = jwt;
     _googleError = null;
@@ -103,6 +107,19 @@ class _KaziAppState extends State<KaziApp> {
       return MaterialApp(
         title: 'Kazi App',
         home: HomeScreen(onLogout: logout),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+    if (_needsEmailVerification && _registeredEmail != null) {
+      return MaterialApp(
+        title: 'Kazi App',
+        home: VerificationScreen(
+          email: _registeredEmail!,
+          onSuccess: () => setState(() {
+            _needsEmailVerification = false;
+            // Move to login screen after successful verification.
+          }),
+        ),
         debugShowCheckedModeBanner: false,
       );
     }
@@ -650,6 +667,241 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class VerificationScreen extends StatefulWidget {
+  final String email;
+  final VoidCallback onSuccess;
+  const VerificationScreen({
+    Key? key,
+    required this.email,
+    required this.onSuccess,
+  }) : super(key: key);
+
+  @override
+  State<VerificationScreen> createState() => _VerificationScreenState();
+}
+
+class _VerificationScreenState extends State<VerificationScreen> {
+  final _codeController = TextEditingController();
+  String? _message;
+  bool _loading = false;
+  int _seconds = 90;
+  Timer? _timer;
+  bool _resendLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _seconds = 90;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_seconds == 0) {
+        timer.cancel();
+        setState(() {});
+      } else {
+        setState(() {
+          _seconds--;
+        });
+      }
+    });
+  }
+
+  Future<void> _verifyCode() async {
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final res = await http.post(
+        Uri.parse('$convexBackend/api/auth/verify-email-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': widget.email,
+          'code': _codeController.text.trim(),
+        }),
+      );
+      final json = jsonDecode(res.body);
+      if (res.statusCode == 200 && json['ok'] == true) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Email verified! You may now log in.'),
+            ),
+          );
+          widget.onSuccess();
+        }
+      } else {
+        setState(() {
+          _message = json['error'] ?? 'Invalid or expired code.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Network error: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _resendCode() async {
+    setState(() {
+      _resendLoading = true;
+      _message = null;
+    });
+    try {
+      final res = await http.post(
+        Uri.parse('$convexBackend/api/auth/resend-verification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': widget.email}),
+      );
+      final json = jsonDecode(res.body);
+      if (res.statusCode == 200 && json['ok'] == true) {
+        setState(() {
+          _message = 'Verification code resent.';
+        });
+        _startTimer();
+      } else {
+        setState(() {
+          _message = json['error'] ?? 'Could not resend verification code.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Network error: $e';
+      });
+    } finally {
+      setState(() {
+        _resendLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Verify Your Email',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Enter the 6-digit code sent to your email address (${widget.email}):',
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _codeController,
+                  decoration: const InputDecoration(
+                    labelText: '6-digit code',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  enabled: !_loading,
+                ),
+                if (_message != null && _message!.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(top: 14),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      border: Border.all(color: Colors.red.shade200),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _message!,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _loading ? null : _verifyCode,
+                        child: _loading
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Verify'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Center(
+                  child: Column(
+                    children: [
+                      TextButton(
+                        onPressed: _seconds > 0 || _resendLoading
+                            ? null
+                            : _resendCode,
+                        child: _resendLoading
+                            ? const SizedBox(
+                                height: 16,
+                                width: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                _seconds > 0
+                                    ? 'Resend Code (wait $_seconds s)'
+                                    : 'Resend Code',
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),
