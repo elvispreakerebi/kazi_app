@@ -219,6 +219,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Account created successfully!')),
         );
+      } else if (json['error'] != null) {
+        setState(() {
+          _message = json['error'];
+        });
       } else if (json is Map && json['result']?['error'] != null) {
         setState(() {
           _message = json['result']['error'];
@@ -229,7 +233,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         });
       } else {
         setState(() {
-          _message = 'Unknown error.';
+          _message =
+              'Could not complete registration. Please check your input and try again.';
         });
       }
     } catch (e) {
@@ -405,19 +410,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       ),
                     ),
                   ],
-                  if (_message != null) ...[
-                    const SizedBox(height: 24),
-                    Center(
-                      child: Text(
-                        _message!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.deepPurple,
-                        ),
-                        textAlign: TextAlign.center,
+                  if (_message != null && _message!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _message!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
                 ],
               ),
             ),

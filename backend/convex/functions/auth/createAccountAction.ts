@@ -20,15 +20,23 @@ export const createAccountAction = action({
       }
       throw err;
     }
-    const hashedPassword: string = await bcrypt.hash(args.password, 10);
-    const result: { id: any; email: string } = await ctx.runMutation(
-      api.functions.auth.createAccount.createAccount,
-      {
-        email: args.email,
-        name: args.name,
-        hashedPassword,
+    try {
+      const hashedPassword: string = await bcrypt.hash(args.password, 10);
+      const result: { id: any; email: string } = await ctx.runMutation(
+        api.functions.auth.createAccount.createAccount,
+        {
+          email: args.email,
+          name: args.name,
+          hashedPassword,
+        }
+      );
+      return result;
+    } catch (err: any) {
+      // If error message text matches 'Account already exists.'
+      if (err instanceof Error && err.message && err.message.toLowerCase().includes("already exists")) {
+        return { error: "An account with this email already exists." };
       }
-    );
-    return result;
+      throw err;
+    }
   },
 });
