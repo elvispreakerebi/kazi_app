@@ -19,6 +19,8 @@ export const findTeacherByEmail = query({
       lastLogin: v.optional(v.number()),
       googleId: v.optional(v.string()),
       verified: v.optional(v.boolean()),
+      verificationCode: v.optional(v.string()),
+      verificationCodeCreatedAt: v.optional(v.number()),
     }),
     v.null()
   ),

@@ -52,12 +52,11 @@ class KaziApp extends StatefulWidget {
 }
 
 class _KaziAppState extends State<KaziApp> {
-  // Simple in-memory store for registration/email
   String? _registeredEmail;
   String? _jwt;
-  StreamSubscription? _sub;
   String? _googleError;
-  bool _needsEmailVerification = false;
+  StreamSubscription? _sub;
+  String _view = 'register'; // 'register' | 'login' | 'verify'
 
   @override
   void initState() {
@@ -72,8 +71,20 @@ class _KaziAppState extends State<KaziApp> {
   }
 
   void onRegistered(String email) => setState(() {
+    _view = 'verify';
     _registeredEmail = email;
-    _needsEmailVerification = true;
+  });
+  void onGoToLogin() => setState(() {
+    _view = 'login';
+    _registeredEmail = null;
+  });
+  void onBackToRegister() => setState(() {
+    _view = 'register';
+    _registeredEmail = null;
+  });
+  void onGoToVerification(String email) => setState(() {
+    _view = 'verify';
+    _registeredEmail = email;
   });
   void onLoggedIn(String jwt) => setState(() {
     _jwt = jwt;
@@ -110,41 +121,43 @@ class _KaziAppState extends State<KaziApp> {
         debugShowCheckedModeBanner: false,
       );
     }
-    if (_needsEmailVerification && _registeredEmail != null) {
+    if (_view == 'verify' && _registeredEmail != null) {
       return MaterialApp(
         title: 'Kazi App',
         home: VerificationScreen(
           email: _registeredEmail!,
           onSuccess: () => setState(() {
-            _needsEmailVerification = false;
-            // Move to login screen after successful verification.
+            _view = 'login';
+            _registeredEmail = null;
           }),
         ),
         debugShowCheckedModeBanner: false,
       );
     }
-    if (_registeredEmail == null) {
-      return MaterialApp(
-        title: 'Kazi App',
-        home: RegistrationScreen(
-          onRegistered: onRegistered,
-          onGoogleError: _googleError,
-          onLoggedIn: onLoggedIn,
-        ),
-        debugShowCheckedModeBanner: false,
-      );
-    } else {
+    if (_view == 'login') {
       return MaterialApp(
         title: 'Kazi App',
         home: LoginScreen(
-          email: _registeredEmail!,
+          email: _registeredEmail ?? '',
           onLoggedIn: onLoggedIn,
-          onBackToRegister: () => setState(() => _registeredEmail = null),
+          onBackToRegister: onBackToRegister,
           onGoogleError: _googleError,
+          onGoToVerification: (email) => onGoToVerification(email),
         ),
         debugShowCheckedModeBanner: false,
       );
     }
+    // Default: registration
+    return MaterialApp(
+      title: 'Kazi App',
+      home: RegistrationScreen(
+        onRegistered: onRegistered,
+        onGoogleError: _googleError,
+        onLoggedIn: onLoggedIn,
+        onGoToLogin: onGoToLogin,
+      ),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }
 
@@ -153,11 +166,13 @@ class RegistrationScreen extends StatefulWidget {
   final String? onGoogleError;
   final void Function(String jwt)
   onLoggedIn; // Add this to RegistrationScreen props
+  final VoidCallback onGoToLogin;
   const RegistrationScreen({
     Key? key,
     required this.onRegistered,
     this.onGoogleError,
     required this.onLoggedIn,
+    required this.onGoToLogin,
   }) : super(key: key);
 
   @override
@@ -367,9 +382,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     child: TextButton(
                       onPressed: _loading
                           ? null
-                          : () => widget.onRegistered(
-                              _emailController.text.trim(),
-                            ),
+                          : widget
+                                .onGoToLogin, // Not onRegistered anymore! Fixes logic.
                       child: const Text('Already have an account?'),
                     ),
                   ),
@@ -419,12 +433,14 @@ class LoginScreen extends StatefulWidget {
   final void Function(String jwt) onLoggedIn;
   final VoidCallback onBackToRegister;
   final String? onGoogleError;
+  final void Function(String email)? onGoToVerification;
   const LoginScreen({
     Key? key,
     required this.email,
     required this.onLoggedIn,
     required this.onBackToRegister,
     this.onGoogleError,
+    this.onGoToVerification,
   }) : super(key: key);
 
   @override
@@ -439,6 +455,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _message;
   bool _loading = false;
   final FlutterAppAuth _appAuth = const FlutterAppAuth();
+  bool _showVerifyBtn = false;
 
   @override
   void initState() {
@@ -471,6 +488,13 @@ class _LoginScreenState extends State<LoginScreen> {
       final json = jsonDecode(res.body);
       if (res.statusCode == 200 && json['token'] != null) {
         widget.onLoggedIn(json['token']);
+      } else if (json['error'] ==
+          'Please verify your email first. Check your inbox for the code.') {
+        setState(() {
+          _message = json['error'];
+          _showVerifyBtn = true;
+        });
+        return;
       } else if (json['error'] != null) {
         setState(() {
           _message = json['error'];
@@ -625,6 +649,43 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  if (_showVerifyBtn)
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            _loading = true;
+                            _message = null;
+                          });
+                          final res = await http.post(
+                            Uri.parse(
+                              '$convexBackend/api/auth/resend-verification',
+                            ),
+                            headers: {'Content-Type': 'application/json'},
+                            body: jsonEncode({
+                              'email': _emailController.text.trim(),
+                            }),
+                          );
+                          final json = jsonDecode(res.body);
+                          setState(() {
+                            _loading = false;
+                          });
+                          if (res.statusCode == 200 && json['ok'] == true) {
+                            if (widget.onGoToVerification != null)
+                              widget.onGoToVerification!(
+                                _emailController.text.trim(),
+                              );
+                          } else {
+                            setState(() {
+                              _message =
+                                  json['error'] ??
+                                  'Could not resend verification code.';
+                            });
+                          }
+                        },
+                        child: const Text('Verify Now'),
                       ),
                     ),
                   const SizedBox(height: 24),
