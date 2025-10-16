@@ -68,49 +68,6 @@ http.route({
 });
 
 http.route({
-  path: "/api/auth/google/start",
-  method: "GET",
-  handler: httpAction(async (ctx, _req) => {
-    // Call node action to get Google OAuth URL
-    const { url } = await ctx.runAction(api.functions.auth.googleOAuthAction.generateGoogleAuthUrl, {});
-    return Response.redirect(url, 302);
-  }),
-});
-
-http.route({
-  path: "/api/auth/google/callback",
-  method: "GET",
-  handler: httpAction(async (ctx, req) => {
-    const url = new URL(req.url);
-    const code = url.searchParams.get("code");
-    if (!code) {
-      return new Response("Missing code parameter", { status: 400 });
-    }
-    const result = await ctx.runAction(api.functions.auth.googleOAuthAction.handleGoogleCallback, { code });
-    if (result && result.deepLink) {
-      const html = `<!DOCTYPE html>
-        <html lang='en'>
-        <head>
-          <meta charset='UTF-8'>
-          <meta http-equiv='refresh' content='0;url=${result.deepLink}'>
-          <meta name='viewport' content='width=device-width,initial-scale=1'>
-          <title>Return to App</title>
-        </head>
-        <body style='font-family: system-ui, sans-serif; padding: 2rem;'>
-          <p>Trying to open the Kazi App...</p>
-          <p>If not redirected, <a href='${result.deepLink}'>tap here to open the Kazi App</a>.</p>
-        </body>
-        </html>`;
-      return new Response(html, { status: 200, headers: { "Content-Type": "text/html" } });
-    } else if (result && result.error) {
-      return new Response("Google login failed: " + result.error, { status: 500 });
-    } else {
-      return new Response("Unexpected Google login error.", { status: 500 });
-    }
-  })
-});
-
-http.route({
   path: '/api/auth/google-idtoken-login',
   method: 'POST',
   handler: httpAction(async (ctx, req) => {

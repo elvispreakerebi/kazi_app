@@ -7,6 +7,7 @@ export const createAccount = mutation({
     email: v.string(),
     name: v.string(),
     hashedPassword: v.string(),
+    googleId: v.optional(v.string()), // allow optional googleId
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db
@@ -18,13 +19,15 @@ export const createAccount = mutation({
     }
     const now = Date.now();
     const name = capitalizeWords(args.name);
-    const teacherId = await ctx.db.insert("teachers", {
+    const doc = {
       email: args.email,
       name,
       createdAt: now,
-      language: "english",
+      language: "english" as const,
       hashedPassword: args.hashedPassword,
-    });
+      ...(args.googleId ? { googleId: args.googleId } : {}),
+    };
+    const teacherId = await ctx.db.insert("teachers", doc);
     return { id: teacherId, email: args.email };
   },
 });
