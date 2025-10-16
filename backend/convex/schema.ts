@@ -18,6 +18,9 @@ export default defineSchema({
     ),
     googleId: v.optional(v.string()),
     hashedPassword: v.optional(v.string()),
+    verificationCode: v.optional(v.string()),
+    verificationCodeCreatedAt: v.optional(v.number()),
+    verified: v.optional(v.boolean()),
     // Add more teacher metadata fields here if desired
   })
     .index("by_email", ["email"])

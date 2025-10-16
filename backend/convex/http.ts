@@ -20,8 +20,19 @@ http.route({
       }
       // Use createAccountAction for registration
       const result = await ctx.runAction(api.functions.auth.createAccountAction.createAccountAction, { email, password, name });
+      if (result?.error) {
+        return new Response(
+          JSON.stringify({ result }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      // Trigger verification email after success, only for email/pw
+      await ctx.runAction(api.functions.auth.sendVerificationEmailAction.sendVerificationEmailAction, {
+        email,
+        name
+      });
       return new Response(
-        JSON.stringify({ result }),
+        JSON.stringify({ result, verificationEmailSent: true }),
         { status: 201, headers: { "Content-Type": "application/json" } }
       );
     } catch (err) {

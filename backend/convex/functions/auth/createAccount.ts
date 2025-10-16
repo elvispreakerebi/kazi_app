@@ -1,6 +1,7 @@
 import { mutation } from "../../_generated/server";
 import { v } from "convex/values";
 import { capitalizeWords } from "../../utils/text";
+import { api } from "../../_generated/api";
 
 export const createAccount = mutation({
   args: {
@@ -28,6 +29,7 @@ export const createAccount = mutation({
       ...(args.googleId ? { googleId: args.googleId } : {}),
     };
     const teacherId = await ctx.db.insert("teachers", doc);
+    // TODO: Trigger sendVerificationEmailAction from the HTTP or action layer after createAccount runs successfully (mutations can't call actions directly)
     return { id: teacherId, email: args.email };
   },
 });

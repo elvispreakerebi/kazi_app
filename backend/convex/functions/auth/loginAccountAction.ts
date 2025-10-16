@@ -15,6 +15,7 @@ interface TeacherDoc {
   hashedPassword?: string;
   lastLogin?: number;
   googleId?: string;
+  verified?: boolean; // updated to be optional
 }
 
 export const loginAccountAction = action({
@@ -39,6 +40,9 @@ export const loginAccountAction = action({
     }
     if (!user.hashedPassword) {
       return { token: null, error: 'This account was registered with Google. Please sign in with Google instead.' };
+    }
+    if (!user.verified) {
+      return { token: null, error: 'Please verify your email first. Check your inbox for the code.' };
     }
     const passwordOk: boolean = await bcrypt.compare(args.password, user.hashedPassword);
     if (!passwordOk) {
