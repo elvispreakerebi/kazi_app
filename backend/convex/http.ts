@@ -32,4 +32,38 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/api/auth/login-account",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const body = await req.json();
+      const { email, password } = body;
+      if (!email || !password) {
+        return new Response(
+          JSON.stringify({ message: "Missing required fields." }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      // Call login logic via an action to allow bcrypt and JWT
+      const result = await ctx.runAction(api.functions.auth.loginAccountAction.loginAccountAction, { email, password });
+      if (!result || !result.token) {
+        return new Response(
+          JSON.stringify({ message: "Invalid credentials." }),
+          { status: 401, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify(result),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    } catch (err) {
+      return new Response(
+        JSON.stringify({ message: err instanceof Error ? err.message : String(err) }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  }),
+});
+
 export default http;

@@ -10,6 +10,8 @@
 
 import type * as functions_auth_createAccount from "../functions/auth/createAccount.js";
 import type * as functions_auth_createAccountAction from "../functions/auth/createAccountAction.js";
+import type * as functions_auth_findTeacherByEmail from "../functions/auth/findTeacherByEmail.js";
+import type * as functions_auth_loginAccountAction from "../functions/auth/loginAccountAction.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_text from "../utils/text.js";
@@ -31,6 +33,8 @@ import type {
 declare const fullApi: ApiFromModules<{
   "functions/auth/createAccount": typeof functions_auth_createAccount;
   "functions/auth/createAccountAction": typeof functions_auth_createAccountAction;
+  "functions/auth/findTeacherByEmail": typeof functions_auth_findTeacherByEmail;
+  "functions/auth/loginAccountAction": typeof functions_auth_loginAccountAction;
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/text": typeof utils_text;
