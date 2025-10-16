@@ -1,16 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:convex_flutter/convex_flutter.dart';
 import 'package:uni_links/uni_links.dart';
 import 'dart:async';
+import 'package:flutter_appauth/flutter_appauth.dart';
+import 'dart:io' show Platform;
 
 late ConvexClient convexClient;
 
 // --- Set to your deployed Convex Auth backend (site URL, no trailing slash)
 const convexBackend =
     'https://kindly-crow-554.convex.site'; // CHANGE to your prod Convex .site URL when needed
+
+/// -- REPLACE with your real Google OAuth values for the app --
+// -- Update these with YOUR app's correct client IDs --
+const String androidClientId =
+    '943087778314-iqotm7kuon08kouuadtm0arapstisc7s.apps.googleusercontent.com';
+const String androidRedirectUri =
+    'com.googleusercontent.apps.943087778314-iqotm7kuon08kouuadtm0arapstisc7s:/oauthredirect';
+const String iosClientId =
+    '943087778314-9e75n0oo41q7a4tmdhafiuv7u9p26gsq.apps.googleusercontent.com';
+const String iosRedirectUri =
+    'com.googleusercontent.apps.943087778314-9e75n0oo41q7a4tmdhafiuv7u9p26gsq:/oauthredirect';
+
+// Choose at runtime
+final String googleClientId = Platform.isIOS ? iosClientId : androidClientId;
+final String googleRedirectUri = Platform.isIOS
+    ? iosRedirectUri
+    : androidRedirectUri;
+
+const AuthorizationServiceConfiguration googleServiceConfig =
+    AuthorizationServiceConfiguration(
+      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+      tokenEndpoint: 'https://oauth2.googleapis.com/token',
+    );
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -88,6 +112,7 @@ class _KaziAppState extends State<KaziApp> {
         home: RegistrationScreen(
           onRegistered: onRegistered,
           onGoogleError: _googleError,
+          onLoggedIn: onLoggedIn,
         ),
         debugShowCheckedModeBanner: false,
       );
@@ -109,10 +134,13 @@ class _KaziAppState extends State<KaziApp> {
 class RegistrationScreen extends StatefulWidget {
   final void Function(String email) onRegistered;
   final String? onGoogleError;
+  final void Function(String jwt)
+  onLoggedIn; // Add this to RegistrationScreen props
   const RegistrationScreen({
     Key? key,
     required this.onRegistered,
     this.onGoogleError,
+    required this.onLoggedIn,
   }) : super(key: key);
 
   @override
@@ -127,6 +155,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _obscurePassword = true;
   String? _message;
   bool _loading = false;
+  final FlutterAppAuth _appAuth = const FlutterAppAuth();
 
   @override
   void dispose() {
@@ -182,13 +211,60 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     }
   }
 
-  Future<void> _signUpWithGoogle() async {
-    final url = Uri.parse('$convexBackend/api/auth/google/start');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-      setState(() => _message = 'Google sign-in flow started in browser.');
-    } else {
-      setState(() => _message = 'Could not launch Google sign-in.');
+  Future<void> _googleNativeLogin() async {
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final AuthorizationTokenResponse? result = await _appAuth
+          .authorizeAndExchangeCode(
+            AuthorizationTokenRequest(
+              googleClientId,
+              googleRedirectUri,
+              serviceConfiguration: googleServiceConfig,
+              scopes: ['openid', 'email', 'profile'],
+            ),
+          );
+      if (result?.idToken == null) {
+        setState(() {
+          _message = 'Google sign-in failed: No idToken received.';
+        });
+        return;
+      }
+      final response = await http.post(
+        Uri.parse('$convexBackend/api/auth/google-idtoken-login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'idToken': result!.idToken,
+          'name': _fullNameController.text.trim(),
+        }),
+      );
+      final json = jsonDecode(response.body);
+      if (response.statusCode == 200 && json['token'] != null) {
+        widget.onLoggedIn(json['token']);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created & logged in with Google!'),
+            ),
+          );
+        }
+        return;
+      } else {
+        setState(() {
+          _message =
+              json['error'] ?? json['message'] ?? 'Unknown error from backend.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Google sign-in failed: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -284,8 +360,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   Center(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.login),
-                      label: const Text('Sign up with Google'),
-                      onPressed: _loading ? null : _signUpWithGoogle,
+                      label: const Text('Create account with Google'),
+                      onPressed: _loading ? null : _googleNativeLogin,
                     ),
                   ),
                   if (widget.onGoogleError != null) ...[
@@ -345,6 +421,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   String? _message;
   bool _loading = false;
+  final FlutterAppAuth _appAuth = const FlutterAppAuth();
 
   @override
   void initState() {
@@ -401,13 +478,54 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    final url = Uri.parse('$convexBackend/api/auth/google/start');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-      setState(() => _message = 'Google sign-in flow started in browser.');
-    } else {
-      setState(() => _message = 'Could not launch Google sign-in.');
+  Future<void> _googleLogin() async {
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final AuthorizationTokenResponse? result = await _appAuth
+          .authorizeAndExchangeCode(
+            AuthorizationTokenRequest(
+              googleClientId,
+              googleRedirectUri,
+              serviceConfiguration: googleServiceConfig,
+              scopes: ['openid', 'email', 'profile'],
+            ),
+          );
+      if (result?.idToken == null) {
+        setState(() {
+          _message = 'Google login failed: No idToken received.';
+        });
+        return;
+      }
+      final response = await http.post(
+        Uri.parse('$convexBackend/api/auth/google-idtoken-login'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'idToken': result!.idToken}),
+      );
+      final json = jsonDecode(response.body);
+      if (response.statusCode == 200 && json['token'] != null) {
+        widget.onLoggedIn(json['token']);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Logged in with Google!')),
+          );
+        }
+      } else {
+        setState(() {
+          _message =
+              json['error'] ?? json['message'] ?? 'Unknown error from backend.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Google sign-in failed: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -482,8 +600,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.login),
-                      label: const Text('Sign in with Google'),
-                      onPressed: _loading ? null : _signInWithGoogle,
+                      label: const Text('Login with Google'),
+                      onPressed: _loading ? null : _googleLogin,
                     ),
                   ),
                   const SizedBox(height: 8),

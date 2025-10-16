@@ -86,6 +86,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_appauth:
+    dependency: "direct main"
+    description:
+      name: flutter_appauth
+      sha256: a989a17bb5089fbaff8c57b2d7ccbe031255ecda11a165da5ea1f349f008470d
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.0"
+  flutter_appauth_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_appauth_platform_interface
+      sha256: "1bc3e9a3803840dfd4f1ffd1bfe06221f04f7e8a0a9d21524e220bc69df792f4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
