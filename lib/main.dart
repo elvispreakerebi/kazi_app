@@ -57,6 +57,9 @@ class _KaziAppState extends State<KaziApp> {
   String? _googleError;
   StreamSubscription? _sub;
   String _view = 'register'; // 'register' | 'login' | 'verify'
+  String? _resetEmail;
+  String? _resetCode;
+  String? _resetSuccessMessage;
 
   @override
   void initState() {
@@ -143,6 +146,61 @@ class _KaziAppState extends State<KaziApp> {
           onBackToRegister: onBackToRegister,
           onGoogleError: _googleError,
           onGoToVerification: (email) => onGoToVerification(email),
+          resetSuccessMessage: _resetSuccessMessage,
+          onForgotPassword: () => setState(() {
+            _view = 'passwordResetRequest';
+          }),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+    if (_view == 'passwordResetRequest') {
+      return MaterialApp(
+        title: 'Kazi App',
+        home: PasswordResetRequestScreen(
+          onRequested: (email) => setState(() {
+            _resetEmail = email;
+            _view = 'passwordResetCode';
+          }),
+          onBackToLogin: () => setState(() {
+            _view = 'login';
+          }),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+    if (_view == 'passwordResetCode') {
+      return MaterialApp(
+        title: 'Kazi App',
+        home: PasswordResetCodeScreen(
+          email: _resetEmail ?? '',
+          onCodeVerified: (code) => setState(() {
+            _resetCode = code;
+            _view = 'passwordResetSet';
+          }),
+          onBack: () => setState(() {
+            _view = 'passwordResetRequest';
+          }),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+    if (_view == 'passwordResetSet') {
+      return MaterialApp(
+        title: 'Kazi App',
+        home: PasswordResetSetScreen(
+          email: _resetEmail ?? '',
+          code: _resetCode ?? '',
+          onPasswordReset: () => setState(() {
+            _view = 'login';
+            _resetEmail = null;
+            _resetCode = null;
+            _resetSuccessMessage =
+                'Password reset successful! You can now log in.';
+          }),
+          onBack: () => setState(() {
+            _view = 'passwordResetCode';
+          }),
         ),
         debugShowCheckedModeBanner: false,
       );
@@ -453,6 +511,8 @@ class LoginScreen extends StatefulWidget {
   final VoidCallback onBackToRegister;
   final String? onGoogleError;
   final void Function(String email)? onGoToVerification;
+  final String? resetSuccessMessage;
+  final VoidCallback? onForgotPassword;
   const LoginScreen({
     Key? key,
     required this.email,
@@ -460,6 +520,8 @@ class LoginScreen extends StatefulWidget {
     required this.onBackToRegister,
     this.onGoogleError,
     this.onGoToVerification,
+    this.resetSuccessMessage,
+    this.onForgotPassword,
   }) : super(key: key);
 
   @override
@@ -650,6 +712,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : 'Password must be at least 8 chars',
                   ),
+                  if (widget.resetSuccessMessage != null) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        border: Border.all(color: Colors.green.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.check_circle, color: Colors.green),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              widget.resetSuccessMessage!,
+                              style: const TextStyle(
+                                color: Colors.green,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   if (_message != null && _message!.isNotEmpty)
                     Container(
                       margin: const EdgeInsets.only(top: 16),
@@ -740,6 +831,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextButton(
                       onPressed: _loading ? null : widget.onBackToRegister,
                       child: const Text('Back to Register'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.onForgotPassword,
+                      child: const Text('Forgot password?'),
                     ),
                   ),
                   if (widget.onGoogleError != null) ...[
@@ -989,6 +1087,484 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordResetRequestScreen extends StatefulWidget {
+  final void Function(String email) onRequested;
+  final VoidCallback onBackToLogin;
+  const PasswordResetRequestScreen({
+    Key? key,
+    required this.onRequested,
+    required this.onBackToLogin,
+  }) : super(key: key);
+
+  @override
+  State<PasswordResetRequestScreen> createState() =>
+      _PasswordResetRequestScreenState();
+}
+
+class _PasswordResetRequestScreenState
+    extends State<PasswordResetRequestScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  String? _message;
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final res = await http.post(
+        Uri.parse('$convexBackend/api/auth/send-password-reset'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': _emailController.text.trim()}),
+      );
+      final json = jsonDecode(res.body);
+      if (res.statusCode == 200 && json['ok'] == true) {
+        widget.onRequested(_emailController.text.trim());
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset request sent!')),
+        );
+      } else {
+        setState(() {
+          _message =
+              json['error'] ??
+              json['message'] ??
+              'Could not send password reset request.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Network error: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Password Reset Request',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.email],
+                    validator: (v) => v == null || !v.contains('@')
+                        ? 'Enter a valid email'
+                        : null,
+                  ),
+                  if (_message != null && _message!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _message!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _loading ? null : _submit,
+                      child: _loading
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Request Password Reset'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.onBackToLogin,
+                      child: const Text('Back to Login'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordResetCodeScreen extends StatefulWidget {
+  final String email;
+  final void Function(String code) onCodeVerified;
+  final VoidCallback onBack;
+  const PasswordResetCodeScreen({
+    Key? key,
+    required this.email,
+    required this.onCodeVerified,
+    required this.onBack,
+  }) : super(key: key);
+
+  @override
+  State<PasswordResetCodeScreen> createState() =>
+      _PasswordResetCodeScreenState();
+}
+
+class _PasswordResetCodeScreenState extends State<PasswordResetCodeScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _codeController = TextEditingController();
+  String? _message;
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verifyCode() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final res = await http.post(
+        Uri.parse('$convexBackend/api/auth/verify-password-reset-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': widget.email,
+          'code': _codeController.text.trim(),
+        }),
+      );
+      final json = jsonDecode(res.body);
+      if (res.statusCode == 200 && json['ok'] == true) {
+        widget.onCodeVerified(_codeController.text.trim());
+      } else {
+        setState(() {
+          _message =
+              json['error'] ?? json['message'] ?? 'Invalid or expired code.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Network error: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Password Reset Code',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Enter the 6-digit code sent to your email address (${widget.email}):',
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _codeController,
+                    decoration: const InputDecoration(
+                      labelText: '6-digit code',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.number,
+                    maxLength: 6,
+                    enabled: !_loading,
+                  ),
+                  if (_message != null && _message!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 14),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _message!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 22),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _loading ? null : _verifyCode,
+                          child: _loading
+                              ? const SizedBox(
+                                  height: 18,
+                                  width: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Verify Code'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.onBack,
+                      child: const Text('Back to Password Reset Request'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordResetSetScreen extends StatefulWidget {
+  final String email;
+  final String code;
+  final void Function() onPasswordReset;
+  final VoidCallback onBack;
+  const PasswordResetSetScreen({
+    Key? key,
+    required this.email,
+    required this.code,
+    required this.onPasswordReset,
+    required this.onBack,
+  }) : super(key: key);
+
+  @override
+  State<PasswordResetSetScreen> createState() => _PasswordResetSetScreenState();
+}
+
+class _PasswordResetSetScreenState extends State<PasswordResetSetScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  String? _message;
+  bool _loading = false;
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _resetPassword() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() {
+      _loading = true;
+      _message = null;
+    });
+    try {
+      final res = await http.post(
+        Uri.parse('$convexBackend/api/auth/reset-password'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': widget.email,
+          'code': widget.code,
+          'newPassword': _passwordController.text,
+        }),
+      );
+      final json = jsonDecode(res.body);
+      if (res.statusCode == 200 && json['ok'] == true) {
+        widget.onPasswordReset();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset successful!')),
+        );
+      } else {
+        setState(() {
+          _message =
+              json['error'] ?? json['message'] ?? 'Could not reset password.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _message = 'Network error: $e';
+      });
+    } finally {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Set New Password',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 24),
+                  Text('Enter your new password for ${widget.email}:'),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        tooltip: _obscurePassword
+                            ? 'Show password'
+                            : 'Hide password',
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
+                      ),
+                    ),
+                    obscureText: _obscurePassword,
+                    textInputAction: TextInputAction.done,
+                    autofillHints: const [AutofillHints.newPassword],
+                    validator: (v) => v != null && v.length >= 8
+                        ? null
+                        : 'Password must be at least 8 chars',
+                  ),
+                  if (_message != null && _message!.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.error_outline, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _message!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _loading ? null : _resetPassword,
+                      child: _loading
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Reset Password'),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: TextButton(
+                      onPressed: widget.onBack,
+                      child: const Text('Back to Password Reset Code'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
