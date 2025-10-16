@@ -25,6 +25,11 @@ export const sendVerificationEmailAction = action({
     const code = generate6DigitCode();
     const now = Date.now();
 
+    const CODE_RESEND_INTERVAL_MS = 90 * 1000;
+    if (teachers.verificationCodeCreatedAt && Date.now() - teachers.verificationCodeCreatedAt < CODE_RESEND_INTERVAL_MS) {
+      return { ok: false, error: "Please wait before requesting another code." };
+    }
+
     // Save code+timestamp to teacher (must use a mutation)
     await ctx.runMutation(api.functions.auth._patchTeacherVerification._patchTeacherVerification, {
       teacherId: teachers._id,
