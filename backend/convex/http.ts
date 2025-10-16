@@ -208,4 +208,45 @@ http.route({
   }),
 });
 
+http.route({
+  path: '/api/auth/send-password-reset',
+  method: 'POST',
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const { email } = await req.json();
+      // Always respond ok=true for privacy
+      await ctx.runAction(api.functions.auth.sendPasswordResetCodeAction.sendPasswordResetCodeAction, { email });
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' }});
+    } catch {
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' }});
+    }
+  }),
+});
+http.route({
+  path: '/api/auth/verify-password-reset-code',
+  method: 'POST',
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const { email, code } = await req.json();
+      const result = await ctx.runMutation(api.functions.auth.verifyPasswordResetCode.verifyPasswordResetCode, { email, code });
+      return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' }});
+    } catch (err) {
+      return new Response(JSON.stringify({ ok: false, error: 'Internal error.' }), { status: 500, headers: { 'Content-Type': 'application/json' }});
+    }
+  }),
+});
+http.route({
+  path: '/api/auth/reset-password',
+  method: 'POST',
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const { email, code, newPassword } = await req.json();
+      const result = await ctx.runAction(api.functions.auth.resetPasswordAction.resetPasswordAction, { email, code, newPassword });
+      return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' }});
+    } catch (err) {
+      return new Response(JSON.stringify({ ok: false, error: 'Internal error.' }), { status: 500, headers: { 'Content-Type': 'application/json' }});
+    }
+  }),
+});
+
 export default http;

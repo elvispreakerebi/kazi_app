@@ -21,6 +21,8 @@ export const findTeacherByEmail = query({
       verified: v.optional(v.boolean()),
       verificationCode: v.optional(v.string()),
       verificationCodeCreatedAt: v.optional(v.number()),
+      passwordResetCode: v.optional(v.string()),
+      passwordResetCodeCreatedAt: v.optional(v.number()),
     }),
     v.null()
   ),

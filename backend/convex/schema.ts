@@ -21,6 +21,8 @@ export default defineSchema({
     verificationCode: v.optional(v.string()),
     verificationCodeCreatedAt: v.optional(v.number()),
     verified: v.optional(v.boolean()),
+    passwordResetCode: v.optional(v.string()),
+    passwordResetCodeCreatedAt: v.optional(v.number()),
     // Add more teacher metadata fields here if desired
   })
     .index("by_email", ["email"])
