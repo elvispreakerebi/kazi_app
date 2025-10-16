@@ -4,6 +4,7 @@ import { v } from "convex/values";
 import { api } from "../../_generated/api";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { validateEmail, validatePassword, ValidationError } from "../../utils/validation";
 
 interface TeacherDoc {
   _id: string;
@@ -21,18 +22,24 @@ export const loginAccountAction = action({
     email: v.string(),
     password: v.string(),
   },
-  handler: async (ctx, args): Promise<{ token: string | null }> => {
-    // 1. Find teacher by email
+  handler: async (ctx, args): Promise<{ token: string | null; error?: string }> => {
+    try {
+      validateEmail(args.email);
+      validatePassword(args.password);
+    } catch (err: any) {
+      if (err instanceof ValidationError) {
+        return { token: null, error: err.message };
+      }
+      throw err;
+    }
     const user: TeacherDoc | null = await ctx.runQuery(api.functions.auth.findTeacherByEmail.findTeacherByEmail, { email: args.email });
     if (!user || !user.hashedPassword) {
       return { token: null };
     }
-    // 2. Check password
     const passwordOk: boolean = await bcrypt.compare(args.password, user.hashedPassword);
     if (!passwordOk) {
       return { token: null };
     }
-    // 3. Issue JWT
     const payload: Record<string, any> = {
       teacherId: user._id,
       email: user.email,

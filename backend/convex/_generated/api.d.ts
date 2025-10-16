@@ -15,6 +15,7 @@ import type * as functions_auth_loginAccountAction from "../functions/auth/login
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_text from "../utils/text.js";
+import type * as utils_validation from "../utils/validation.js";
 
 import type {
   ApiFromModules,
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/text": typeof utils_text;
+  "utils/validation": typeof utils_validation;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
