@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:convex_flutter/convex_flutter.dart';
+import 'package:uni_links/uni_links.dart';
+import 'dart:async';
 
 late ConvexClient convexClient;
 
@@ -29,10 +31,47 @@ class _KaziAppState extends State<KaziApp> {
   // Simple in-memory store for registration/email
   String? _registeredEmail;
   String? _jwt;
+  StreamSubscription? _sub;
+  String? _googleError;
+
+  @override
+  void initState() {
+    super.initState();
+    _initDeepLinks();
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
 
   void onRegistered(String email) => setState(() => _registeredEmail = email);
-  void onLoggedIn(String jwt) => setState(() => _jwt = jwt);
+  void onLoggedIn(String jwt) => setState(() {
+    _jwt = jwt;
+    _googleError = null;
+  });
   void logout() => setState(() => _jwt = null);
+
+  Future<void> _initDeepLinks() async {
+    _sub = uriLinkStream.listen(
+      (Uri? uri) {
+        if (uri != null && uri.scheme == 'kazi' && uri.host == 'auth-success') {
+          final token = uri.queryParameters['token'];
+          if (token != null && token.isNotEmpty) {
+            onLoggedIn(token);
+          } else {
+            setState(
+              () => _googleError = "No token found in Google OAuth deep link.",
+            );
+          }
+        }
+      },
+      onError: (err) {
+        setState(() => _googleError = 'Deep link error: $err');
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +85,10 @@ class _KaziAppState extends State<KaziApp> {
     if (_registeredEmail == null) {
       return MaterialApp(
         title: 'Kazi App',
-        home: RegistrationScreen(onRegistered: onRegistered),
+        home: RegistrationScreen(
+          onRegistered: onRegistered,
+          onGoogleError: _googleError,
+        ),
         debugShowCheckedModeBanner: false,
       );
     } else {
@@ -56,6 +98,7 @@ class _KaziAppState extends State<KaziApp> {
           email: _registeredEmail!,
           onLoggedIn: onLoggedIn,
           onBackToRegister: () => setState(() => _registeredEmail = null),
+          onGoogleError: _googleError,
         ),
         debugShowCheckedModeBanner: false,
       );
@@ -65,8 +108,12 @@ class _KaziAppState extends State<KaziApp> {
 
 class RegistrationScreen extends StatefulWidget {
   final void Function(String email) onRegistered;
-  const RegistrationScreen({Key? key, required this.onRegistered})
-    : super(key: key);
+  final String? onGoogleError;
+  const RegistrationScreen({
+    Key? key,
+    required this.onRegistered,
+    this.onGoogleError,
+  }) : super(key: key);
 
   @override
   State<RegistrationScreen> createState() => _RegistrationScreenState();
@@ -132,6 +179,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       setState(() {
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _signUpWithGoogle() async {
+    final url = Uri.parse('$convexBackend/api/auth/google/start');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+      setState(() => _message = 'Google sign-in flow started in browser.');
+    } else {
+      setState(() => _message = 'Could not launch Google sign-in.');
     }
   }
 
@@ -231,6 +288,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       onPressed: _loading ? null : _signUpWithGoogle,
                     ),
                   ),
+                  if (widget.onGoogleError != null) ...[
+                    const SizedBox(height: 24),
+                    Center(
+                      child: Text(
+                        widget.onGoogleError!,
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                   if (_message != null) ...[
                     const SizedBox(height: 24),
                     Center(
@@ -252,27 +319,19 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       ),
     );
   }
-
-  Future<void> _signUpWithGoogle() async {
-    final url = Uri.parse('$convexBackend/api/auth/signIn?provider=google');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-      setState(() => _message = 'Google sign-in flow started in browser.');
-    } else {
-      setState(() => _message = 'Could not launch Google sign-in.');
-    }
-  }
 }
 
 class LoginScreen extends StatefulWidget {
   final String email;
   final void Function(String jwt) onLoggedIn;
   final VoidCallback onBackToRegister;
+  final String? onGoogleError;
   const LoginScreen({
     Key? key,
     required this.email,
     required this.onLoggedIn,
     required this.onBackToRegister,
+    this.onGoogleError,
   }) : super(key: key);
 
   @override
@@ -318,7 +377,6 @@ class _LoginScreenState extends State<LoginScreen> {
       final json = jsonDecode(res.body);
       if (res.statusCode == 200 && json['token'] != null) {
         widget.onLoggedIn(json['token']);
-        // Will show snackbar via HomeScreen
       } else if (json['error'] != null) {
         setState(() {
           _message = json['error'];
@@ -340,6 +398,16 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _loading = false;
       });
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    final url = Uri.parse('$convexBackend/api/auth/google/start');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+      setState(() => _message = 'Google sign-in flow started in browser.');
+    } else {
+      setState(() => _message = 'Could not launch Google sign-in.');
     }
   }
 
@@ -412,11 +480,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 8),
                   Center(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.login),
+                      label: const Text('Sign in with Google'),
+                      onPressed: _loading ? null : _signInWithGoogle,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
                     child: TextButton(
                       onPressed: _loading ? null : widget.onBackToRegister,
                       child: const Text('Back to Register'),
                     ),
                   ),
+                  if (widget.onGoogleError != null) ...[
+                    const SizedBox(height: 24),
+                    Center(
+                      child: Text(
+                        widget.onGoogleError!,
+                        style: TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
                   if (_message != null) ...[
                     const SizedBox(height: 24),
                     Center(
