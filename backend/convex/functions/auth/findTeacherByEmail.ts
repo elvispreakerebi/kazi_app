@@ -6,10 +6,15 @@ export const findTeacherByEmail = query({
   returns: v.union(
     v.object({
       _id: v.id("teachers"),
+      _creationTime: v.number(),
       email: v.string(),
       name: v.optional(v.string()),
       createdAt: v.number(),
-      language: v.union(v.literal("english"), v.literal("french"), v.literal("kiryanwanda")),
+      language: v.union(
+        v.literal("english"),
+        v.literal("french"),
+        v.literal("kiryanwanda")
+      ),
       hashedPassword: v.optional(v.string()),
       lastLogin: v.optional(v.number()),
       googleId: v.optional(v.string()),
