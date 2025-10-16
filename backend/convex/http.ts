@@ -4,6 +4,7 @@ import { api } from "./_generated/api";
 
 const http = httpRouter();
 
+
 http.route({
   path: "/api/auth/crate-account",
   method: "POST",
@@ -64,6 +65,36 @@ http.route({
       );
     }
   }),
+});
+
+http.route({
+  path: "/api/auth/google/start",
+  method: "GET",
+  handler: httpAction(async (ctx, _req) => {
+    // Call node action to get Google OAuth URL
+    const { url } = await ctx.runAction(api.functions.auth.googleOAuthAction.generateGoogleAuthUrl, {});
+    return Response.redirect(url, 302);
+  }),
+});
+
+http.route({
+  path: "/api/auth/google/callback",
+  method: "GET",
+  handler: httpAction(async (ctx, req) => {
+    const url = new URL(req.url);
+    const code = url.searchParams.get("code");
+    if (!code) {
+      return new Response("Missing code parameter", { status: 400 });
+    }
+    const result = await ctx.runAction(api.functions.auth.googleOAuthAction.handleGoogleCallback, { code });
+    if (result && result.deepLink) {
+      return Response.redirect(result.deepLink, 302);
+    } else if (result && result.error) {
+      return new Response("Google login failed: " + result.error, { status: 500 });
+    } else {
+      return new Response("Unexpected Google login error.", { status: 500 });
+    }
+  })
 });
 
 export default http;

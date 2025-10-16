@@ -11,6 +11,8 @@
 import type * as functions_auth_createAccount from "../functions/auth/createAccount.js";
 import type * as functions_auth_createAccountAction from "../functions/auth/createAccountAction.js";
 import type * as functions_auth_findTeacherByEmail from "../functions/auth/findTeacherByEmail.js";
+import type * as functions_auth_googleAuth from "../functions/auth/googleAuth.js";
+import type * as functions_auth_googleOAuthAction from "../functions/auth/googleOAuthAction.js";
 import type * as functions_auth_loginAccountAction from "../functions/auth/loginAccountAction.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
@@ -35,6 +37,8 @@ declare const fullApi: ApiFromModules<{
   "functions/auth/createAccount": typeof functions_auth_createAccount;
   "functions/auth/createAccountAction": typeof functions_auth_createAccountAction;
   "functions/auth/findTeacherByEmail": typeof functions_auth_findTeacherByEmail;
+  "functions/auth/googleAuth": typeof functions_auth_googleAuth;
+  "functions/auth/googleOAuthAction": typeof functions_auth_googleOAuthAction;
   "functions/auth/loginAccountAction": typeof functions_auth_loginAccountAction;
   http: typeof http;
   myFunctions: typeof myFunctions;
