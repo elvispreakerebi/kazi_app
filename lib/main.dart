@@ -6,7 +6,10 @@ import 'package:uni_links/uni_links.dart';
 import 'dart:async';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'dart:io' show Platform;
+// Faly Added
+import 'package:kazi_app/app/router.dart';
 
+ 
 late ConvexClient convexClient;
 
 // --- Set to your deployed Convex Auth backend (site URL, no trailing slash)
@@ -205,15 +208,11 @@ class _KaziAppState extends State<KaziApp> {
         debugShowCheckedModeBanner: false,
       );
     }
-    // Default: registration
+    // Default: start app with router (splash at '/')
     return MaterialApp(
       title: 'Kazi App',
-      home: RegistrationScreen(
-        onRegistered: onRegistered,
-        onGoogleError: _googleError,
-        onLoggedIn: onLoggedIn,
-        onGoToLogin: onGoToLogin,
-      ),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: '/',
       debugShowCheckedModeBanner: false,
     );
   }
@@ -1599,3 +1598,5 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+
