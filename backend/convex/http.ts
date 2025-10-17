@@ -2,65 +2,14 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
+import { createAccountHandler } from "./functions/routeHandlers/createAccountHandler";
 
 const http = httpRouter();
 
 http.route({
-  path: "/api/auth/crate-account",
+  path: "/api/auth/create-account",
   method: "POST",
-  handler: httpAction(async (ctx, req) => {
-    try {
-      const body = await req.json();
-      const { email, password, name } = body;
-      if (!email || !password || !name) {
-        return new Response(
-          JSON.stringify({ error: "All fields are required." }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      // Use createAccountAction for registration
-      const result = await ctx.runAction(api.functions.auth.createAccountAction.createAccountAction, { email, password, name });
-      if (result?.error) {
-        // Validation error (password or email) or duplicate account
-        // catch common case: duplicate email vs. validation error
-        if (result.error.toLowerCase().includes('already exists')) {
-          return new Response(
-            JSON.stringify({ error: "An account with this email already exists." }),
-            { status: 409, headers: { "Content-Type": "application/json" } }
-          );
-        } else if (result.error.toLowerCase().includes('invalid email')) {
-          return new Response(
-            JSON.stringify({ error: "Invalid email address." }),
-            { status: 422, headers: { "Content-Type": "application/json" } }
-          );
-        } else if (result.error.toLowerCase().includes('password')) {
-          return new Response(
-            JSON.stringify({ error: result.error }),
-            { status: 422, headers: { "Content-Type": "application/json" } }
-          );
-        }
-        // Fallback: forward any other error
-        return new Response(
-          JSON.stringify({ error: result.error }),
-          { status: 422, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      // Trigger verification email after success, only for email/pw
-      await ctx.runAction(api.functions.auth.sendVerificationEmailAction.sendVerificationEmailAction, {
-        email,
-        name
-      });
-      return new Response(
-        JSON.stringify({ result, verificationEmailSent: true }),
-        { status: 201, headers: { "Content-Type": "application/json" } }
-      );
-    } catch (err) {
-      return new Response(
-        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
-  }),
+  handler: httpAction(createAccountHandler),
 });
 
 http.route({
@@ -368,6 +317,30 @@ http.route({
 });
 
 http.route({
+  path: "/api/classes/list",
+  method: "GET",
+  handler: httpAction(async (ctx, req) => {
+    const auth = req.headers.get('authorization') || req.headers.get('Authorization');
+    if (!auth || !auth.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
+    }
+    const token = auth.slice(7);
+    const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
+    if (!verify.valid || !verify.teacherId) {
+      return new Response(JSON.stringify({ error: verify.error || "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
+    }
+    try {
+      const classes = await ctx.runQuery(api.functions.classes.getTeacherClasses.getTeacherClasses, {
+        teacherId: verify.teacherId as Id<"teachers">,
+      });
+      return new Response(JSON.stringify(classes), { status: 200, headers: { "Content-Type": "application/json" } });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), { status: 422, headers: { "Content-Type": "application/json" } });
+    }
+  })
+});
+
+http.route({
   path: "/api/subjects/add",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
@@ -474,30 +447,6 @@ http.route({
         name
       });
       return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
-    } catch (err) {
-      return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), { status: 422, headers: { "Content-Type": "application/json" } });
-    }
-  })
-});
-
-http.route({
-  path: "/api/classes/list",
-  method: "GET",
-  handler: httpAction(async (ctx, req) => {
-    const auth = req.headers.get('authorization') || req.headers.get('Authorization');
-    if (!auth || !auth.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
-    }
-    const token = auth.slice(7);
-    const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
-    if (!verify.valid || !verify.teacherId) {
-      return new Response(JSON.stringify({ error: verify.error || "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
-    }
-    try {
-      const classes = await ctx.runQuery(api.functions.classes.getTeacherClasses.getTeacherClasses, {
-        teacherId: verify.teacherId as Id<"teachers">,
-      });
-      return new Response(JSON.stringify(classes), { status: 200, headers: { "Content-Type": "application/json" } });
     } catch (err) {
       return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), { status: 422, headers: { "Content-Type": "application/json" } });
     }

@@ -26,6 +26,7 @@ import type * as functions_classes_addClass from "../functions/classes/addClass.
 import type * as functions_classes_deleteClass from "../functions/classes/deleteClass.js";
 import type * as functions_classes_editClass from "../functions/classes/editClass.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
+import type * as functions_routeHandlers_createAccountHandler from "../functions/routeHandlers/createAccountHandler.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
@@ -70,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/deleteClass": typeof functions_classes_deleteClass;
   "functions/classes/editClass": typeof functions_classes_editClass;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
+  "functions/routeHandlers/createAccountHandler": typeof functions_routeHandlers_createAccountHandler;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
