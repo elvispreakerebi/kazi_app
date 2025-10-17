@@ -59,6 +59,8 @@ export default defineSchema({
     fileId: v.optional(v.id("files")),
     parsedContent: v.optional(v.any()),
     uploadedAt: v.number(),
+    currentWeek: v.optional(v.number()),
+    progress: v.optional(v.object({ topicsCovered: v.number(), totalTopics: v.number() })),
   })
     .index("by_subjectId", ["subjectId"])
     .index("by_teacherId", ["teacherId"]),
