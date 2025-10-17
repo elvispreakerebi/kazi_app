@@ -56,7 +56,8 @@ export default defineSchema({
   schemeOfWork: defineTable({
     subjectId: v.id("subjects"),
     teacherId: v.id("teachers"),
-    fileId: v.optional(v.id("files")),
+    storageId: v.id("_storage"), // <-- For Convex file storage
+    // fileId: v.optional(v.id("files")), // (deprecated, keep for legacy only if needed)
     parsedContent: v.optional(v.any()),
     uploadedAt: v.number(),
     currentWeek: v.optional(v.number()),
