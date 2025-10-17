@@ -18,6 +18,7 @@ import { editSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/e
 import { getClassSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler";
 import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler";
 import { generateUploadUrlHandler } from "./functions/routeHandlers/fileHandlers/generateUploadUrlHandler";
+import { parseAndExtractTopicsHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsHandler";
 
 const http = httpRouter();
 
@@ -131,6 +132,13 @@ http.route({
   path: "/api/file/generate-upload-url",
   method: "POST",
   handler: httpAction(generateUploadUrlHandler),
+});
+
+// Scheme of Work Routes
+http.route({
+  path: "/api/schemeOfWork/parse-and-extract",
+  method: "POST",
+  handler: httpAction(parseAndExtractTopicsHandler),
 });
 
 export default http;
