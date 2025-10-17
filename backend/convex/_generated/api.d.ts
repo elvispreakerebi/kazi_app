@@ -30,7 +30,10 @@ import type * as functions_routeHandlers_authHandlers_createAccountHandler from 
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
 import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_resendVerificationHandler from "../functions/routeHandlers/authHandlers/resendVerificationHandler.js";
+import type * as functions_routeHandlers_authHandlers_resetPasswordHandler from "../functions/routeHandlers/authHandlers/resetPasswordHandler.js";
+import type * as functions_routeHandlers_authHandlers_sendPasswordResetHandler from "../functions/routeHandlers/authHandlers/sendPasswordResetHandler.js";
 import type * as functions_routeHandlers_authHandlers_verifyEmailCodeHandler from "../functions/routeHandlers/authHandlers/verifyEmailCodeHandler.js";
+import type * as functions_routeHandlers_authHandlers_verifyPasswordResetCodeHandler from "../functions/routeHandlers/authHandlers/verifyPasswordResetCodeHandler.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
@@ -79,7 +82,10 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
   "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
   "functions/routeHandlers/authHandlers/resendVerificationHandler": typeof functions_routeHandlers_authHandlers_resendVerificationHandler;
+  "functions/routeHandlers/authHandlers/resetPasswordHandler": typeof functions_routeHandlers_authHandlers_resetPasswordHandler;
+  "functions/routeHandlers/authHandlers/sendPasswordResetHandler": typeof functions_routeHandlers_authHandlers_sendPasswordResetHandler;
   "functions/routeHandlers/authHandlers/verifyEmailCodeHandler": typeof functions_routeHandlers_authHandlers_verifyEmailCodeHandler;
+  "functions/routeHandlers/authHandlers/verifyPasswordResetCodeHandler": typeof functions_routeHandlers_authHandlers_verifyPasswordResetCodeHandler;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
