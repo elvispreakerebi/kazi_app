@@ -1,6 +1,24 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
+import jwt from "jsonwebtoken"; // <-- Add this import near the top
+const JWT_SECRET = process.env.JWT_SECRET || 'FAKE_SECRET_MUST_REPLACE';
+
+// Add a reusable verifyJwt utility
+function verifyJwtFromRequest(req: Request) {
+  const auth = req.headers.get('authorization') || req.headers.get('Authorization');
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return null;
+  }
+  const token = auth.slice(7);
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (!decoded || typeof decoded !== 'object' || !decoded.teacherId) return null;
+    return decoded;
+  } catch {
+    return null;
+  }
+}
 
 const http = httpRouter();
 
@@ -222,6 +240,7 @@ http.route({
     }
   }),
 });
+
 http.route({
   path: '/api/auth/verify-password-reset-code',
   method: 'POST',
@@ -235,6 +254,7 @@ http.route({
     }
   }),
 });
+
 http.route({
   path: '/api/auth/reset-password',
   method: 'POST',
@@ -253,17 +273,31 @@ http.route({
   path: "/api/classes/add",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
+    const tokenPayload = verifyJwtFromRequest(req);
+    if (!tokenPayload) {
+      return new Response(JSON.stringify({ error: "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
+    }
+    const teacherId = tokenPayload.teacherId;
+    let name, gradeLevel, academicYear;
     try {
       const body = await req.json();
-      const { teacherId, name, gradeLevel, academicYear } = body;
-      if (!teacherId || !name || !gradeLevel) {
-        return new Response(
-          JSON.stringify({ error: "teacherId, name, and gradeLevel are required." }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        );
-      }
+      ({ name, gradeLevel, academicYear } = body);
+    } catch {
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON body." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    if (!name || !gradeLevel) {
+      return new Response(
+        JSON.stringify({ error: "name and gradeLevel are required." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+    try {
       const result = await ctx.runMutation(api.functions.classes.addClass.addClass, {
-        teacherId, name, gradeLevel, academicYear
+        teacherId,
+        name, gradeLevel, academicYear
       });
       return new Response(JSON.stringify(result), { status: 201, headers: { "Content-Type": "application/json" } });
     } catch (err) {
