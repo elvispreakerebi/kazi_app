@@ -1,27 +1,9 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
-import jwt from "jsonwebtoken"; // <-- Add this import near the top
-const JWT_SECRET = process.env.JWT_SECRET || 'FAKE_SECRET_MUST_REPLACE';
-
-// Add a reusable verifyJwt utility
-function verifyJwtFromRequest(req: Request) {
-  const auth = req.headers.get('authorization') || req.headers.get('Authorization');
-  if (!auth || !auth.startsWith('Bearer ')) {
-    return null;
-  }
-  const token = auth.slice(7);
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    if (!decoded || typeof decoded !== 'object' || !decoded.teacherId) return null;
-    return decoded;
-  } catch {
-    return null;
-  }
-}
+import { Id } from "./_generated/dataModel";
 
 const http = httpRouter();
-
 
 http.route({
   path: "/api/auth/crate-account",
@@ -249,7 +231,7 @@ http.route({
       const { email, code } = await req.json();
       const result = await ctx.runMutation(api.functions.auth.verifyPasswordResetCode.verifyPasswordResetCode, { email, code });
       return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' }});
-    } catch (err) {
+    } catch {
       return new Response(JSON.stringify({ ok: false, error: 'Internal error.' }), { status: 500, headers: { 'Content-Type': 'application/json' }});
     }
   }),
@@ -263,7 +245,7 @@ http.route({
       const { email, code, newPassword } = await req.json();
       const result = await ctx.runAction(api.functions.auth.resetPasswordAction.resetPasswordAction, { email, code, newPassword });
       return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' }});
-    } catch (err) {
+    } catch {
       return new Response(JSON.stringify({ ok: false, error: 'Internal error.' }), { status: 500, headers: { 'Content-Type': 'application/json' }});
     }
   }),
@@ -273,11 +255,17 @@ http.route({
   path: "/api/classes/add",
   method: "POST",
   handler: httpAction(async (ctx, req) => {
-    const tokenPayload = verifyJwtFromRequest(req);
-    if (!tokenPayload) {
+    // Extract authorization header (Bearer token)
+    const auth = req.headers.get('authorization') || req.headers.get('Authorization');
+    if (!auth || !auth.startsWith('Bearer ')) {
       return new Response(JSON.stringify({ error: "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
     }
-    const teacherId = tokenPayload.teacherId;
+    const token = auth.slice(7);
+    // Call Node platform action to verify the token
+    const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
+    if (!verify.valid || !verify.teacherId) {
+      return new Response(JSON.stringify({ error: verify.error || "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
+    }
     let classes;
     try {
       const body = await req.json();
@@ -296,7 +284,7 @@ http.route({
     }
     try {
       const result = await ctx.runMutation(api.functions.classes.addClass.addClass, {
-        teacherId,
+        teacherId: verify.teacherId as Id<"teachers">,
         classes
       });
       return new Response(JSON.stringify(result), { status: 201, headers: { "Content-Type": "application/json" } });
