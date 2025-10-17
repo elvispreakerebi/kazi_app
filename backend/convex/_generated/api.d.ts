@@ -42,10 +42,12 @@ import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler fro
 import type * as functions_routeHandlers_subjectsHandlers_deleteSubjectHandler from "../functions/routeHandlers/subjectsHandlers/deleteSubjectHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_editSubjectHandler from "../functions/routeHandlers/subjectsHandlers/editSubjectHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler.js";
+import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
 import type * as functions_subjects_getClassSubjects from "../functions/subjects/getClassSubjects.js";
+import type * as functions_teachers_getTeacherDetails from "../functions/teachers/getTeacherDetails.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_code from "../utils/code.js";
@@ -102,10 +104,12 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/subjectsHandlers/deleteSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_deleteSubjectHandler;
   "functions/routeHandlers/subjectsHandlers/editSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_editSubjectHandler;
   "functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler;
+  "functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
   "functions/subjects/getClassSubjects": typeof functions_subjects_getClassSubjects;
+  "functions/teachers/getTeacherDetails": typeof functions_teachers_getTeacherDetails;
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/code": typeof utils_code;

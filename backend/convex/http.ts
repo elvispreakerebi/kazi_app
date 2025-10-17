@@ -1,7 +1,5 @@
 import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
-import { api } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
 import { createAccountHandler } from "./functions/routeHandlers/authHandlers/createAccountHandler";
 import { loginAccountHandler } from "./functions/routeHandlers/authHandlers/loginAccountHandler";
 import { googleIdTokenLoginHandler } from "./functions/routeHandlers/authHandlers/googleIdTokenLoginHandler";
@@ -18,6 +16,7 @@ import { addSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/a
 import { deleteSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/deleteSubjectHandler";
 import { editSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/editSubjectHandler";
 import { getClassSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler";
+import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler";
 
 const http = httpRouter();
 
@@ -118,6 +117,13 @@ http.route({
   path: "/api/subjects/list",
   method: "GET",
   handler: httpAction(getClassSubjectsHandler),
+});
+
+// Teachers Routes
+http.route({
+  path: "/api/teacher/details",
+  method: "GET",
+  handler: httpAction(getTeacherDetailsHandler),
 });
 
 export default http;
