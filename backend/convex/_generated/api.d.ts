@@ -34,6 +34,10 @@ import type * as functions_routeHandlers_authHandlers_resetPasswordHandler from 
 import type * as functions_routeHandlers_authHandlers_sendPasswordResetHandler from "../functions/routeHandlers/authHandlers/sendPasswordResetHandler.js";
 import type * as functions_routeHandlers_authHandlers_verifyEmailCodeHandler from "../functions/routeHandlers/authHandlers/verifyEmailCodeHandler.js";
 import type * as functions_routeHandlers_authHandlers_verifyPasswordResetCodeHandler from "../functions/routeHandlers/authHandlers/verifyPasswordResetCodeHandler.js";
+import type * as functions_routeHandlers_classesHandlers_addClassHandler from "../functions/routeHandlers/classesHandlers/addClassHandler.js";
+import type * as functions_routeHandlers_classesHandlers_deleteClassHandler from "../functions/routeHandlers/classesHandlers/deleteClassHandler.js";
+import type * as functions_routeHandlers_classesHandlers_editClassHandler from "../functions/routeHandlers/classesHandlers/editClassHandler.js";
+import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandler from "../functions/routeHandlers/classesHandlers/getTeacherClassesHandler.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
@@ -86,6 +90,10 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/authHandlers/sendPasswordResetHandler": typeof functions_routeHandlers_authHandlers_sendPasswordResetHandler;
   "functions/routeHandlers/authHandlers/verifyEmailCodeHandler": typeof functions_routeHandlers_authHandlers_verifyEmailCodeHandler;
   "functions/routeHandlers/authHandlers/verifyPasswordResetCodeHandler": typeof functions_routeHandlers_authHandlers_verifyPasswordResetCodeHandler;
+  "functions/routeHandlers/classesHandlers/addClassHandler": typeof functions_routeHandlers_classesHandlers_addClassHandler;
+  "functions/routeHandlers/classesHandlers/deleteClassHandler": typeof functions_routeHandlers_classesHandlers_deleteClassHandler;
+  "functions/routeHandlers/classesHandlers/editClassHandler": typeof functions_routeHandlers_classesHandlers_editClassHandler;
+  "functions/routeHandlers/classesHandlers/getTeacherClassesHandler": typeof functions_routeHandlers_classesHandlers_getTeacherClassesHandler;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
