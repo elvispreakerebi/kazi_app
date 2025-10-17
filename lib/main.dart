@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const KaziApp());
+void main() {
+  runApp(const KaziApp());
+}
 
 class KaziApp extends StatelessWidget {
   const KaziApp({super.key});
@@ -9,15 +11,27 @@ class KaziApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kazi App',
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Kazi App',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
-      debugShowCheckedModeBanner: false,
+      home: const HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text('Kazi App'),
+      ),
     );
   }
 }

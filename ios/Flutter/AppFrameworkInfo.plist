@@ -2,25 +2,36 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleDevelopmentRegion</key>
-  <string>en</string>
-  <key>CFBundleExecutable</key>
-  <string>App</string>
-  <key>CFBundleIdentifier</key>
-  <string>io.flutter.flutter.app</string>
-  <key>CFBundleInfoDictionaryVersion</key>
-  <string>6.0</string>
-  <key>CFBundleName</key>
-  <string>App</string>
-  <key>CFBundlePackageType</key>
-  <string>FMWK</string>
-  <key>CFBundleShortVersionString</key>
-  <string>1.0</string>
-  <key>CFBundleSignature</key>
-  <string>????</string>
-  <key>CFBundleVersion</key>
-  <string>1.0</string>
-  <key>MinimumOSVersion</key>
-  <string>13.0</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>App</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.example.myflutterapp</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>My Flutter App</string>
+    <key>CFBundleDisplayName</key>
+    <string>My Flutter App</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundlePackageType</key>
+    <string>FMWK</string>
+    <key>MinimumOSVersion</key>
+    <string>13.0</string>
+    <key>NSCameraUsageDescription</key>
+    <string>This app requires access to the camera to take photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs access to your photo library to upload images.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app uses your location to provide better services.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <false/>
+    </dict>
 </dict>
 </plist>
