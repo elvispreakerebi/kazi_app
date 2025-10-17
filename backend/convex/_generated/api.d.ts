@@ -23,6 +23,8 @@ import type * as functions_auth_verifyEmailCode from "../functions/auth/verifyEm
 import type * as functions_auth_verifyPasswordResetCode from "../functions/auth/verifyPasswordResetCode.js";
 import type * as functions_auth_verifyTokenAction from "../functions/auth/verifyTokenAction.js";
 import type * as functions_classes_addClass from "../functions/classes/addClass.js";
+import type * as functions_classes_deleteClass from "../functions/classes/deleteClass.js";
+import type * as functions_classes_editClass from "../functions/classes/editClass.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_code from "../utils/code.js";
@@ -60,6 +62,8 @@ declare const fullApi: ApiFromModules<{
   "functions/auth/verifyPasswordResetCode": typeof functions_auth_verifyPasswordResetCode;
   "functions/auth/verifyTokenAction": typeof functions_auth_verifyTokenAction;
   "functions/classes/addClass": typeof functions_classes_addClass;
+  "functions/classes/deleteClass": typeof functions_classes_deleteClass;
+  "functions/classes/editClass": typeof functions_classes_editClass;
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/code": typeof utils_code;
