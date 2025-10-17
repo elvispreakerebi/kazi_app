@@ -61,6 +61,7 @@ export default defineSchema({
     uploadedAt: v.number(),
     currentWeek: v.optional(v.number()),
     progress: v.optional(v.object({ topicsCovered: v.number(), totalTopics: v.number() })),
+    extractedTopics: v.optional(v.array(v.string())),
   })
     .index("by_subjectId", ["subjectId"])
     .index("by_teacherId", ["teacherId"]),

@@ -17,6 +17,7 @@ import { deleteSubjectHandler } from "./functions/routeHandlers/subjectsHandlers
 import { editSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/editSubjectHandler";
 import { getClassSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler";
 import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler";
+import { generateUploadUrlHandler } from "./functions/routeHandlers/fileHandlers/generateUploadUrlHandler";
 
 const http = httpRouter();
 
@@ -124,6 +125,12 @@ http.route({
   path: "/api/teacher/details",
   method: "GET",
   handler: httpAction(getTeacherDetailsHandler),
+});
+
+http.route({
+  path: "/api/file/generate-upload-url",
+  method: "POST",
+  handler: httpAction(generateUploadUrlHandler),
 });
 
 export default http;
