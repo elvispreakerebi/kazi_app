@@ -18,7 +18,7 @@ import { editSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/e
 import { getClassSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler";
 import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler";
 import { generateUploadUrlHandler } from "./functions/routeHandlers/fileHandlers/generateUploadUrlHandler";
-import { parseAndExtractTopicsHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsHandler";
+import { parseAndExtractTopicsBatchHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler";
 
 const http = httpRouter();
 
@@ -136,9 +136,9 @@ http.route({
 
 // Scheme of Work Routes
 http.route({
-  path: "/api/schemeOfWork/parse-and-extract",
+  path: "/api/schemeOfWork/parse-and-extract-batch",
   method: "POST",
-  handler: httpAction(parseAndExtractTopicsHandler),
+  handler: httpAction(parseAndExtractTopicsBatchHandler),
 });
 
 export default http;

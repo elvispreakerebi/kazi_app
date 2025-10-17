@@ -1,6 +1,6 @@
 import { api } from '../../../_generated/api';
 
-export const parseAndExtractTopicsHandler = async (ctx: any, req: Request) => {
+export const parseAndExtractTopicsBatchHandler = async (ctx: any, req: Request) => {
   try {
     const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -25,9 +25,9 @@ export const parseAndExtractTopicsHandler = async (ctx: any, req: Request) => {
         }
       });
     }
-    const { schemeOfWorkId, currentWeek } = await req.json();
-    if (!schemeOfWorkId || (currentWeek !== undefined && typeof currentWeek !== 'number')) {
-      return new Response(JSON.stringify({ error: "Missing or invalid 'schemeOfWorkId' or 'currentWeek' param."}), {
+    const body = await req.json();
+    if (!Array.isArray(body)) {
+      return new Response(JSON.stringify({ error: "Request JSON must be an array of {schemeOfWorkId, currentWeek}" }), {
         status: 400,
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -36,11 +36,23 @@ export const parseAndExtractTopicsHandler = async (ctx: any, req: Request) => {
         }
       });
     }
-    const result = await ctx.runAction(api.functions.schemeOfWork.parseAndExtractTopicsAction, {
-      schemeOfWorkId,
-      currentWeek
-    });
-    return new Response(JSON.stringify(result), {
+    const results = [];
+    for (const item of body) {
+      if (!item || typeof item.schemeOfWorkId !== 'string') {
+        results.push({ ...item, ok: false, error: 'Invalid schemeOfWorkId or structure.' });
+        continue;
+      }
+      try {
+        const result = await ctx.runAction(api.functions.schemeOfWork.parseAndExtractTopicsAction, {
+          schemeOfWorkId: item.schemeOfWorkId,
+          currentWeek: item.currentWeek
+        });
+        results.push({ ...item, ...result, ok: true });
+      } catch (err: any) {
+        results.push({ ...item, ok: false, error: err?.message || String(err) });
+      }
+    }
+    return new Response(JSON.stringify(results), {
       status: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
