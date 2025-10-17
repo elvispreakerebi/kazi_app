@@ -118,7 +118,7 @@ class _KaziAppState extends State<KaziApp> {
   @override
   Widget build(BuildContext context) {
     if (_jwt != null) {
-      return MaterialApp(
+    return MaterialApp(
         title: 'Kazi App',
         home: HomeScreen(onLogout: logout),
         debugShowCheckedModeBanner: false,
@@ -989,7 +989,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Column(
+        child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -998,7 +998,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                Text(
+            Text(
                   'Enter the 6-digit code sent to your email address (${widget.email}):',
                 ),
                 const SizedBox(height: 16),
@@ -1038,10 +1038,10 @@ class _VerificationScreenState extends State<VerificationScreen> {
                               fontSize: 15,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+            ),
+          ],
+        ),
+      ),
                 const SizedBox(height: 22),
                 Row(
                   children: [

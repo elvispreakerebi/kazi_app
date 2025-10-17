@@ -45,6 +45,7 @@ import type * as functions_routeHandlers_subjectsHandlers_editSubjectHandler fro
 import type * as functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler.js";
 import type * as functions_schemeOfWork_addSchemeOfWork from "../functions/schemeOfWork/addSchemeOfWork.js";
+import type * as functions_schemeOfWork_parseAndExtractTopicsAction from "../functions/schemeOfWork/parseAndExtractTopicsAction.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
@@ -109,6 +110,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler;
   "functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler;
   "functions/schemeOfWork/addSchemeOfWork": typeof functions_schemeOfWork_addSchemeOfWork;
+  "functions/schemeOfWork/parseAndExtractTopicsAction": typeof functions_schemeOfWork_parseAndExtractTopicsAction;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
