@@ -249,4 +249,30 @@ http.route({
   }),
 });
 
+http.route({
+  path: "/api/classes/add",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    try {
+      const body = await req.json();
+      const { teacherId, name, gradeLevel, academicYear } = body;
+      if (!teacherId || !name || !gradeLevel) {
+        return new Response(
+          JSON.stringify({ error: "teacherId, name, and gradeLevel are required." }),
+          { status: 400, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      const result = await ctx.runMutation(api.functions.classes.addClass.addClass, {
+        teacherId, name, gradeLevel, academicYear
+      });
+      return new Response(JSON.stringify(result), { status: 201, headers: { "Content-Type": "application/json" } });
+    } catch (err) {
+      return new Response(
+        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
+        { status: 422, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  })
+});
+
 export default http;

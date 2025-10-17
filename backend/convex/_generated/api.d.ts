@@ -21,6 +21,7 @@ import type * as functions_auth_sendPasswordResetCodeAction from "../functions/a
 import type * as functions_auth_sendVerificationEmailAction from "../functions/auth/sendVerificationEmailAction.js";
 import type * as functions_auth_verifyEmailCode from "../functions/auth/verifyEmailCode.js";
 import type * as functions_auth_verifyPasswordResetCode from "../functions/auth/verifyPasswordResetCode.js";
+import type * as functions_classes_addClass from "../functions/classes/addClass.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_code from "../utils/code.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   "functions/auth/sendVerificationEmailAction": typeof functions_auth_sendVerificationEmailAction;
   "functions/auth/verifyEmailCode": typeof functions_auth_verifyEmailCode;
   "functions/auth/verifyPasswordResetCode": typeof functions_auth_verifyPasswordResetCode;
+  "functions/classes/addClass": typeof functions_classes_addClass;
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/code": typeof utils_code;
