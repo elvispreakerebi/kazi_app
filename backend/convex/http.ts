@@ -2,7 +2,11 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
-import { createAccountHandler } from "./functions/routeHandlers/createAccountHandler";
+import { createAccountHandler } from "./functions/routeHandlers/authHandlers/createAccountHandler";
+import { loginAccountHandler } from "./functions/routeHandlers/authHandlers/loginAccountHandler";
+import { googleIdTokenLoginHandler } from "./functions/routeHandlers/authHandlers/googleIdTokenLoginHandler";
+import { resendVerificationHandler } from "./functions/routeHandlers/authHandlers/resendVerificationHandler";
+import { verifyEmailCodeHandler } from "./functions/routeHandlers/authHandlers/verifyEmailCodeHandler";
 
 const http = httpRouter();
 
@@ -15,146 +19,25 @@ http.route({
 http.route({
   path: "/api/auth/login-account",
   method: "POST",
-  handler: httpAction(async (ctx, req) => {
-    try {
-      const body = await req.json();
-      const { email, password } = body;
-      if (!email || !password) {
-        return new Response(
-          JSON.stringify({ error: "Email and password are required." }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      // Call login logic via an action to allow bcrypt and JWT
-      const result = await ctx.runAction(api.functions.auth.loginAccountAction.loginAccountAction, { email, password });
-      if (!result || !result.token) {
-        // Run a direct query to check for 'no user' error for best error copy
-        const user = await ctx.runQuery(api.functions.auth.findTeacherByEmail.findTeacherByEmail, { email });
-        if (!user) {
-          return new Response(
-            JSON.stringify({ error: "No account found for this email." }),
-            { status: 401, headers: { "Content-Type": "application/json" } }
-          );
-        }
-        // Custom handling for error copy returned from action
-        if (result.error === 'Please enter a valid email and password.') {
-          return new Response(
-            JSON.stringify({ error: "Invalid email or password format." }),
-            { status: 422, headers: { "Content-Type": "application/json" } }
-          );
-        } else if (result.error && result.error.toLowerCase().includes('google')) {
-          return new Response(
-            JSON.stringify({ error: "This account uses Google sign in only." }),
-            { status: 422, headers: { "Content-Type": "application/json" } }
-          );
-        } else if (result.error) {
-          return new Response(
-            JSON.stringify({ error: result.error }),
-            { status: 401, headers: { "Content-Type": "application/json" } }
-          );
-        }
-        return new Response(
-          JSON.stringify({ error: "Invalid credentials." }),
-          { status: 401, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      return new Response(
-        JSON.stringify(result),
-        { status: 200, headers: { "Content-Type": "application/json" } }
-      );
-    } catch (err) {
-      return new Response(
-        JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
-  }),
+  handler: httpAction(loginAccountHandler),
 });
 
 http.route({
   path: '/api/auth/google-idtoken-login',
   method: 'POST',
-  handler: httpAction(async (ctx, req) => {
-    try {
-      const { idToken, name } = await req.json();
-      if (!idToken) {
-        return new Response(JSON.stringify({ message: 'Missing idToken' }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-      // Call action to handle Google ID token (should verify, find/create teacher, return signed JWT)
-      const result = await ctx.runAction(api.functions.auth.googleOAuthAction.handleGoogleIdTokenLogin, { idToken, name });
-      if (result && result.token) {
-        return new Response(JSON.stringify({ token: result.token }), { status: 200, headers: { 'Content-Type': 'application/json' }});
-      } else {
-        return new Response(JSON.stringify({ error: result?.error || 'Login failed.' }), { status: 401, headers: { 'Content-Type': 'application/json' }});
-      }
-    } catch (err) {
-      return new Response(JSON.stringify({ message: err instanceof Error ? err.message : String(err) }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-  })
+  handler: httpAction(googleIdTokenLoginHandler),
 });
 
 http.route({
   path: '/api/auth/resend-verification',
   method: 'POST',
-  handler: httpAction(async (ctx, req) => {
-    try {
-      const body = await req.json();
-      const { email, name } = body;
-      if (!email) {
-        return new Response(
-          JSON.stringify({ message: 'Missing email field.' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-      const result = await ctx.runAction(api.functions.auth.sendVerificationEmailAction.sendVerificationEmailAction, {
-        email,
-        name
-      });
-      if (!result.ok) {
-        return new Response(
-          JSON.stringify({ ok: false, error: result.error }),
-          { status: 429, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-      return new Response(
-        JSON.stringify({ ok: true }),
-        { status: 200, headers: { 'Content-Type': 'application/json' } }
-      );
-    } catch (err) {
-      return new Response(
-        JSON.stringify({ message: err instanceof Error ? err.message : String(err) }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-  }),
+  handler: httpAction(resendVerificationHandler),
 });
 
 http.route({
   path: '/api/auth/verify-email-code',
   method: 'POST',
-  handler: httpAction(async (ctx, req) => {
-    try {
-      const body = await req.json();
-      const { email, code } = body;
-      if (!email || !code) {
-        return new Response(JSON.stringify({ ok: false, error: 'Missing email or code.' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-      }
-      const result = await ctx.runMutation(api.functions.auth.verifyEmailCode.verifyEmailCode, { email, code });
-      if (result.ok) {
-        return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-      } else {
-        return new Response(JSON.stringify({ ok: false, error: result.error }), { status: 422, headers: { 'Content-Type': 'application/json' } });
-      }
-    } catch (err) {
-      return new Response(JSON.stringify({ ok: false, error: String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
-  }),
+  handler: httpAction(verifyEmailCodeHandler),
 });
 
 http.route({

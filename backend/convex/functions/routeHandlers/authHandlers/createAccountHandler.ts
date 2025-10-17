@@ -1,4 +1,4 @@
-import { api } from "../../_generated/api";
+import { api } from "../../../_generated/api";
 
 export const createAccountHandler = async (ctx: any, req: Request) => {
   try {

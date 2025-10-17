@@ -26,7 +26,11 @@ import type * as functions_classes_addClass from "../functions/classes/addClass.
 import type * as functions_classes_deleteClass from "../functions/classes/deleteClass.js";
 import type * as functions_classes_editClass from "../functions/classes/editClass.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
-import type * as functions_routeHandlers_createAccountHandler from "../functions/routeHandlers/createAccountHandler.js";
+import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
+import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
+import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
+import type * as functions_routeHandlers_authHandlers_resendVerificationHandler from "../functions/routeHandlers/authHandlers/resendVerificationHandler.js";
+import type * as functions_routeHandlers_authHandlers_verifyEmailCodeHandler from "../functions/routeHandlers/authHandlers/verifyEmailCodeHandler.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
 import type * as functions_subjects_editSubject from "../functions/subjects/editSubject.js";
@@ -71,7 +75,11 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/deleteClass": typeof functions_classes_deleteClass;
   "functions/classes/editClass": typeof functions_classes_editClass;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
-  "functions/routeHandlers/createAccountHandler": typeof functions_routeHandlers_createAccountHandler;
+  "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
+  "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
+  "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
+  "functions/routeHandlers/authHandlers/resendVerificationHandler": typeof functions_routeHandlers_authHandlers_resendVerificationHandler;
+  "functions/routeHandlers/authHandlers/verifyEmailCodeHandler": typeof functions_routeHandlers_authHandlers_verifyEmailCodeHandler;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
   "functions/subjects/editSubject": typeof functions_subjects_editSubject;
