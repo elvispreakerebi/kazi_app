@@ -25,6 +25,7 @@ import type * as functions_auth_verifyTokenAction from "../functions/auth/verify
 import type * as functions_classes_addClass from "../functions/classes/addClass.js";
 import type * as functions_classes_deleteClass from "../functions/classes/deleteClass.js";
 import type * as functions_classes_editClass from "../functions/classes/editClass.js";
+import type * as functions_classes_getClassSubjectsCount from "../functions/classes/getClassSubjectsCount.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
 import type * as functions_curriculum_addCurriculum from "../functions/curriculum/addCurriculum.js";
 import type * as functions_curriculum_getCurriculumContext from "../functions/curriculum/getCurriculumContext.js";
@@ -42,6 +43,7 @@ import type * as functions_routeHandlers_authHandlers_verifyPasswordResetCodeHan
 import type * as functions_routeHandlers_classesHandlers_addClassHandler from "../functions/routeHandlers/classesHandlers/addClassHandler.js";
 import type * as functions_routeHandlers_classesHandlers_deleteClassHandler from "../functions/routeHandlers/classesHandlers/deleteClassHandler.js";
 import type * as functions_routeHandlers_classesHandlers_editClassHandler from "../functions/routeHandlers/classesHandlers/editClassHandler.js";
+import type * as functions_routeHandlers_classesHandlers_getClassSubjectsCountHandler from "../functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler.js";
 import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandler from "../functions/routeHandlers/classesHandlers/getTeacherClassesHandler.js";
 import type * as functions_routeHandlers_fileHandlers_generateUploadUrlHandler from "../functions/routeHandlers/fileHandlers/generateUploadUrlHandler.js";
 import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler from "../functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler.js";
@@ -104,6 +106,7 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/addClass": typeof functions_classes_addClass;
   "functions/classes/deleteClass": typeof functions_classes_deleteClass;
   "functions/classes/editClass": typeof functions_classes_editClass;
+  "functions/classes/getClassSubjectsCount": typeof functions_classes_getClassSubjectsCount;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
   "functions/curriculum/addCurriculum": typeof functions_curriculum_addCurriculum;
   "functions/curriculum/getCurriculumContext": typeof functions_curriculum_getCurriculumContext;
@@ -121,6 +124,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/classesHandlers/addClassHandler": typeof functions_routeHandlers_classesHandlers_addClassHandler;
   "functions/routeHandlers/classesHandlers/deleteClassHandler": typeof functions_routeHandlers_classesHandlers_deleteClassHandler;
   "functions/routeHandlers/classesHandlers/editClassHandler": typeof functions_routeHandlers_classesHandlers_editClassHandler;
+  "functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler": typeof functions_routeHandlers_classesHandlers_getClassSubjectsCountHandler;
   "functions/routeHandlers/classesHandlers/getTeacherClassesHandler": typeof functions_routeHandlers_classesHandlers_getTeacherClassesHandler;
   "functions/routeHandlers/fileHandlers/generateUploadUrlHandler": typeof functions_routeHandlers_fileHandlers_generateUploadUrlHandler;
   "functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler": typeof functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler;

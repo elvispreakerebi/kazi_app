@@ -24,6 +24,7 @@ import { parseAndExtractCurriculumHandler } from "./functions/routeHandlers/file
 import { getTopicsBySubjectHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler";
 import { generateLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler";
 import { getTeacherOverviewCountsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler";
+import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler";
 
 const http = httpRouter();
 
@@ -99,6 +100,12 @@ http.route({
   path: "/api/classes/list",
   method: "GET",
   handler: httpAction(getTeacherClassesHandler),
+});
+
+http.route({
+  path: "/api/classes/subjects-count",
+  method: "GET",
+  handler: httpAction(getClassSubjectsCountHandler),
 });
 
 // Subjects Routes
