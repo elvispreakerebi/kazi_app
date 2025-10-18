@@ -43,6 +43,7 @@ import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandle
 import type * as functions_routeHandlers_fileHandlers_generateUploadUrlHandler from "../functions/routeHandlers/fileHandlers/generateUploadUrlHandler.js";
 import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler from "../functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler.js";
 import type * as functions_routeHandlers_fileHandlers_uploadCurriculumHandler from "../functions/routeHandlers/fileHandlers/uploadCurriculumHandler.js";
+import type * as functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler from "../functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler from "../functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_deleteSubjectHandler from "../functions/routeHandlers/subjectsHandlers/deleteSubjectHandler.js";
@@ -50,6 +51,7 @@ import type * as functions_routeHandlers_subjectsHandlers_editSubjectHandler fro
 import type * as functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler.js";
 import type * as functions_schemeOfWork_addSchemeOfWork from "../functions/schemeOfWork/addSchemeOfWork.js";
+import type * as functions_schemeOfWork_getTopicsBySubject from "../functions/schemeOfWork/getTopicsBySubject.js";
 import type * as functions_schemeOfWork_parseAndExtractTopicsAction from "../functions/schemeOfWork/parseAndExtractTopicsAction.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
 import type * as functions_subjects_deleteSubject from "../functions/subjects/deleteSubject.js";
@@ -113,6 +115,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/fileHandlers/generateUploadUrlHandler": typeof functions_routeHandlers_fileHandlers_generateUploadUrlHandler;
   "functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler": typeof functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler;
   "functions/routeHandlers/fileHandlers/uploadCurriculumHandler": typeof functions_routeHandlers_fileHandlers_uploadCurriculumHandler;
+  "functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
   "functions/routeHandlers/subjectsHandlers/deleteSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_deleteSubjectHandler;
@@ -120,6 +123,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler;
   "functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler;
   "functions/schemeOfWork/addSchemeOfWork": typeof functions_schemeOfWork_addSchemeOfWork;
+  "functions/schemeOfWork/getTopicsBySubject": typeof functions_schemeOfWork_getTopicsBySubject;
   "functions/schemeOfWork/parseAndExtractTopicsAction": typeof functions_schemeOfWork_parseAndExtractTopicsAction;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;
   "functions/subjects/deleteSubject": typeof functions_subjects_deleteSubject;
