@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:kazi_app/features/splash/splash_route.dart';
+import 'package:kazi_app/features/welcome/welcome_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
       case SplashRoute.path:
         return SplashRoute.route(settings);
+      case WelcomeRoute.path:
+        return WelcomeRoute.route(settings);
       case '/home':
         return MaterialPageRoute(
           settings: settings,
@@ -25,9 +28,7 @@ class _HomePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Home')),
-    );
+    return const Scaffold(body: Center(child: Text('Home')));
   }
 }
 
@@ -36,10 +37,6 @@ class _NotFoundPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Route not found')),
-    );
+    return const Scaffold(body: Center(child: Text('Route not found')));
   }
 }
-
-
