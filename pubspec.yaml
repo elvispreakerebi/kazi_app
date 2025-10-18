@@ -41,6 +41,7 @@ dependencies:
   flutter_appauth: ^10.0.0
   flutter_riverpod: ^2.6.1
   shared_preferences: ^2.5.3
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -109,3 +110,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_native_splash:
+  background_image: assets/images/splash-screen-bg.png
+  android: true
+  ios: true
+  web: false
+  android_gravity: fill
+  ios_content_mode: scaleAspectFill
