@@ -27,7 +27,10 @@ import type * as functions_classes_deleteClass from "../functions/classes/delete
 import type * as functions_classes_editClass from "../functions/classes/editClass.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
 import type * as functions_curriculum_addCurriculum from "../functions/curriculum/addCurriculum.js";
+import type * as functions_curriculum_getCurriculumContext from "../functions/curriculum/getCurriculumContext.js";
 import type * as functions_curriculum_parseAndExtractCurriculumAction from "../functions/curriculum/parseAndExtractCurriculumAction.js";
+import type * as functions_internal_upsertLessonPlan from "../functions/internal/upsertLessonPlan.js";
+import type * as functions_lessonPlans_generateLessonPlanAction from "../functions/lessonPlans/generateLessonPlanAction.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
 import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
@@ -43,6 +46,7 @@ import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandle
 import type * as functions_routeHandlers_fileHandlers_generateUploadUrlHandler from "../functions/routeHandlers/fileHandlers/generateUploadUrlHandler.js";
 import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler from "../functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler.js";
 import type * as functions_routeHandlers_fileHandlers_uploadCurriculumHandler from "../functions/routeHandlers/fileHandlers/uploadCurriculumHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler from "../functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler from "../functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
@@ -51,6 +55,7 @@ import type * as functions_routeHandlers_subjectsHandlers_editSubjectHandler fro
 import type * as functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler.js";
 import type * as functions_schemeOfWork_addSchemeOfWork from "../functions/schemeOfWork/addSchemeOfWork.js";
+import type * as functions_schemeOfWork_getSchemeOfWorkContext from "../functions/schemeOfWork/getSchemeOfWorkContext.js";
 import type * as functions_schemeOfWork_getTopicsBySubject from "../functions/schemeOfWork/getTopicsBySubject.js";
 import type * as functions_schemeOfWork_parseAndExtractTopicsAction from "../functions/schemeOfWork/parseAndExtractTopicsAction.js";
 import type * as functions_subjects_addSubjects from "../functions/subjects/addSubjects.js";
@@ -99,7 +104,10 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/editClass": typeof functions_classes_editClass;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
   "functions/curriculum/addCurriculum": typeof functions_curriculum_addCurriculum;
+  "functions/curriculum/getCurriculumContext": typeof functions_curriculum_getCurriculumContext;
   "functions/curriculum/parseAndExtractCurriculumAction": typeof functions_curriculum_parseAndExtractCurriculumAction;
+  "functions/internal/upsertLessonPlan": typeof functions_internal_upsertLessonPlan;
+  "functions/lessonPlans/generateLessonPlanAction": typeof functions_lessonPlans_generateLessonPlanAction;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
   "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
@@ -115,6 +123,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/fileHandlers/generateUploadUrlHandler": typeof functions_routeHandlers_fileHandlers_generateUploadUrlHandler;
   "functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler": typeof functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler;
   "functions/routeHandlers/fileHandlers/uploadCurriculumHandler": typeof functions_routeHandlers_fileHandlers_uploadCurriculumHandler;
+  "functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
@@ -123,6 +132,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_getClassSubjectsHandler;
   "functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler;
   "functions/schemeOfWork/addSchemeOfWork": typeof functions_schemeOfWork_addSchemeOfWork;
+  "functions/schemeOfWork/getSchemeOfWorkContext": typeof functions_schemeOfWork_getSchemeOfWorkContext;
   "functions/schemeOfWork/getTopicsBySubject": typeof functions_schemeOfWork_getTopicsBySubject;
   "functions/schemeOfWork/parseAndExtractTopicsAction": typeof functions_schemeOfWork_parseAndExtractTopicsAction;
   "functions/subjects/addSubjects": typeof functions_subjects_addSubjects;

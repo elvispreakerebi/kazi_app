@@ -81,7 +81,12 @@ export default defineSchema({
     content: v.any(),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
-    status: v.optional(v.string()),
+    status: v.union(
+      v.literal('pending'),
+      v.literal('in_progress'),
+      v.literal('finished')
+    ),
+    lessonDate: v.number(),
   })
     .index("by_subjectId", ["subjectId"])
     .index("by_teacherId", ["teacherId"]),

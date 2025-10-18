@@ -22,6 +22,7 @@ import { parseAndExtractTopicsBatchHandler } from "./functions/routeHandlers/sch
 import { uploadCurriculumHandler } from "./functions/routeHandlers/fileHandlers/uploadCurriculumHandler";
 import { parseAndExtractCurriculumHandler } from "./functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler";
 import { getTopicsBySubjectHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler";
+import { generateLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler";
 
 const http = httpRouter();
 
@@ -160,6 +161,12 @@ http.route({
   path: "/api/schemeOfWork/topics-by-subject",
   method: "POST",
   handler: httpAction(getTopicsBySubjectHandler),
+});
+
+http.route({
+  path: "/api/lessonPlan/generate",
+  method: "POST",
+  handler: httpAction(generateLessonPlanHandler),
 });
 
 export default http;
