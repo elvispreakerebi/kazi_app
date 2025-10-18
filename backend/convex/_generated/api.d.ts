@@ -66,6 +66,7 @@ import type * as functions_routeHandlers_subjectsHandlers_getClassSubjectsHandle
 import type * as functions_routeHandlers_teachersHandlers_editTeacherAccountHandler from "../functions/routeHandlers/teachersHandlers/editTeacherAccountHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_getTeacherOverviewCountsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler.js";
+import type * as functions_routeHandlers_teachersHandlers_setLanguagePreferenceHandler from "../functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler.js";
 import type * as functions_schemeOfWork_addSchemeOfWork from "../functions/schemeOfWork/addSchemeOfWork.js";
 import type * as functions_schemeOfWork_getSchemeOfWorkContext from "../functions/schemeOfWork/getSchemeOfWorkContext.js";
 import type * as functions_schemeOfWork_getTopicsBySubject from "../functions/schemeOfWork/getTopicsBySubject.js";
@@ -77,6 +78,7 @@ import type * as functions_subjects_getClassSubjects from "../functions/subjects
 import type * as functions_teachers_editTeacherAccount from "../functions/teachers/editTeacherAccount.js";
 import type * as functions_teachers_getTeacherDetails from "../functions/teachers/getTeacherDetails.js";
 import type * as functions_teachers_getTeacherOverviewCounts from "../functions/teachers/getTeacherOverviewCounts.js";
+import type * as functions_teachers_setLanguagePreference from "../functions/teachers/setLanguagePreference.js";
 import type * as http from "../http.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as utils_code from "../utils/code.js";
@@ -157,6 +159,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/teachersHandlers/editTeacherAccountHandler": typeof functions_routeHandlers_teachersHandlers_editTeacherAccountHandler;
   "functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherDetailsHandler;
   "functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherOverviewCountsHandler;
+  "functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler": typeof functions_routeHandlers_teachersHandlers_setLanguagePreferenceHandler;
   "functions/schemeOfWork/addSchemeOfWork": typeof functions_schemeOfWork_addSchemeOfWork;
   "functions/schemeOfWork/getSchemeOfWorkContext": typeof functions_schemeOfWork_getSchemeOfWorkContext;
   "functions/schemeOfWork/getTopicsBySubject": typeof functions_schemeOfWork_getTopicsBySubject;
@@ -168,6 +171,7 @@ declare const fullApi: ApiFromModules<{
   "functions/teachers/editTeacherAccount": typeof functions_teachers_editTeacherAccount;
   "functions/teachers/getTeacherDetails": typeof functions_teachers_getTeacherDetails;
   "functions/teachers/getTeacherOverviewCounts": typeof functions_teachers_getTeacherOverviewCounts;
+  "functions/teachers/setLanguagePreference": typeof functions_teachers_setLanguagePreference;
   http: typeof http;
   myFunctions: typeof myFunctions;
   "utils/code": typeof utils_code;

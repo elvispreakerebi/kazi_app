@@ -29,6 +29,7 @@ import { editLessonPlanContentHandler } from "./functions/routeHandlers/lessonPl
 import { regenerateLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler";
 import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
+import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
 
 const http = httpRouter();
 
@@ -154,6 +155,12 @@ http.route({
   path: "/api/teacher/edit-account",
   method: "PATCH",
   handler: httpAction(editTeacherAccountHandler),
+});
+
+http.route({
+  path: "/api/teacher/language-preference",
+  method: "PATCH",
+  handler: httpAction(setLanguagePreferenceHandler),
 });
 
 http.route({
