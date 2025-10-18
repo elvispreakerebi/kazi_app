@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kazi App',
+      theme: ThemeData(fontFamily: 'Inter'),
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: SplashRoute.path,
       debugShowCheckedModeBanner: false,
