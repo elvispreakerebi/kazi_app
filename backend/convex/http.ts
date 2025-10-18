@@ -26,6 +26,7 @@ import { generateLessonPlanHandler } from "./functions/routeHandlers/lessonPlans
 import { getTeacherOverviewCountsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler";
 import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler";
 import { editLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler";
+import { regenerateLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler";
 
 const http = httpRouter();
 
@@ -188,6 +189,12 @@ http.route({
   path: "/api/lessonPlan/edit-content",
   method: "PATCH",
   handler: httpAction(editLessonPlanContentHandler),
+});
+
+http.route({
+  path: "/api/lessonPlan/regenerate-content",
+  method: "PATCH",
+  handler: httpAction(regenerateLessonPlanContentHandler),
 });
 
 export default http;

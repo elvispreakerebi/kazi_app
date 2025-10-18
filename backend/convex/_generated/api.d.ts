@@ -30,9 +30,12 @@ import type * as functions_classes_getTeacherClasses from "../functions/classes/
 import type * as functions_curriculum_addCurriculum from "../functions/curriculum/addCurriculum.js";
 import type * as functions_curriculum_getCurriculumContext from "../functions/curriculum/getCurriculumContext.js";
 import type * as functions_curriculum_parseAndExtractCurriculumAction from "../functions/curriculum/parseAndExtractCurriculumAction.js";
+import type * as functions_internal_getLessonPlanById from "../functions/internal/getLessonPlanById.js";
+import type * as functions_internal_updateLessonPlanContent from "../functions/internal/updateLessonPlanContent.js";
 import type * as functions_internal_upsertLessonPlan from "../functions/internal/upsertLessonPlan.js";
 import type * as functions_lessonPlans_editLessonPlanContent from "../functions/lessonPlans/editLessonPlanContent.js";
 import type * as functions_lessonPlans_generateLessonPlanAction from "../functions/lessonPlans/generateLessonPlanAction.js";
+import type * as functions_lessonPlans_regenerateLessonPlanContent from "../functions/lessonPlans/regenerateLessonPlanContent.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
 import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
@@ -51,6 +54,7 @@ import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumH
 import type * as functions_routeHandlers_fileHandlers_uploadCurriculumHandler from "../functions/routeHandlers/fileHandlers/uploadCurriculumHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler from "../functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler from "../functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
@@ -113,9 +117,12 @@ declare const fullApi: ApiFromModules<{
   "functions/curriculum/addCurriculum": typeof functions_curriculum_addCurriculum;
   "functions/curriculum/getCurriculumContext": typeof functions_curriculum_getCurriculumContext;
   "functions/curriculum/parseAndExtractCurriculumAction": typeof functions_curriculum_parseAndExtractCurriculumAction;
+  "functions/internal/getLessonPlanById": typeof functions_internal_getLessonPlanById;
+  "functions/internal/updateLessonPlanContent": typeof functions_internal_updateLessonPlanContent;
   "functions/internal/upsertLessonPlan": typeof functions_internal_upsertLessonPlan;
   "functions/lessonPlans/editLessonPlanContent": typeof functions_lessonPlans_editLessonPlanContent;
   "functions/lessonPlans/generateLessonPlanAction": typeof functions_lessonPlans_generateLessonPlanAction;
+  "functions/lessonPlans/regenerateLessonPlanContent": typeof functions_lessonPlans_regenerateLessonPlanContent;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
   "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
@@ -134,6 +141,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/fileHandlers/uploadCurriculumHandler": typeof functions_routeHandlers_fileHandlers_uploadCurriculumHandler;
   "functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler;
   "functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler;
+  "functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
