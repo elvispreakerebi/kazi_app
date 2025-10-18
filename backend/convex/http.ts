@@ -28,6 +28,7 @@ import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesH
 import { editLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler";
 import { regenerateLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler";
 import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
+import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 
 const http = httpRouter();
 
@@ -147,6 +148,12 @@ http.route({
   path: "/api/teacher/overview-counts",
   method: "GET",
   handler: httpAction(getTeacherOverviewCountsHandler),
+});
+
+http.route({
+  path: "/api/teacher/edit-account",
+  method: "PATCH",
+  handler: httpAction(editTeacherAccountHandler),
 });
 
 http.route({
