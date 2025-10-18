@@ -33,6 +33,7 @@ import type * as functions_curriculum_parseAndExtractCurriculumAction from "../f
 import type * as functions_internal_getLessonPlanById from "../functions/internal/getLessonPlanById.js";
 import type * as functions_internal_updateLessonPlanContent from "../functions/internal/updateLessonPlanContent.js";
 import type * as functions_internal_upsertLessonPlan from "../functions/internal/upsertLessonPlan.js";
+import type * as functions_lessonPlans_deleteLessonPlan from "../functions/lessonPlans/deleteLessonPlan.js";
 import type * as functions_lessonPlans_editLessonPlanContent from "../functions/lessonPlans/editLessonPlanContent.js";
 import type * as functions_lessonPlans_generateLessonPlanAction from "../functions/lessonPlans/generateLessonPlanAction.js";
 import type * as functions_lessonPlans_regenerateLessonPlanContent from "../functions/lessonPlans/regenerateLessonPlanContent.js";
@@ -52,6 +53,7 @@ import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandle
 import type * as functions_routeHandlers_fileHandlers_generateUploadUrlHandler from "../functions/routeHandlers/fileHandlers/generateUploadUrlHandler.js";
 import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler from "../functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler.js";
 import type * as functions_routeHandlers_fileHandlers_uploadCurriculumHandler from "../functions/routeHandlers/fileHandlers/uploadCurriculumHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler.js";
@@ -120,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   "functions/internal/getLessonPlanById": typeof functions_internal_getLessonPlanById;
   "functions/internal/updateLessonPlanContent": typeof functions_internal_updateLessonPlanContent;
   "functions/internal/upsertLessonPlan": typeof functions_internal_upsertLessonPlan;
+  "functions/lessonPlans/deleteLessonPlan": typeof functions_lessonPlans_deleteLessonPlan;
   "functions/lessonPlans/editLessonPlanContent": typeof functions_lessonPlans_editLessonPlanContent;
   "functions/lessonPlans/generateLessonPlanAction": typeof functions_lessonPlans_generateLessonPlanAction;
   "functions/lessonPlans/regenerateLessonPlanContent": typeof functions_lessonPlans_regenerateLessonPlanContent;
@@ -139,6 +142,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/fileHandlers/generateUploadUrlHandler": typeof functions_routeHandlers_fileHandlers_generateUploadUrlHandler;
   "functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler": typeof functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler;
   "functions/routeHandlers/fileHandlers/uploadCurriculumHandler": typeof functions_routeHandlers_fileHandlers_uploadCurriculumHandler;
+  "functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler;
   "functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler;
