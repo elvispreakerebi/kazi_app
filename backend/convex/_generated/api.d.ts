@@ -27,6 +27,7 @@ import type * as functions_classes_deleteClass from "../functions/classes/delete
 import type * as functions_classes_editClass from "../functions/classes/editClass.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
 import type * as functions_curriculum_addCurriculum from "../functions/curriculum/addCurriculum.js";
+import type * as functions_curriculum_parseAndExtractCurriculumAction from "../functions/curriculum/parseAndExtractCurriculumAction.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
 import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
@@ -40,6 +41,7 @@ import type * as functions_routeHandlers_classesHandlers_deleteClassHandler from
 import type * as functions_routeHandlers_classesHandlers_editClassHandler from "../functions/routeHandlers/classesHandlers/editClassHandler.js";
 import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandler from "../functions/routeHandlers/classesHandlers/getTeacherClassesHandler.js";
 import type * as functions_routeHandlers_fileHandlers_generateUploadUrlHandler from "../functions/routeHandlers/fileHandlers/generateUploadUrlHandler.js";
+import type * as functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler from "../functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler.js";
 import type * as functions_routeHandlers_fileHandlers_uploadCurriculumHandler from "../functions/routeHandlers/fileHandlers/uploadCurriculumHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler from "../functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
@@ -95,6 +97,7 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/editClass": typeof functions_classes_editClass;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
   "functions/curriculum/addCurriculum": typeof functions_curriculum_addCurriculum;
+  "functions/curriculum/parseAndExtractCurriculumAction": typeof functions_curriculum_parseAndExtractCurriculumAction;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
   "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
@@ -108,6 +111,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/classesHandlers/editClassHandler": typeof functions_routeHandlers_classesHandlers_editClassHandler;
   "functions/routeHandlers/classesHandlers/getTeacherClassesHandler": typeof functions_routeHandlers_classesHandlers_getTeacherClassesHandler;
   "functions/routeHandlers/fileHandlers/generateUploadUrlHandler": typeof functions_routeHandlers_fileHandlers_generateUploadUrlHandler;
+  "functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler": typeof functions_routeHandlers_fileHandlers_parseAndExtractCurriculumHandler;
   "functions/routeHandlers/fileHandlers/uploadCurriculumHandler": typeof functions_routeHandlers_fileHandlers_uploadCurriculumHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;

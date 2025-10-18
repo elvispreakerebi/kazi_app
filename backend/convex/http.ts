@@ -20,6 +20,7 @@ import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHand
 import { generateUploadUrlHandler } from "./functions/routeHandlers/fileHandlers/generateUploadUrlHandler";
 import { parseAndExtractTopicsBatchHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler";
 import { uploadCurriculumHandler } from "./functions/routeHandlers/fileHandlers/uploadCurriculumHandler";
+import { parseAndExtractCurriculumHandler } from "./functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler";
 
 const http = httpRouter();
 
@@ -140,6 +141,12 @@ http.route({
   path: "/api/file/upload-curriculum",
   method: "POST",
   handler: httpAction(uploadCurriculumHandler),
+});
+
+http.route({
+  path: "/api/file/parse-curriculum",
+  method: "POST",
+  handler: httpAction(parseAndExtractCurriculumHandler),
 });
 
 http.route({
