@@ -39,6 +39,7 @@ dependencies:
   url_launcher: ^6.3.2
   uni_links: ^0.5.1
   flutter_appauth: ^10.0.0
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
