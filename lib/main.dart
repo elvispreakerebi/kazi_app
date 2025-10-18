@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:convex_flutter/convex_flutter.dart';
 import 'core/constants/backend.dart';
+import 'app/router.dart';
+import 'features/splash/splash_route.dart';
 
 late ConvexClient convexClient;
 
@@ -21,10 +23,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kazi App',
-      home: const Scaffold(
-        body: Center(child: Text('Hello App', style: TextStyle(fontSize: 24))),
-        backgroundColor: Colors.white,
-      ),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: SplashRoute.path,
       debugShowCheckedModeBanner: false,
     );
   }
