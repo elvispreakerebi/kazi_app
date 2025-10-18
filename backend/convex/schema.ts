@@ -47,7 +47,6 @@ export default defineSchema({
 
   curriculum: defineTable({
     teacherId: v.id("teachers"),
-    name: v.string(),
     createdAt: v.number(),
     fileId: v.optional(v.id("files")),
     parsedContent: v.optional(v.any()),
