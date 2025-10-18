@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kazi App',
+      title: 'Kazi',
       theme: ThemeData(fontFamily: 'Inter'),
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: SplashRoute.path,
