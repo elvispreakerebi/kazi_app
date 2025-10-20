@@ -40,6 +40,9 @@ dependencies:
   app_links: ^6.0.2
 
   flutter_appauth: ^10.0.0
+  flutter_riverpod: ^2.6.1
+  shared_preferences: ^2.5.3
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -51,10 +54,14 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_icons:
+  image_path: "assets/icon/app_icon.png"   # Your 1024x1024 PNG
+  android: true
+  ios: true
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -66,6 +73,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/fonts/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -78,7 +86,18 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Italic.ttf
+          style: italic
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
@@ -92,3 +111,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_native_splash:
+  background_image: assets/images/splash-screen-bg.png
+  android: true
+  ios: true
+  web: false
+  android_gravity: fill
+  ios_content_mode: scaleAspectFill

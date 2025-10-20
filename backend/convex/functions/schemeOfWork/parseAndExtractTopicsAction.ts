@@ -3,7 +3,7 @@ import { action } from "../../_generated/server";
 import { v } from "convex/values";
 
 export const parseAndExtractTopicsAction = action({
-  args: { schemeOfWorkId: v.id("schemeOfWork") },
+  args: { schemeOfWorkId: v.id("schemeOfWork"), currentWeek: v.optional(v.number()) },
   handler: async (ctx, args) => {
     // @ts-expect-error Convex Node action - db typing
     const sow = await ctx.db.get(args.schemeOfWorkId);
@@ -82,7 +82,6 @@ export const parseAndExtractTopicsAction = action({
       if (!extractRes.ok) throw new Error(`Reducto extraction failed: HTTP ${extractRes.status}`);
       const extractData = await extractRes.json();
       const topics: Array<{topic?: string}> = Array.isArray(extractData?.result) && extractData?.result.length ? extractData.result : [];
-      // Optionally aggregate all result to content, else empty
       const parsedContent = topics.map((r: {topic?: string}) => r.topic || '').join('\n');
       if (!topics.length) throw new Error("No topics extracted from Reducto");
       // @ts-expect-error Convex Node ctx
@@ -90,6 +89,7 @@ export const parseAndExtractTopicsAction = action({
         parsedContent,
         extractedTopics: topics,
         progress: { topicsCovered: 0, totalTopics: topics.length },
+        currentWeek: args.currentWeek,
       });
       return { topics, parsedLength: parsedContent.length, ok: true };
     } catch (error) {

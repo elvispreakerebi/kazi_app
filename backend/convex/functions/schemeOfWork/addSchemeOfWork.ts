@@ -6,6 +6,7 @@ export const addSchemeOfWork = mutation({
     teacherId: v.id("teachers"),
     subjectId: v.id("subjects"),
     storageId: v.id("_storage"),
+    currentWeek: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
@@ -14,6 +15,7 @@ export const addSchemeOfWork = mutation({
       subjectId: args.subjectId,
       storageId: args.storageId,
       uploadedAt: now,
+      currentWeek: args.currentWeek,
       parsedContent: undefined,
       extractedTopics: undefined,
       progress: undefined,
