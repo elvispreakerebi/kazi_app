@@ -9,11 +9,6 @@ class KaziApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kazi',
-      theme: ThemeData(fontFamily: 'Inter'),
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: SplashRoute.path,
-    return MaterialApp(
       title: 'Kazi App',
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: '/',
