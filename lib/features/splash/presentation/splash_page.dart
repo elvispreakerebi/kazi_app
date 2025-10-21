@@ -24,7 +24,7 @@ class _SplashPageState extends State<SplashPage>
     Future.delayed(const Duration(milliseconds: 80), () {
       if (mounted) _controller.forward();
     });
-    Future.delayed(const Duration(seconds: 3), _navigateAfterSplash);
+    Future.delayed(const Duration(seconds: 30), _navigateAfterSplash);
   }
 
   Future<void> _navigateAfterSplash() async {
