@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'app_theme.dart';
 
 class AppPopoverMenuItem {
   final String label;
@@ -46,7 +46,7 @@ class AppPopoverMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
       offset: const Offset(0, 12),
-      color: AppColors.white,
+      color: AppTheme.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 12,
       itemBuilder: (_) {
@@ -67,8 +67,8 @@ class AppPopoverMenu extends StatelessWidget {
                     child: Icon(
                       item.icon,
                       color: item.isDestructive
-                          ? AppColors.destructive
-                          : AppColors.popoverForeground,
+                          ? AppTheme.destructive
+                          : AppTheme.popoverForeground,
                       size: 22,
                     ),
                   ),
@@ -77,8 +77,8 @@ class AppPopoverMenu extends StatelessWidget {
                     item.label,
                     style: TextStyle(
                       color: item.isDestructive
-                          ? AppColors.destructive
-                          : AppColors.popoverForeground,
+                          ? AppTheme.destructive
+                          : AppTheme.popoverForeground,
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                     ),

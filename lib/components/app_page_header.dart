@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'app_theme.dart';
 
 class AppPageHeader extends StatelessWidget {
   final Widget? backButton;
@@ -60,7 +60,7 @@ class AppPageHeader extends StatelessWidget {
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 22,
-                            color: AppColors.foreground,
+                            color: AppTheme.foreground,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -101,9 +101,9 @@ class AppPageHeader extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: progress!,
                         minHeight: 7,
-                        backgroundColor: AppColors.secondary,
+                        backgroundColor: AppTheme.secondary,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          AppColors.primary,
+                          AppTheme.primary,
                         ),
                       ),
                     ),
@@ -115,7 +115,7 @@ class AppPageHeader extends StatelessWidget {
                       progressText!,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: AppColors.textDark,
+                        color: AppTheme.textDark,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

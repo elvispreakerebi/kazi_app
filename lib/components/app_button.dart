@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'app_theme.dart';
 
 enum ButtonVariant {
   primary, // default
@@ -16,6 +16,7 @@ class AppButton extends StatelessWidget {
   final Widget? icon;
   final bool expanded;
   final double height;
+  final double borderRadius;
 
   const AppButton({
     Key? key,
@@ -25,19 +26,20 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.expanded = true,
     this.height = 48,
+    this.borderRadius = AppTheme.radiusMd,
   }) : super(key: key);
 
   Color _bg(BuildContext context) {
     switch (variant) {
       case ButtonVariant.primary:
-        return AppColors.primary;
+        return AppTheme.primary;
       case ButtonVariant.secondary:
-        return AppColors.secondary;
+        return AppTheme.secondary;
       case ButtonVariant.destructive:
-        return AppColors.destructive;
+        return AppTheme.destructive;
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
-        return AppColors.white;
+        return AppTheme.white;
     }
   }
 
@@ -45,18 +47,18 @@ class AppButton extends StatelessWidget {
     switch (variant) {
       case ButtonVariant.primary:
       case ButtonVariant.destructive:
-        return AppColors.white;
+        return AppTheme.white;
       case ButtonVariant.secondary:
       case ButtonVariant.outline:
       case ButtonVariant.ghost:
-        return AppColors.textDark;
+        return AppTheme.textDark;
     }
   }
 
   BoxBorder? _border() {
     switch (variant) {
       case ButtonVariant.outline:
-        return Border.all(color: AppColors.outline, width: 1);
+        return Border.all(color: AppTheme.outline, width: 1);
       default:
         return null;
     }
@@ -89,7 +91,7 @@ class AppButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
       decoration: BoxDecoration(
         color: _bg(context),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(borderRadius),
         border: _border(),
       ),
       child: child,
@@ -100,7 +102,7 @@ class AppButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           onTap: onPressed,
           child: btn,
         ),
