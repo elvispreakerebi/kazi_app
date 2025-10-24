@@ -21,52 +21,53 @@ class WelcomePage extends ConsumerWidget {
             const SizedBox(height: 32),
             // Main content
             Expanded(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Image.asset(
                         'assets/images/welcome.png',
                         width: double.infinity,
-                        height: 240,
                         fit: BoxFit.cover,
+                        alignment: Alignment.topCenter,
                       ),
-                      const SizedBox(height: 32),
-                      Text(
-                        'welcome_title'.tr(),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
+                    ),
+                    const SizedBox(height: 32),
+                    Text(
+                      'welcome_title'.tr(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    Column(
+                      children: [
+                        AppButton(
+                          text: 'login'.tr(),
+                          onPressed: () {
+                            // TODO: Implement navigation to login
+                          },
+                          variant: ButtonVariant.primary,
+                          borderRadius: AppTheme.radiusFull,
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Column(
-                        children: [
-                          AppButton(
-                            text: 'login'.tr(),
-                            onPressed: () {
-                              // TODO: Implement navigation to login
-                            },
-                            variant: ButtonVariant.primary,
-                            borderRadius: AppTheme.radiusFull,
-                          ),
-                          const SizedBox(height: 16),
-                          AppButton(
-                            text: 'create_account'.tr(),
-                            onPressed: () {
-                              // TODO: Implement navigation to signup
-                            },
-                            variant: ButtonVariant.secondary,
-                            borderRadius: AppTheme.radiusFull,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        const SizedBox(height: 16),
+                        AppButton(
+                          text: 'create_account'.tr(),
+                          onPressed: () {
+                            // TODO: Implement navigation to signup
+                          },
+                          variant: ButtonVariant.secondary,
+                          borderRadius: AppTheme.radiusFull,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
