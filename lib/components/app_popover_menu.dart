@@ -8,6 +8,7 @@ class AppPopoverMenuItem {
   final Widget? trailing;
   final bool isDestructive;
   final bool isDivider;
+  final bool isTitle;
 
   const AppPopoverMenuItem({
     required this.label,
@@ -15,7 +16,17 @@ class AppPopoverMenuItem {
     this.onTap,
     this.trailing,
     this.isDestructive = false,
+    this.isTitle = false,
   }) : isDivider = false;
+
+  const AppPopoverMenuItem.title(String label)
+    : label = label,
+      icon = null,
+      onTap = null,
+      trailing = null,
+      isDestructive = false,
+      isTitle = true,
+      isDivider = false;
 
   const AppPopoverMenuItem.divider()
     : label = '',
@@ -23,6 +34,7 @@ class AppPopoverMenuItem {
       onTap = null,
       trailing = null,
       isDestructive = false,
+      isTitle = false,
       isDivider = true;
 }
 
@@ -47,54 +59,92 @@ class AppPopoverMenu extends StatelessWidget {
     return PopupMenuButton<int>(
       offset: const Offset(0, 12),
       color: AppTheme.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 12,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+      ),
+      elevation: 0,
       itemBuilder: (_) {
         int idx = -1;
-        return items.map<PopupMenuEntry<int>>((item) {
-          idx++;
-          if (item.isDivider) {
-            return const PopupMenuDivider(height: 1);
-          }
-          return PopupMenuItem<int>(
-            value: idx,
-            enabled: item.onTap != null,
-            child: Row(
-              children: [
-                if (item.icon != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 12),
-                    child: Icon(
-                      item.icon,
-                      color: item.isDestructive
-                          ? AppTheme.destructive
-                          : AppTheme.popoverForeground,
-                      size: 22,
-                    ),
-                  ),
-                Expanded(
-                  child: Text(
-                    item.label,
-                    style: TextStyle(
-                      color: item.isDestructive
-                          ? AppTheme.destructive
-                          : AppTheme.popoverForeground,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    ),
-                  ),
+        List<PopupMenuEntry<int>> menuContent = [];
+        if (items.isNotEmpty && items.first.isTitle) {
+          menuContent.add(
+            PopupMenuItem<int>(
+              enabled: false,
+              height: 48,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: Text(
+                items.first.label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: AppTheme.foreground,
                 ),
-                if (item.trailing != null) ...[
-                  const SizedBox(width: 8),
-                  item.trailing!,
-                ],
-              ],
+              ),
             ),
           );
-        }).toList();
+          // Divider below title with custom color
+          menuContent.add(
+            PopupMenuDivider(height: 1, color: AppTheme.baseMuted),
+          );
+          idx++;
+        }
+        for (final item in items.skip(
+          (items.isNotEmpty && items.first.isTitle) ? 1 : 0,
+        )) {
+          idx++;
+          if (item.isDivider) {
+            menuContent.add(
+              PopupMenuDivider(height: 1, color: AppTheme.baseMuted),
+            );
+            continue;
+          }
+          menuContent.add(
+            PopupMenuItem<int>(
+              value: idx,
+              enabled: item.onTap != null,
+              height: 48,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: Row(
+                children: [
+                  if (item.icon != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Icon(
+                        item.icon,
+                        color: item.isDestructive
+                            ? AppTheme.destructive
+                            : AppTheme.popoverForeground,
+                        size: 22,
+                      ),
+                    ),
+                  Expanded(
+                    child: Text(
+                      item.label,
+                      style: TextStyle(
+                        color: item.isDestructive
+                            ? AppTheme.destructive
+                            : AppTheme.popoverForeground,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  if (item.trailing != null) ...[
+                    const SizedBox(width: 8),
+                    item.trailing!,
+                  ],
+                ],
+              ),
+            ),
+          );
+        }
+        return menuContent;
       },
       onSelected: (index) {
-        final item = items[index];
+        final shiftedIndex = items.isNotEmpty && items.first.isTitle
+            ? index + 1
+            : index;
+        final item = items[shiftedIndex];
         if (item.onTap != null) item.onTap!();
       },
       padding: EdgeInsets.zero,
