@@ -40,6 +40,7 @@ dependencies:
   flutter_appauth: ^10.0.0
   flutter_riverpod: ^2.6.1
   shared_preferences: ^2.5.3
+  easy_localization: ^3.0.8
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,7 @@ flutter:
   assets:
     - assets/images/
     - assets/fonts/
+    - lib/l10n/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

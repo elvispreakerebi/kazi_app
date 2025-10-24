@@ -12,7 +12,9 @@ final authStateProvider = StateProvider<String?>(
 final userProfileProvider = StateProvider<UserProfile?>((ref) => null);
 
 /// Language state (for localization)
-final languageProvider = StateProvider<String>((ref) => 'english');
+final languageProvider = StateProvider<String>(
+  (ref) => 'en',
+); // default is English
 
 /// Example UserProfile model (adjust fields as needed)
 class UserProfile {
