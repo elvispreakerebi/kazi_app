@@ -4,6 +4,7 @@ import 'app_theme.dart';
 class AppPopoverMenuItem {
   final String label;
   final IconData? icon;
+  final Widget? leading;
   final VoidCallback? onTap;
   final Widget? trailing;
   final bool isDestructive;
@@ -13,6 +14,7 @@ class AppPopoverMenuItem {
   const AppPopoverMenuItem({
     required this.label,
     this.icon,
+    this.leading,
     this.onTap,
     this.trailing,
     this.isDestructive = false,
@@ -22,6 +24,7 @@ class AppPopoverMenuItem {
   const AppPopoverMenuItem.title(String label)
     : label = label,
       icon = null,
+      leading = null,
       onTap = null,
       trailing = null,
       isDestructive = false,
@@ -31,6 +34,7 @@ class AppPopoverMenuItem {
   const AppPopoverMenuItem.divider()
     : label = '',
       icon = null,
+      leading = null,
       onTap = null,
       trailing = null,
       isDestructive = false,
@@ -44,6 +48,7 @@ class AppPopoverMenu extends StatelessWidget {
   final double menuWidth;
   final AlignmentGeometry alignment;
   final EdgeInsets menuPadding;
+  final List<BoxShadow>? boxShadow;
 
   const AppPopoverMenu({
     Key? key,
@@ -52,6 +57,7 @@ class AppPopoverMenu extends StatelessWidget {
     this.menuWidth = 230,
     this.alignment = Alignment.topRight,
     this.menuPadding = const EdgeInsets.symmetric(vertical: 8),
+    this.boxShadow,
   }) : super(key: key);
 
   @override
@@ -64,13 +70,13 @@ class AppPopoverMenu extends StatelessWidget {
       ),
       elevation: 0,
       itemBuilder: (_) {
-        int idx = -1;
-        List<PopupMenuEntry<int>> menuContent = [];
+        // idx is not needed anymore
+        List<Widget> menuContent = [];
         if (items.isNotEmpty && items.first.isTitle) {
           menuContent.add(
-            PopupMenuItem<int>(
-              enabled: false,
+            Container(
               height: 48,
+              alignment: Alignment.centerLeft,
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: Text(
                 items.first.label,
@@ -84,61 +90,94 @@ class AppPopoverMenu extends StatelessWidget {
           );
           // Divider below title with custom color
           menuContent.add(
-            PopupMenuDivider(height: 1, color: AppTheme.baseMuted),
+            Container(
+              height: 1,
+              width: double.infinity,
+              color: AppTheme.baseMuted,
+            ),
           );
-          idx++;
         }
         for (final item in items.skip(
           (items.isNotEmpty && items.first.isTitle) ? 1 : 0,
         )) {
-          idx++;
           if (item.isDivider) {
             menuContent.add(
-              PopupMenuDivider(height: 1, color: AppTheme.baseMuted),
+              Container(
+                height: 1,
+                width: double.infinity,
+                color: AppTheme.baseMuted,
+              ),
             );
             continue;
           }
           menuContent.add(
-            PopupMenuItem<int>(
-              value: idx,
-              enabled: item.onTap != null,
-              height: 48,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                children: [
-                  if (item.icon != null)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Icon(
-                        item.icon,
-                        color: item.isDestructive
-                            ? AppTheme.destructive
-                            : AppTheme.popoverForeground,
-                        size: 22,
+            InkWell(
+              onTap: item.onTap,
+              child: Container(
+                height: 48,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
+                ),
+                child: Row(
+                  children: [
+                    if (item.leading != null) ...[
+                      item.leading!,
+                      const SizedBox(width: 8),
+                    ],
+                    if (item.icon != null)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: Icon(
+                          item.icon,
+                          color: item.isDestructive
+                              ? AppTheme.destructive
+                              : AppTheme.popoverForeground,
+                          size: 22,
+                        ),
+                      ),
+                    Expanded(
+                      child: Text(
+                        item.label,
+                        style: TextStyle(
+                          color: item.isDestructive
+                              ? AppTheme.destructive
+                              : AppTheme.popoverForeground,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
-                  Expanded(
-                    child: Text(
-                      item.label,
-                      style: TextStyle(
-                        color: item.isDestructive
-                            ? AppTheme.destructive
-                            : AppTheme.popoverForeground,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                  if (item.trailing != null) ...[
-                    const SizedBox(width: 8),
-                    item.trailing!,
+                    if (item.trailing != null) ...[
+                      const SizedBox(width: 8),
+                      item.trailing!,
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           );
         }
-        return menuContent;
+        return [
+          PopupMenuItem<int>(
+            enabled: false,
+            height: 0,
+            padding: EdgeInsets.zero,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                boxShadow: boxShadow ?? [],
+                color: AppTheme.white,
+                borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: menuContent,
+              ),
+            ),
+          ),
+        ];
       },
       onSelected: (index) {
         final shiftedIndex = items.isNotEmpty && items.first.isTitle
