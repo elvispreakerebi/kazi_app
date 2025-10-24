@@ -5,7 +5,7 @@ class AppPopoverMenuItem {
   final String label;
   final IconData? icon;
   final Widget? leading;
-  final VoidCallback? onTap;
+  final void Function(BuildContext)? onTap;
   final Widget? trailing;
   final bool isDestructive;
   final bool isDivider;
@@ -70,7 +70,6 @@ class AppPopoverMenu extends StatelessWidget {
       ),
       elevation: 0,
       itemBuilder: (_) {
-        // idx is not needed anymore
         List<Widget> menuContent = [];
         if (items.isNotEmpty && items.first.isTitle) {
           menuContent.add(
@@ -88,7 +87,6 @@ class AppPopoverMenu extends StatelessWidget {
               ),
             ),
           );
-          // Divider below title with custom color
           menuContent.add(
             Container(
               height: 1,
@@ -112,7 +110,12 @@ class AppPopoverMenu extends StatelessWidget {
           }
           menuContent.add(
             InkWell(
-              onTap: item.onTap,
+              onTap: item.onTap != null
+                  ? () {
+                      Navigator.of(context).pop();
+                      item.onTap!(context);
+                    }
+                  : null,
               child: Container(
                 height: 48,
                 alignment: Alignment.centerLeft,
@@ -169,26 +172,88 @@ class AppPopoverMenu extends StatelessWidget {
                 boxShadow: boxShadow ?? [],
                 color: AppTheme.white,
                 borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                border: Border.all(color: AppTheme.outline, width: 1),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: menuContent,
-              ),
+              child: AnimatedPopoverMenu(menuContent),
             ),
           ),
         ];
       },
-      onSelected: (index) {
-        final shiftedIndex = items.isNotEmpty && items.first.isTitle
-            ? index + 1
-            : index;
-        final item = items[shiftedIndex];
-        if (item.onTap != null) item.onTap!();
-      },
       padding: EdgeInsets.zero,
       child: anchor,
       constraints: BoxConstraints(minWidth: menuWidth),
+    );
+  }
+}
+
+class AnimatedPopoverMenu extends StatefulWidget {
+  final List<Widget> children;
+  const AnimatedPopoverMenu(this.children, {super.key});
+  @override
+  State<AnimatedPopoverMenu> createState() => _AnimatedPopoverMenuState();
+}
+
+class _AnimatedPopoverMenuState extends State<AnimatedPopoverMenu>
+    with TickerProviderStateMixin {
+  late final List<AnimationController> controllers;
+  late final List<Animation<double>> fades;
+  late final List<Animation<Offset>> slides;
+  bool closing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    controllers = List.generate(
+      widget.children.length,
+      (i) => AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 220),
+      ),
+    );
+    fades = [
+      for (final c in controllers)
+        CurvedAnimation(parent: c, curve: Curves.easeInOut),
+    ];
+    slides = [
+      for (final c in controllers)
+        Tween(
+          begin: const Offset(0, 0.035),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(parent: c, curve: Curves.easeInOut)),
+    ];
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      for (int i = 0; i < controllers.length; ++i) {
+        await Future.delayed(Duration(milliseconds: 32));
+        if (!mounted) break;
+        controllers[i].forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    for (var c in controllers) {
+      c.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < widget.children.length; ++i)
+          AnimatedBuilder(
+            animation: controllers[i],
+            builder: (_, child) => FadeTransition(
+              opacity: fades[i],
+              child: SlideTransition(position: slides[i], child: child),
+            ),
+            child: widget.children[i],
+          ),
+      ],
     );
   }
 }

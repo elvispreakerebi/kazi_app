@@ -57,18 +57,9 @@ class LanguagePopover extends ConsumerWidget {
               item['abbr']!,
               style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
-            onTap: () async {
+            onTap: (ctx) async {
+              await ctx.setLocale(Locale(item['code']!));
               ref.read(languageProvider.notifier).state = item['code']!;
-              context.setLocale(Locale(item['code']!));
-              try {
-                await ApiService().post(
-                  '/api/teacher/language-preference',
-                  body: {'language': item['code']!},
-                );
-                // Optionally show feedback
-              } catch (_) {
-                // Optionally show error
-              }
             },
           ),
         ),
