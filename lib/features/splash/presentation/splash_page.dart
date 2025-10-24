@@ -2,15 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../shared/services/api_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app.dart'; // for localeProvider
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -40,6 +42,12 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Locale>(localeProvider, (prev, next) {
+      if (mounted && prev != null && next != prev) {
+        Navigator.of(context).pushReplacementNamed('/welcome');
+      }
+    });
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,

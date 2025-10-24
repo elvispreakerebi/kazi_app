@@ -36,6 +36,8 @@ class UserProfile {
   );
 }
 
+final localeProvider = StateProvider<Locale>((ref) => const Locale('en'));
+
 // Login state for async login process
 class LoginState {
   final bool loading;

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app/app.dart';
 import 'app_popover_menu.dart';
-import '../shared/services/api_service.dart';
 import 'app_theme.dart';
 
 class LanguagePopover extends ConsumerWidget {
-  const LanguagePopover({super.key});
+  final BuildContext parentContext;
+  const LanguagePopover({super.key, required this.parentContext});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lang = ref.watch(languageProvider);
+    final lang = ref.watch(localeProvider).languageCode;
     final languages = [
       {'code': 'en', 'label': 'English', 'abbr': 'EN'},
       {'code': 'fr', 'label': 'French', 'abbr': 'FR'},
@@ -57,9 +57,17 @@ class LanguagePopover extends ConsumerWidget {
               item['abbr']!,
               style: const TextStyle(color: Colors.grey, fontSize: 13),
             ),
-            onTap: (ctx) async {
-              await ctx.setLocale(Locale(item['code']!));
-              ref.read(languageProvider.notifier).state = item['code']!;
+            onTap: (menuCtx) async {
+              final locale = Locale(item['code']!);
+              ref.read(localeProvider.notifier).state = locale;
+              await parentContext.setLocale(locale);
+              final routeName =
+                  ModalRoute.of(parentContext)?.settings.name ?? '/';
+              Navigator.of(
+                parentContext,
+                rootNavigator: true,
+              ).pushReplacementNamed(routeName);
+              Navigator.of(menuCtx).pop();
             },
           ),
         ),

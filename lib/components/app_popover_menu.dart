@@ -109,54 +109,55 @@ class AppPopoverMenu extends StatelessWidget {
             continue;
           }
           menuContent.add(
-            InkWell(
-              onTap: item.onTap != null
-                  ? () {
-                      Navigator.of(context).pop();
-                      item.onTap!(context);
-                    }
-                  : null,
-              child: Container(
-                height: 48,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
-                child: Row(
-                  children: [
-                    if (item.leading != null) ...[
-                      item.leading!,
-                      const SizedBox(width: 8),
-                    ],
-                    if (item.icon != null)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Icon(
-                          item.icon,
-                          color: item.isDestructive
-                              ? AppTheme.destructive
-                              : AppTheme.popoverForeground,
-                          size: 22,
+            Builder(
+              builder: (popoverContext) => InkWell(
+                onTap: item.onTap != null
+                    ? () {
+                        item.onTap!(popoverContext);
+                      }
+                    : null,
+                child: Container(
+                  height: 48,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  child: Row(
+                    children: [
+                      if (item.leading != null) ...[
+                        item.leading!,
+                        const SizedBox(width: 8),
+                      ],
+                      if (item.icon != null)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Icon(
+                            item.icon,
+                            color: item.isDestructive
+                                ? AppTheme.destructive
+                                : AppTheme.popoverForeground,
+                            size: 22,
+                          ),
+                        ),
+                      Expanded(
+                        child: Text(
+                          item.label,
+                          style: TextStyle(
+                            color: item.isDestructive
+                                ? AppTheme.destructive
+                                : AppTheme.popoverForeground,
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    Expanded(
-                      child: Text(
-                        item.label,
-                        style: TextStyle(
-                          color: item.isDestructive
-                              ? AppTheme.destructive
-                              : AppTheme.popoverForeground,
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                    if (item.trailing != null) ...[
-                      const SizedBox(width: 8),
-                      item.trailing!,
+                      if (item.trailing != null) ...[
+                        const SizedBox(width: 8),
+                        item.trailing!,
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

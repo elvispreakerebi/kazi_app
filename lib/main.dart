@@ -5,7 +5,7 @@ import 'app/router.dart';
 import 'features/splash/splash_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'app/app.dart';
+import 'app/app.dart'; // required for localeProvider
 
 late ConvexClient convexClient;
 
@@ -17,12 +17,17 @@ void main() async {
     clientId: "kazi-app-v1.0-demo1",
   );
   print('Connected to Convex backend!');
+
   runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en'), Locale('fr'), Locale('rw')],
-      path: 'lib/l10n',
-      fallbackLocale: const Locale('en'),
-      child: const ProviderScope(child: MyApp()),
+    ProviderScope(
+      child: EasyLocalization(
+        supportedLocales: const [Locale('en'), Locale('fr'), Locale('rw')],
+        path: 'lib/l10n',
+        fallbackLocale: const Locale('en'),
+        startLocale: const Locale('en'), // Always boot in English
+        useOnlyLangCode: true,
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -32,20 +37,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Get user's selected language from Riverpod
-    final language = ref.watch(languageProvider);
-    Locale currentLocale;
-    switch (language) {
-      case 'french':
-        currentLocale = const Locale('fr');
-        break;
-      case 'kiryanwanda':
-        currentLocale = const Locale('rw');
-        break;
-      default:
-        currentLocale = const Locale('en');
-    }
-    context.setLocale(currentLocale); // Update EasyLocalization context
+    final locale = ref.watch(localeProvider);
     return MaterialApp(
       title: 'Kazi App',
       theme: ThemeData(fontFamily: 'Inter'),
@@ -54,7 +46,22 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
-      locale: context.locale,
+      locale: locale,
+      // Suppress Material warning for rw; let EasyLocalization handle tr()
+      localeResolutionCallback: (loc, supportedLocales) {
+        // If current is rw, Material/Cupertino fallback to en
+        if (loc?.languageCode == 'rw') {
+          return const Locale('en');
+        }
+        // If exact match en/fr, allow
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == loc?.languageCode) {
+            return supportedLocale;
+          }
+        }
+        // fallback to en
+        return const Locale('en');
+      },
     );
   }
 }

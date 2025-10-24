@@ -11,13 +11,18 @@ class WelcomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ref.watch(localeProvider); // ensures this rebuilds when locale changes
     return Scaffold(
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            AppPageHeader(showLogo: true, actions: const [LanguagePopover()]),
+            AppPageHeader(
+              showLogo: true,
+              parentContext: context,
+              actions: [LanguagePopover(parentContext: context)],
+            ),
             const SizedBox(height: 32),
             // Main content
             Expanded(
@@ -50,18 +55,14 @@ class WelcomePage extends ConsumerWidget {
                       children: [
                         AppButton(
                           text: 'login'.tr(),
-                          onPressed: () {
-                            // TODO: Implement navigation to login
-                          },
+                          onPressed: () {},
                           variant: ButtonVariant.primary,
                           borderRadius: AppTheme.radiusFull,
                         ),
                         const SizedBox(height: 16),
                         AppButton(
                           text: 'create_account'.tr(),
-                          onPressed: () {
-                            // TODO: Implement navigation to signup
-                          },
+                          onPressed: () {},
                           variant: ButtonVariant.secondary,
                           borderRadius: AppTheme.radiusFull,
                         ),

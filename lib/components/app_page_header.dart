@@ -8,6 +8,7 @@ class AppPageHeader extends StatelessWidget {
   final List<Widget>? actions;
   final double? progress; // 0.0 to 1.0
   final String? progressText;
+  final BuildContext? parentContext;
 
   const AppPageHeader({
     Key? key,
@@ -17,6 +18,7 @@ class AppPageHeader extends StatelessWidget {
     this.actions,
     this.progress,
     this.progressText,
+    this.parentContext,
   }) : super(key: key);
 
   @override
@@ -37,7 +39,6 @@ class AppPageHeader extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Left section: back, logo, or title
                 Expanded(
                   child: Row(
                     children: [
@@ -68,14 +69,16 @@ class AppPageHeader extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Right side actions
                 if (actions != null && actions!.isNotEmpty) ...[
                   Row(
                     children: List.generate(
                       actions!.length,
                       (i) => Padding(
                         padding: EdgeInsets.only(left: i == 0 ? 0 : 8),
-                        child: actions![i],
+                        // If an action supports parentContext, pass it down
+                        child: actions![i] is Function
+                            ? (actions![i] as dynamic)(parentContext ?? context)
+                            : actions![i],
                       ),
                     ),
                   ),
