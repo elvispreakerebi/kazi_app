@@ -60,7 +60,7 @@ class LanguagePopover extends ConsumerWidget {
             onTap: (menuCtx) async {
               final locale = Locale(item['code']!);
               ref.read(localeProvider.notifier).state = locale;
-              await parentContext.setLocale(locale);
+              await parentContext.setLocale(locale); // Await fully!
               final routeName =
                   ModalRoute.of(parentContext)?.settings.name ?? '/';
               Navigator.of(

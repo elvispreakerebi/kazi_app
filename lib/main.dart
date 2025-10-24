@@ -37,7 +37,14 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locale = ref.watch(localeProvider);
+    final appLocale = EasyLocalization.of(context)?.locale;
+    final providerLocale = ref.watch(localeProvider);
+    // Ensure sync between provider and EasyLocalization
+    if (appLocale != null && appLocale != providerLocale) {
+      Future.microtask(() {
+        ref.read(localeProvider.notifier).state = appLocale;
+      });
+    }
     return MaterialApp(
       title: 'Kazi App',
       theme: ThemeData(fontFamily: 'Inter'),
@@ -46,7 +53,7 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
-      locale: locale,
+      locale: providerLocale,
       // Suppress Material warning for rw; let EasyLocalization handle tr()
       localeResolutionCallback: (loc, supportedLocales) {
         // If current is rw, Material/Cupertino fallback to en
