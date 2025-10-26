@@ -35,65 +35,62 @@ class AppPageHeader extends StatelessWidget {
       children: [
         if (hasTop)
           Padding(
-            padding: const EdgeInsets.only(top: 18, left: 16, right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      if (backButton != null) ...[
-                        backButton!,
+                // Left group: back button, logo, title
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (backButton != null) ...[
+                      backButton!,
+                      if (showLogo || (title != null && title!.isNotEmpty))
                         const SizedBox(width: 8),
-                      ],
-                      if (showLogo)
-                        Image.asset(
-                          'assets/images/Kazi-Logo.png',
-                          width: 64,
-                          height: 32,
-                          fit: BoxFit.contain,
-                        ),
-                      if (showLogo && (title != null && title!.isNotEmpty))
-                        const SizedBox(width: 8),
-                      if (title != null && title!.isNotEmpty)
-                        Text(
-                          title!,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 22,
-                            color: AppTheme.foreground,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
                     ],
-                  ),
+                    if (showLogo)
+                      Image.asset(
+                        'assets/images/Kazi-Logo.png',
+                        width: 64,
+                        height: 32,
+                        fit: BoxFit.contain,
+                      ),
+                    if (showLogo && (title != null && title!.isNotEmpty))
+                      const SizedBox(width: 8),
+                    if (title != null && title!.isNotEmpty)
+                      Text(
+                        title!,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 22,
+                          color: AppTheme.foreground,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
                 ),
-                if (actions != null && actions!.isNotEmpty) ...[
+                // Right actions
+                if (actions != null && actions!.isNotEmpty)
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: List.generate(
                       actions!.length,
                       (i) => Padding(
                         padding: EdgeInsets.only(left: i == 0 ? 0 : 8),
-                        // If an action supports parentContext, pass it down
                         child: actions![i] is Function
                             ? (actions![i] as dynamic)(parentContext ?? context)
                             : actions![i],
                       ),
                     ),
                   ),
-                ],
               ],
             ),
           ),
         if (hasBottom)
           Padding(
-            padding: const EdgeInsets.only(
-              top: 12,
-              left: 16,
-              right: 16,
-              bottom: 4,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
