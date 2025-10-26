@@ -6,6 +6,7 @@ import 'features/splash/splash_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/app.dart'; // required for localeProvider
+import 'components/app_theme.dart';
 
 late ConvexClient convexClient;
 
@@ -47,7 +48,14 @@ class MyApp extends ConsumerWidget {
     }
     return MaterialApp(
       title: 'Kazi App',
-      theme: ThemeData(fontFamily: 'Inter'),
+      theme: ThemeData(
+        fontFamily: 'Inter',
+        scaffoldBackgroundColor: AppTheme.secondary,
+      ),
+      darkTheme: ThemeData(
+        fontFamily: 'Inter',
+        scaffoldBackgroundColor: AppTheme.secondary,
+      ),
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: SplashRoute.path,
       debugShowCheckedModeBanner: false,
