@@ -28,7 +28,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["appAuthRedirectScheme"] = "kaziapp"
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.googleusercontent.apps.943087778314-iqotm7kuon08kouuadtm0arapstisc7s"
     }
 
     buildTypes {

@@ -50,11 +50,11 @@ class MyApp extends ConsumerWidget {
       title: 'Kazi App',
       theme: ThemeData(
         fontFamily: 'Inter',
-        scaffoldBackgroundColor: AppTheme.secondary,
+        scaffoldBackgroundColor: AppTheme.background,
       ),
       darkTheme: ThemeData(
         fontFamily: 'Inter',
-        scaffoldBackgroundColor: AppTheme.secondary,
+        scaffoldBackgroundColor: AppTheme.background,
       ),
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: SplashRoute.path,

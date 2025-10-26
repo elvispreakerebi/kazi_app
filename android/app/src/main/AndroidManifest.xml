@@ -28,7 +28,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="kazi"/>
+                <data android:scheme="com.googleusercontent.apps.943087778314-iqotm7kuon08kouuadtm0arapstisc7s"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
