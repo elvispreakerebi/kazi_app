@@ -10,6 +10,7 @@ import '../../../components/app_checkbox.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import '../../../shared/services/api_service.dart';
+import '../../../components/error_alert.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -28,6 +29,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   String? _formError;
   bool _submitted = false;
   final _formKey = GlobalKey<FormState>();
+  bool _isLoadingEmail = false;
+  bool _isLoadingGoogle = false;
 
   // Google OAuth constants
   static const String androidClientId =
@@ -109,13 +112,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     setState(() {
       _submitted = true;
       _formError = null;
+      _isLoadingEmail = true;
     });
     if (!_validateAllFieldsForSubmit()) {
+      setState(() {
+        _isLoadingEmail = false;
+      });
       return;
     }
-    setState(() {
-      _isLoading = true;
-    });
     try {
       final result = await ApiService().createAccount(
         name: _nameController.text.trim(),
@@ -154,7 +158,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       });
     } finally {
       setState(() {
-        _isLoading = false;
+        _isLoadingEmail = false;
       });
     }
   }
@@ -162,7 +166,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   Future<void> _googleRegister() async {
     setState(() {
       _formError = null;
-      _isLoading = true;
+      _isLoadingGoogle = true;
     });
     try {
       final AuthorizationTokenResponse? googleResult = await _appAuth
@@ -175,7 +179,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             ),
           );
       if (googleResult?.idToken == null) {
-        setState(() => _formError = 'error_google_login'.tr());
+        setState(() {
+          _formError = 'error_google_login'.tr();
+          _isLoadingGoogle = false;
+        });
         return;
       }
       final result = await ApiService().googleIdTokenLogin(
@@ -196,10 +203,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         // navigate, or clear form, or show onboarding complete
       }
     } catch (e) {
-      setState(() => _formError = 'error_google_login'.tr());
+      setState(() {
+        _formError = 'error_google_login'.tr();
+      });
     } finally {
       setState(() {
-        _isLoading = false;
+        _isLoadingGoogle = false;
       });
     }
   }
@@ -269,35 +278,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_formError != null && _formError!.isNotEmpty)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          border: Border.all(color: Colors.red.shade200),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Icon(
-                              Icons.error_outline,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _formError!,
-                                style: const TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 15,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      ErrorAlert(message: _formError!),
                     const SizedBox(height: 28),
                     SizedBox(
                       height: 34,
@@ -401,9 +382,19 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     AppButton(
                       text: 'create_account'.tr(),
                       variant: ButtonVariant.primary,
-                      onPressed: _isLoading ? null : _register,
+                      onPressed: _isLoadingEmail ? null : _register,
                       borderRadius: AppTheme.radiusFull,
                       height: 48,
+                      icon: _isLoadingEmail
+                          ? SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
                     ),
                     const SizedBox(height: 28),
                     Row(
@@ -434,13 +425,22 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     const SizedBox(height: 28),
                     AppButton(
                       text: 'create_account_with_google'.tr(),
-                      icon: Image.asset(
-                        'assets/images/google-logo.png',
-                        height: 22,
-                        width: 22,
-                      ),
+                      icon: _isLoadingGoogle
+                          ? SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.black,
+                              ),
+                            )
+                          : Image.asset(
+                              'assets/images/google-logo.png',
+                              height: 22,
+                              width: 22,
+                            ),
                       variant: ButtonVariant.secondary,
-                      onPressed: _isLoading ? null : _googleRegister,
+                      onPressed: _isLoadingGoogle ? null : _googleRegister,
                       borderRadius: AppTheme.radiusFull,
                       expanded: true,
                       height: 48,
