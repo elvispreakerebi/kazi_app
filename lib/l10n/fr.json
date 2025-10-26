@@ -2,8 +2,19 @@
   "welcome_title": "Créez instantanément des plans de leçon alignés sur le programme.",
   "login": "Connexion",
   "create_account": "Créer un compte",
+  "create_account_to_get_started": "Créez un compte pour commencer",
   "change_language": "Changer la langue",
   "english": "Anglais",
   "french": "Français",
-  "kiryanwanda": "Kiryanwanda"
+  "kiryanwanda": "Kiryanwanda",
+  "full_name": "Nom complet",
+  "email_address": "Adresse e-mail",
+  "password": "Mot de passe",
+  "show_password": "Afficher le mot de passe",
+  "hide_password": "Masquer le mot de passe",
+  "terms_of_service": "Conditions d'utilisation",
+  "privacy_policy": "Politique de confidentialité",
+  "by_creating_account_agree": "En créant un compte, vous acceptez nos {terms} et {privacy}.",
+  "create_account_with_google": "Créer un compte avec Google",
+  "or": "Ou"
 }

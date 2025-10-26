@@ -5,6 +5,7 @@ import '../../../components/app_theme.dart';
 import '../../../components/app_button.dart';
 import '../../../components/app_input.dart';
 import '../../../components/app_checkbox.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -71,7 +72,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 actions: [
                   LanguagePopover(parentContext: context),
                   AppButton(
-                    text: 'Log in',
+                    text: 'login'.tr(),
                     onPressed: () {},
                     variant: ButtonVariant.secondary,
                     expanded: false,
@@ -81,7 +82,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ],
               ),
               const SizedBox(height: 28),
-              // Kazi Logo, left aligned, smaller
               SizedBox(
                 height: 34,
                 child: Image.asset(
@@ -91,22 +91,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ),
               const SizedBox(height: 28),
-              // Hero text container left-aligned
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Reach every of your student with Kazi',
-                    style: TextStyle(
+                  Text(
+                    'welcome_title'.tr(),
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                       color: AppTheme.textDark,
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Create account to get started',
-                    style: TextStyle(
+                  Text(
+                    'create_account_to_get_started'.tr(),
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.normal,
                       color: AppTheme.inputDescription,
@@ -116,7 +115,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               const SizedBox(height: 28),
               AppInput(
-                label: 'Full name',
+                label: 'full_name'.tr(),
                 controller: _nameController,
                 prefixIcon: const Icon(
                   Icons.person_outline_rounded,
@@ -126,7 +125,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               const SizedBox(height: 20),
               AppInput(
-                label: 'Email address',
+                label: 'email_address'.tr(),
                 controller: _emailController,
                 prefixIcon: const Icon(
                   Icons.mail_outline,
@@ -137,7 +136,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               const SizedBox(height: 20),
               AppInput(
-                label: 'Password',
+                label: 'password'.tr(),
                 controller: _passwordController,
                 prefixIcon: const Icon(
                   Icons.lock_outline_rounded,
@@ -148,7 +147,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 rightLabelWidget: GestureDetector(
                   onTap: () => setState(() => _showPassword = !_showPassword),
                   child: Text(
-                    _showPassword ? 'Hide password' : 'Show password',
+                    _showPassword ? 'hide_password'.tr() : 'show_password'.tr(),
                     style: const TextStyle(
                       fontWeight: FontWeight.normal,
                       color: AppTheme.inputDescription,
@@ -162,12 +161,16 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               AppCheckbox(
                 value: _termsChecked,
                 onChanged: (v) => setState(() => _termsChecked = v),
-                label:
-                    'By creating an account you agree to our Terms of Service and Privacy Policy.',
+                label: 'by_creating_account_agree'.tr(
+                  namedArgs: {
+                    'terms': 'terms_of_service'.tr(),
+                    'privacy': 'privacy_policy'.tr(),
+                  },
+                ),
               ),
               const SizedBox(height: 28),
               AppButton(
-                text: 'Create account',
+                text: 'create_account'.tr(),
                 variant: ButtonVariant.primary,
                 onPressed: () {},
                 borderRadius: AppTheme.radiusFull,
@@ -183,9 +186,9 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       color: AppTheme.inputOutline,
                     ),
                   ),
-                  const Text(
-                    'Or',
-                    style: TextStyle(
+                  Text(
+                    'or'.tr(),
+                    style: const TextStyle(
                       color: AppTheme.inputDescription,
                       fontWeight: FontWeight.w600,
                     ),
@@ -201,7 +204,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               const SizedBox(height: 28),
               AppButton(
-                text: 'Create account with Google',
+                text: 'create_account_with_google'.tr(),
                 icon: Image.asset(
                   'assets/images/google-logo.png',
                   height: 22,

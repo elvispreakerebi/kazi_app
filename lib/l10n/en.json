@@ -2,8 +2,20 @@
   "welcome_title": "Instantly create curriculum-aligned lesson plans.",
   "login": "Log in",
   "create_account": "Create account",
+  "create_account_to_get_started": "Create account to get started",
   "change_language": "Change language",
   "english": "English",
   "french": "French",
-  "kiryanwanda": "Kiryanwanda"
+  "kiryanwanda": "Kiryanwanda",
+
+  "full_name": "Full name",
+  "email_address": "Email address",
+  "password": "Password",
+  "show_password": "Show password",
+  "hide_password": "Hide password",
+  "terms_of_service": "Terms of Service",
+  "privacy_policy": "Privacy Policy",
+  "by_creating_account_agree": "By creating an account you agree to our {terms} and {privacy}.",
+  "create_account_with_google": "Create account with Google",
+  "or": "Or"
 }

@@ -2,8 +2,19 @@
   "welcome_title": "Injyanisha gahunda ya mwarimu n'amasomo ako kanya.",
   "login": "Injira",
   "create_account": "Fungura konti",
+  "create_account_to_get_started": "Fungura konti utangire",
   "change_language": "Hindura ururimi",
   "english": "Icyongereza",
   "french": "Igifaransa",
-  "kiryanwanda": "Ikinyarwanda"
+  "kiryanwanda": "Ikinyarwanda",
+  "full_name": "Amazina asanzwe",
+  "email_address": "Imeli",
+  "password": "Ijambo ry'ibanga",
+  "show_password": "Erekana ijambo ry'ibanga",
+  "hide_password": "Hisha ijambo ry'ibanga",
+  "terms_of_service": "Amabwiriza y'ikoreshwa",
+  "privacy_policy": "Politiki y'ibanga",
+  "by_creating_account_agree": "Fungura konti wemera {terms} na {privacy} byacu.",
+  "create_account_with_google": "Fungura konti ukoresheje Google",
+  "or": "Cyangwa"
 }
