@@ -13,6 +13,7 @@ class AppTheme {
   static const Color baseMuted = Color(0xFFF4F4F5);
   static const Color baseInput = Color(0xFFE4E4E7);
   static const Color baseDestructive = Color(0xFFDC2626);
+  static const Color background = Color(0xFFFfffff);
 
   // Input colors
   static const Color inputBg = Color(0xFFFFFFFF); // White

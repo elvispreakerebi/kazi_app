@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
+import 'dart:math';
 import '../../../components/app_page_header.dart';
 import '../../../components/language_popover.dart';
 import '../../../components/app_theme.dart';
@@ -25,6 +26,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   bool _termsChecked = true;
   bool _isLoading = false;
   String? _formError;
+  bool _submitted = false;
   final _formKey = GlobalKey<FormState>();
 
   // Google OAuth constants
@@ -57,6 +59,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   String? _validateName(String? value) {
+    if (!_submitted) return null;
     if (value == null || value.trim().isEmpty) {
       return 'error_required_field'.tr();
     }
@@ -64,6 +67,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   String? _validateEmail(String? value) {
+    if (!_submitted) return null;
     if (value == null || value.trim().isEmpty) {
       return 'error_required_field'.tr();
     }
@@ -74,6 +78,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   String? _validatePassword(String? value) {
+    if (!_submitted) return null;
     if (value == null || value.trim().isEmpty) {
       return 'error_required_field'.tr();
     }
@@ -83,11 +88,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     return null;
   }
 
-  bool _validateAllFields() {
+  bool _validateAllFieldsForSubmit() {
     final valid =
-        (_validateName(_nameController.text) == null) &&
-        (_validateEmail(_emailController.text) == null) &&
-        (_validatePassword(_passwordController.text) == null) &&
+        (_nameController.text.trim().isNotEmpty) &&
+        (_emailController.text.trim().isNotEmpty &&
+            _emailController.text.contains('@')) &&
+        (_passwordController.text.length >= 8) &&
         _termsChecked;
     setState(() {
       if (!_termsChecked) {
@@ -101,16 +107,17 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   Future<void> _register() async {
     setState(() {
+      _submitted = true;
       _formError = null;
     });
-    if (!_validateAllFields()) {
-      setState(() {}); // trigger error messages
+    if (!_validateAllFieldsForSubmit()) {
       return;
     }
     setState(() {
       _isLoading = true;
     });
     try {
+      // Correct endpoint: /api/auth/create-account
       final result = await ApiService().createAccount(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
@@ -123,13 +130,14 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       } else {
         setState(() {
           _formError = null;
+          _submitted = false;
         });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
-        // navigate, or clear form, or show onboarding complete
+        // Optionally: clear form or navigate
       }
-    } catch (e) {
+    } catch (_) {
       setState(() {
         _formError = 'error_network'.tr();
       });
@@ -216,6 +224,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
@@ -237,172 +246,199 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ],
             ),
-            if (_formError != null && _formError!.isNotEmpty)
-              Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  border: Border.all(color: Colors.red.shade200),
-                  borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: max(MediaQuery.of(context).viewInsets.bottom, 24),
                 ),
-                child: Row(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.error_outline,
-                      color: Colors.red,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _formError!,
-                        style: const TextStyle(color: Colors.red, fontSize: 15),
+                    if (_formError != null && _formError!.isNotEmpty)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          border: Border.all(color: Colors.red.shade200),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _formError!,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 28),
+                    SizedBox(
+                      height: 34,
+                      child: Image.asset(
+                        'assets/images/Kazi-Logo.png',
+                        fit: BoxFit.contain,
+                        width: 64,
                       ),
                     ),
+                    const SizedBox(height: 28),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'welcome_title'.tr(),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: AppTheme.textDark,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'create_account_to_get_started'.tr(),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: AppTheme.inputDescription,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    AppInput(
+                      label: 'full_name'.tr(),
+                      controller: _nameController,
+                      prefixIcon: const Icon(
+                        Icons.person_outline_rounded,
+                        color: AppTheme.inputDescription,
+                      ),
+                      errorText: _submitted
+                          ? _validateName(_nameController.text)
+                          : null,
+                      description: '',
+                    ),
+                    const SizedBox(height: 20),
+                    AppInput(
+                      label: 'email_address'.tr(),
+                      controller: _emailController,
+                      prefixIcon: const Icon(
+                        Icons.mail_outline,
+                        color: AppTheme.inputDescription,
+                      ),
+                      errorText: _submitted
+                          ? _validateEmail(_emailController.text)
+                          : null,
+                      description: '',
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 20),
+                    AppInput(
+                      label: 'password'.tr(),
+                      controller: _passwordController,
+                      prefixIcon: const Icon(
+                        Icons.lock_outline_rounded,
+                        color: AppTheme.inputDescription,
+                      ),
+                      obscureText: !_showPassword,
+                      errorText: _submitted
+                          ? _validatePassword(_passwordController.text)
+                          : null,
+                      description: '',
+                      rightLabelWidget: GestureDetector(
+                        onTap: () =>
+                            setState(() => _showPassword = !_showPassword),
+                        child: Text(
+                          _showPassword
+                              ? 'hide_password'.tr()
+                              : 'show_password'.tr(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.normal,
+                            color: AppTheme.inputDescription,
+                            fontSize: 15,
+                            letterSpacing: 0.05,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    AppCheckbox(
+                      value: _termsChecked,
+                      onChanged: (v) => setState(() => _termsChecked = v),
+                      label: 'by_creating_account_agree'.tr(
+                        namedArgs: {
+                          'terms': 'terms_of_service'.tr(),
+                          'privacy': 'privacy_policy'.tr(),
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    AppButton(
+                      text: 'create_account'.tr(),
+                      variant: ButtonVariant.primary,
+                      onPressed: _isLoading ? null : _register,
+                      borderRadius: AppTheme.radiusFull,
+                      height: 48,
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 8),
+                            height: 1,
+                            color: AppTheme.inputOutline,
+                          ),
+                        ),
+                        Text(
+                          'or'.tr(),
+                          style: const TextStyle(
+                            color: AppTheme.inputDescription,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 8),
+                            height: 1,
+                            color: AppTheme.inputOutline,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 28),
+                    AppButton(
+                      text: 'create_account_with_google'.tr(),
+                      icon: Image.asset(
+                        'assets/images/google-logo.png',
+                        height: 22,
+                        width: 22,
+                      ),
+                      variant: ButtonVariant.secondary,
+                      onPressed: _isLoading ? null : _googleRegister,
+                      borderRadius: AppTheme.radiusFull,
+                      expanded: true,
+                      height: 48,
+                    ),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),
-            const SizedBox(height: 28),
-            SizedBox(
-              height: 34,
-              child: Image.asset(
-                'assets/images/Kazi-Logo.png',
-                fit: BoxFit.contain,
-                width: 64,
-              ),
             ),
-            const SizedBox(height: 28),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'welcome_title'.tr(),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'create_account_to_get_started'.tr(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
-                    color: AppTheme.inputDescription,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 28),
-            AppInput(
-              label: 'full_name'.tr(),
-              controller: _nameController,
-              prefixIcon: const Icon(
-                Icons.person_outline_rounded,
-                color: AppTheme.inputDescription,
-              ),
-              errorText: _validateName(_nameController.text),
-              description: '',
-            ),
-            const SizedBox(height: 20),
-            AppInput(
-              label: 'email_address'.tr(),
-              controller: _emailController,
-              prefixIcon: const Icon(
-                Icons.mail_outline,
-                color: AppTheme.inputDescription,
-              ),
-              errorText: _validateEmail(_emailController.text),
-              description: '',
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 20),
-            AppInput(
-              label: 'password'.tr(),
-              controller: _passwordController,
-              prefixIcon: const Icon(
-                Icons.lock_outline_rounded,
-                color: AppTheme.inputDescription,
-              ),
-              obscureText: !_showPassword,
-              errorText: _validatePassword(_passwordController.text),
-              description: '',
-              rightLabelWidget: GestureDetector(
-                onTap: () => setState(() => _showPassword = !_showPassword),
-                child: Text(
-                  _showPassword ? 'hide_password'.tr() : 'show_password'.tr(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    color: AppTheme.inputDescription,
-                    fontSize: 15,
-                    letterSpacing: 0.05,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            AppCheckbox(
-              value: _termsChecked,
-              onChanged: (v) => setState(() => _termsChecked = v),
-              label: 'by_creating_account_agree'.tr(
-                namedArgs: {
-                  'terms': 'terms_of_service'.tr(),
-                  'privacy': 'privacy_policy'.tr(),
-                },
-              ),
-            ),
-            const SizedBox(height: 28),
-            AppButton(
-              text: 'create_account'.tr(),
-              variant: ButtonVariant.primary,
-              onPressed: _isLoading ? null : _register,
-              borderRadius: AppTheme.radiusFull,
-              height: 48,
-            ),
-            const SizedBox(height: 28),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    height: 1,
-                    color: AppTheme.inputOutline,
-                  ),
-                ),
-                Text(
-                  'or'.tr(),
-                  style: const TextStyle(
-                    color: AppTheme.inputDescription,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 8),
-                    height: 1,
-                    color: AppTheme.inputOutline,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 28),
-            AppButton(
-              text: 'create_account_with_google'.tr(),
-              icon: Image.asset(
-                'assets/images/google-logo.png',
-                height: 22,
-                width: 22,
-              ),
-              variant: ButtonVariant.secondary,
-              onPressed: _isLoading ? null : _googleRegister,
-              borderRadius: AppTheme.radiusFull,
-              expanded: true,
-              height: 48,
-            ),
-            const SizedBox(height: 10),
           ],
         ),
       ),

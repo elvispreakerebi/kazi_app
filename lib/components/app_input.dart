@@ -79,6 +79,9 @@ class AppInput extends StatelessWidget {
         : focusNode?.hasFocus ?? false
         ? AppTheme.inputOutlineFocused
         : AppTheme.inputOutline;
+    final Color focusedBorderColor = hasError
+        ? AppTheme.inputOutlineError
+        : AppTheme.inputOutlineFocused;
     final Color labelColor = hasError
         ? AppTheme.inputLabelError
         : AppTheme.inputLabel;
@@ -117,8 +120,8 @@ class AppInput extends StatelessWidget {
               : null,
           hintText: description,
           hintStyle: TextStyle(color: AppTheme.inputDescription),
-          enabledBorder: _border(AppTheme.inputOutline),
-          focusedBorder: _border(AppTheme.inputOutlineFocused),
+          enabledBorder: _border(borderColor),
+          focusedBorder: _border(focusedBorderColor),
           errorBorder: _border(AppTheme.inputOutlineError),
           disabledBorder: _border(AppTheme.inputOutlineDisabled),
           border: _border(borderColor),
