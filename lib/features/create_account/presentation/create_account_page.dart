@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
 import '../../../components/app_page_header.dart';
 import '../../../components/language_popover.dart';
 import '../../../components/app_theme.dart';
@@ -30,6 +31,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   Widget _backButton(BuildContext context) {
+    final isIOS =
+        Theme.of(context).platform == TargetPlatform.iOS || Platform.isIOS;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -45,10 +48,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             color: AppTheme.secondary,
           ),
           alignment: Alignment.center,
-          child: const Icon(
-            Icons.chevron_left,
+          child: Icon(
+            isIOS ? Icons.chevron_left : Icons.arrow_back,
             color: AppTheme.textDark,
-            size: 22,
+            size: isIOS ? 22 : 24,
           ),
         ),
       ),
