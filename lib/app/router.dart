@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kazi_app/features/splash/splash_route.dart';
 import 'package:kazi_app/features/welcome/welcome_route.dart';
+import 'package:kazi_app/features/create_account/create_account_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -9,6 +10,8 @@ class AppRouter {
         return SplashRoute.route(settings);
       case WelcomeRoute.path:
         return WelcomeRoute.route(settings);
+      case CreateAccountRoute.path:
+        return CreateAccountRoute.route(settings);
       case '/home':
         return MaterialPageRoute(
           settings: settings,

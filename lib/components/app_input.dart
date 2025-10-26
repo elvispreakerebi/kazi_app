@@ -28,6 +28,9 @@ class AppInput extends StatelessWidget {
   final bool withButton;
   final VoidCallback? onButtonPressed;
   final String? buttonText;
+  final String? passwordToggleText;
+  final VoidCallback? onPasswordToggle;
+  final Widget? rightLabelWidget;
 
   const AppInput({
     Key? key,
@@ -56,6 +59,9 @@ class AppInput extends StatelessWidget {
     this.withButton = false,
     this.onButtonPressed,
     this.buttonText,
+    this.passwordToggleText,
+    this.onPasswordToggle,
+    this.rightLabelWidget,
   }) : super(key: key);
 
   OutlineInputBorder _border(Color color) => OutlineInputBorder(
@@ -106,7 +112,7 @@ class AppInput extends StatelessWidget {
           prefixIcon: prefixIcon != null
               ? GestureDetector(onTap: onPrefixTap, child: prefixIcon)
               : null,
-          suffixIcon: suffixIcon != null
+          suffixIcon: (passwordToggleText == null && suffixIcon != null)
               ? GestureDetector(onTap: onSuffixTap, child: suffixIcon)
               : null,
           hintText: description,
@@ -127,13 +133,20 @@ class AppInput extends StatelessWidget {
         if (label != null && label!.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 6, left: 4),
-            child: Text(
-              label!,
-              style: TextStyle(
-                color: labelColor,
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-              ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  label!,
+                  style: TextStyle(
+                    color: labelColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
+                if (rightLabelWidget != null) rightLabelWidget!,
+              ],
             ),
           ),
         Row(

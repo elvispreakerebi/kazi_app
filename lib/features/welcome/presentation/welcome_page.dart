@@ -55,14 +55,18 @@ class WelcomePage extends ConsumerWidget {
                       children: [
                         AppButton(
                           text: 'login'.tr(),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
                           variant: ButtonVariant.primary,
                           borderRadius: AppTheme.radiusFull,
                         ),
                         const SizedBox(height: 16),
                         AppButton(
                           text: 'create_account'.tr(),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/create-account');
+                          },
                           variant: ButtonVariant.secondary,
                           borderRadius: AppTheme.radiusFull,
                         ),
