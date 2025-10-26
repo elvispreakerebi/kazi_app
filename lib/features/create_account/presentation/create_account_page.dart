@@ -117,16 +117,27 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       _isLoading = true;
     });
     try {
-      // Correct endpoint: /api/auth/create-account
       final result = await ApiService().createAccount(
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      if (result['error'] != null) {
+      final statusCode = result['statusCode'] ?? 0;
+      final errText = (result['error'] ?? '').toString().toLowerCase();
+      if (statusCode == 409) {
+        setState(() => _formError = 'error_email_taken'.tr());
+      } else if (statusCode == -1) {
+        setState(() => _formError = 'error_network'.tr());
+      } else if (statusCode == 422 || statusCode == 400) {
+        if (errText.contains('email')) {
+          setState(() => _formError = 'error_invalid_email'.tr());
+        } else if (errText.contains('password')) {
+          setState(() => _formError = 'error_password_length'.tr());
+        } else {
+          setState(() => _formError = 'error_backend_generic'.tr());
+        }
+      } else if (errText.isNotEmpty) {
         setState(() => _formError = result['error'].toString());
-      } else if (result['message'] != null && result['token'] == null) {
-        setState(() => _formError = result['message'].toString());
       } else {
         setState(() {
           _formError = null;

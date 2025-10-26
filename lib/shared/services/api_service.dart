@@ -71,10 +71,18 @@ class ApiService {
     required String email,
     required String password,
   }) async {
-    return post(
-      '/api/auth/create-account',
-      body: {'name': name, 'email': email, 'password': password},
-    );
+    try {
+      final response = await http.post(
+        Uri.parse('$convexBackend/api/auth/create-account'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'name': name, 'email': email, 'password': password}),
+      );
+      final data = jsonDecode(response.body);
+      data['statusCode'] = response.statusCode;
+      return data;
+    } catch (e) {
+      return {'error': 'error_network', 'statusCode': -1};
+    }
   }
 
   Future<Map<String, dynamic>> googleIdTokenLogin({
