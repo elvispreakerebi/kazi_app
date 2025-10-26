@@ -7,7 +7,6 @@
   "english": "English",
   "french": "French",
   "kiryanwanda": "Kiryanwanda",
-
   "full_name": "Full name",
   "email_address": "Email address",
   "password": "Password",
@@ -17,5 +16,19 @@
   "privacy_policy": "Privacy Policy",
   "by_creating_account_agree": "By creating an account you agree to our {terms} and {privacy}.",
   "create_account_with_google": "Create account with Google",
+  "continue_with_google": "Continue with Google",
+  "already_have_account": "Already have an account?",
+  "register_account": "Register Account",
+  "create_account_message": "Create your Kazi teacher account below.",
+  "success_created": "Account created successfully!",
+  "error_required_field": "This field is required.",
+  "error_invalid_email": "Enter a valid email address.",
+  "error_password_length": "Password must be at least 8 characters.",
+  "error_terms_required": "Please accept our Terms and Privacy Policy.",
+  "error_backend_generic": "Something went wrong. Please try again.",
+  "error_google_login": "Google sign-in failed. Please try again.",
+  "error_email_taken": "This email is already registered.",
+  "error_invalid_password": "Invalid email or password.",
+  "error_network": "Could not connect. Please check your network and try again.",
   "or": "Or"
 }

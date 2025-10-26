@@ -65,4 +65,25 @@ class ApiService {
 
   // Logout just clears the jwt
   void logout() => setToken(null);
+
+  Future<Map<String, dynamic>> createAccount({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    return post(
+      '/api/auth/create-account',
+      body: {'name': name, 'email': email, 'password': password},
+    );
+  }
+
+  Future<Map<String, dynamic>> googleIdTokenLogin({
+    required String idToken,
+    required String? name,
+  }) async {
+    return post(
+      '/api/auth/google-idtoken-login',
+      body: {'idToken': idToken, if (name != null) 'name': name},
+    );
+  }
 }
