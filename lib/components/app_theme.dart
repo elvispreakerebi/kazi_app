@@ -11,6 +11,22 @@ class AppTheme {
   static const Color foreground = Color(0xFF18181B);
   static const Color popoverForeground = Color(0xFF09090B);
   static const Color baseMuted = Color(0xFFF4F4F5);
+  static const Color baseInput = Color(0xFFE4E4E7);
+  static const Color baseDestructive = Color(0xFFDC2626);
+
+  // Input colors
+  static const Color inputBg = Color(0xFFFFFFFF); // White
+  static const Color inputOutline = Color(0xFFE4E4E7); // Default
+  static const Color inputOutlineFocused = Color(
+    0xFF155689,
+  ); // Primary blue for focus
+  static const Color inputOutlineError = Color(0xFFDC2626); // Error red
+  static const Color inputOutlineDisabled = Color(0xFFE4E4E7); // Gray
+  static const Color inputDescription = Color(
+    0xFF71717A,
+  ); // Description and muted text
+  static const Color inputLabel = Color(0xFF18181B); // Main label text
+  static const Color inputLabelError = Color(0xFFDC2626); // Error label
 
   // Border radii
   static const double radiusNone = 0.0;
