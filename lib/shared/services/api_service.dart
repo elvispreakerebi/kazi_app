@@ -28,8 +28,9 @@ class ApiService {
       },
       body: jsonEncode(body),
     );
-    if (response.statusCode >= 400)
+    if (response.statusCode >= 400) {
       throw Exception('API error: ${response.body}');
+    }
     return jsonDecode(response.body);
   }
 
@@ -45,8 +46,9 @@ class ApiService {
         ...?headers,
       },
     );
-    if (response.statusCode >= 400)
+    if (response.statusCode >= 400) {
       throw Exception('API error: ${response.body}');
+    }
     return jsonDecode(response.body);
   }
 

@@ -33,7 +33,7 @@ class AppInput extends StatelessWidget {
   final Widget? rightLabelWidget;
 
   const AppInput({
-    Key? key,
+    super.key,
     this.label,
     this.description,
     this.errorText,
@@ -62,7 +62,7 @@ class AppInput extends StatelessWidget {
     this.passwordToggleText,
     this.onPasswordToggle,
     this.rightLabelWidget,
-  }) : super(key: key);
+  });
 
   OutlineInputBorder _border(Color color) => OutlineInputBorder(
     borderSide: BorderSide(color: color, width: 1.6),

@@ -11,7 +11,7 @@ class AppPageHeader extends StatelessWidget {
   final BuildContext? parentContext;
 
   const AppPageHeader({
-    Key? key,
+    super.key,
     this.backButton,
     this.title,
     this.showLogo = false,
@@ -19,7 +19,7 @@ class AppPageHeader extends StatelessWidget {
     this.progress,
     this.progressText,
     this.parentContext,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

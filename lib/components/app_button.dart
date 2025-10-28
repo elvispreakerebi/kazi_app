@@ -19,7 +19,7 @@ class AppButton extends StatelessWidget {
   final double borderRadius;
 
   const AppButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     this.variant = ButtonVariant.primary,
@@ -27,7 +27,7 @@ class AppButton extends StatelessWidget {
     this.expanded = true,
     this.height = 48,
     this.borderRadius = AppTheme.radiusMd,
-  }) : super(key: key);
+  });
 
   Color _bg(BuildContext context) {
     switch (variant) {

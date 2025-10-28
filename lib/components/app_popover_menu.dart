@@ -51,14 +51,14 @@ class AppPopoverMenu extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
 
   const AppPopoverMenu({
-    Key? key,
+    super.key,
     required this.items,
     required this.anchor,
     this.menuWidth = 230,
     this.alignment = Alignment.topRight,
     this.menuPadding = const EdgeInsets.symmetric(vertical: 8),
     this.boxShadow,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -181,8 +181,8 @@ class AppPopoverMenu extends StatelessWidget {
         ];
       },
       padding: EdgeInsets.zero,
-      child: anchor,
       constraints: BoxConstraints(minWidth: menuWidth),
+      child: anchor,
     );
   }
 }

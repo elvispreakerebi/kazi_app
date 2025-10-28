@@ -25,7 +25,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _showPassword = false;
   bool _termsChecked = true;
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? _formError;
   bool _submitted = false;
   final _formKey = GlobalKey<FormState>();
@@ -169,7 +169,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       _isLoadingGoogle = true;
     });
     try {
-      final AuthorizationTokenResponse? googleResult = await _appAuth
+      final AuthorizationTokenResponse googleResult = await _appAuth
           .authorizeAndExchangeCode(
             AuthorizationTokenRequest(
               googleClientId,

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Example: AuthGuard - used to wrap routes or widgets that require login
 class AuthGuard extends ConsumerWidget {
   final Widget child;
-  const AuthGuard({required this.child, Key? key}) : super(key: key);
+  const AuthGuard({required this.child, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +16,7 @@ class AuthGuard extends ConsumerWidget {
 /// OnboardingGuard can be similarly built
 class OnboardingGuard extends ConsumerWidget {
   final Widget child;
-  const OnboardingGuard({required this.child, Key? key}) : super(key: key);
+  const OnboardingGuard({required this.child, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

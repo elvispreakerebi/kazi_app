@@ -8,12 +8,12 @@ class ErrorAlert extends StatefulWidget {
   final Widget? icon;
 
   const ErrorAlert({
-    Key? key,
+    super.key,
     required this.message,
     this.margin = const EdgeInsets.only(bottom: 16),
     this.borderRadius = 10,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   State<ErrorAlert> createState() => _ErrorAlertState();
