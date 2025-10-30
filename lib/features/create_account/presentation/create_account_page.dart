@@ -178,7 +178,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               scopes: ['openid', 'email', 'profile'],
             ),
           );
-      if (googleResult?.idToken == null) {
+      if (googleResult.idToken == null) {
         setState(() {
           _formError = 'error_google_login'.tr();
           _isLoadingGoogle = false;
@@ -186,7 +186,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         return;
       }
       final result = await ApiService().googleIdTokenLogin(
-        idToken: googleResult!.idToken!,
+        idToken: googleResult.idToken!,
         name: _nameController.text.trim(),
       );
       if (result['error'] != null) {
