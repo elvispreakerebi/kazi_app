@@ -94,10 +94,11 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
           _otpError = null;
           _isVerifying = false;
         });
-        // TODO: Navigate to the next step or show success.
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
+        // Navigate to login page with snackbar flag
+        Navigator.of(context).pushReplacementNamed(
+          '/login',
+          arguments: {'snackbar': 'email_verified'},
+        );
         // Clear fields (optional)
       } else {
         setState(() {

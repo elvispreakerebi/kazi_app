@@ -3,6 +3,7 @@ import 'package:kazi_app/features/splash/splash_route.dart';
 import 'package:kazi_app/features/welcome/welcome_route.dart';
 import 'package:kazi_app/features/create_account/create_account_route.dart';
 import 'package:kazi_app/features/enter_otp/enter_otp_route.dart';
+import 'package:kazi_app/features/login/login_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -15,6 +16,8 @@ class AppRouter {
         return CreateAccountRoute.route(settings);
       case EnterOtpRoute.path:
         return EnterOtpRoute.route(settings);
+      case LoginRoute.path:
+        return LoginRoute.route(settings);
       case '/home':
         return MaterialPageRoute(
           settings: settings,
