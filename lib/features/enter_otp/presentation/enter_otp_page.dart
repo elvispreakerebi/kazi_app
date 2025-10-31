@@ -6,6 +6,7 @@ import '../../../components/app_button.dart';
 import '../../../components/error_alert.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/services.dart';
+import '../../../shared/services/api_service.dart';
 
 class EnterOtpPage extends StatefulWidget {
   final String email;
@@ -21,6 +22,7 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
   final List<FocusNode> _focusNodes = [];
   String? _otpError;
   bool _isVerifying = false;
+  bool _isResending = false;
 
   @override
   void initState() {
@@ -56,7 +58,6 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
       _isVerifying = true;
       _otpError = null;
     });
-    await Future.delayed(const Duration(seconds: 1));
     if (_otpCode.length < otpLength) {
       setState(() {
         _otpError = 'error_invalid_otp'.tr();
@@ -64,31 +65,88 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
       });
       return;
     }
-    // Simulate expired check
-    if (_otpCode == '170420') {
+    try {
+      final result = await ApiService().verifyEmailCode(
+        email: widget.email,
+        code: _otpCode,
+      );
+      final statusCode = result['statusCode'] ?? 0;
+      final errorText = (result['error'] ?? '').toString().toLowerCase();
+      if (statusCode == -1) {
+        setState(() {
+          _otpError = 'error_network'.tr();
+          _isVerifying = false;
+        });
+      } else if (statusCode == 400 || statusCode == 422) {
+        if (errorText.contains('expired')) {
+          setState(() {
+            _otpError = 'error_otp_expired'.tr();
+            _isVerifying = false;
+          });
+        } else {
+          setState(() {
+            _otpError = 'error_invalid_otp'.tr();
+            _isVerifying = false;
+          });
+        }
+      } else if (result['ok'] == true || result['success'] == true) {
+        setState(() {
+          _otpError = null;
+          _isVerifying = false;
+        });
+        // TODO: Navigate to the next step or show success.
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
+        // Clear fields (optional)
+      } else {
+        setState(() {
+          _otpError =
+              result['error']?.toString() ?? 'error_backend_generic'.tr();
+          _isVerifying = false;
+        });
+      }
+    } catch (e) {
       setState(() {
-        _otpError = 'error_otp_expired'.tr();
+        _otpError = 'error_backend_generic'.tr();
         _isVerifying = false;
       });
-      return;
     }
-    // On success, clear error and proceed
-    setState(() {
-      _otpError = null;
-      _isVerifying = false;
-    });
-    // TODO: Implement actual backend verify and navigation
-    //Navigator.of(context).pushReplacementNamed('/success');
   }
 
   void _resendCode() async {
     setState(() {
       _otpError = null;
+      _isResending = true;
     });
-    // TODO: Trigger resend action
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('otp_resent'.tr())));
+    try {
+      final result = await ApiService().resendVerification(email: widget.email);
+      final statusCode = result['statusCode'] ?? 0;
+      if (statusCode == -1) {
+        setState(() {
+          _otpError = 'error_network'.tr();
+          _isResending = false;
+        });
+        return;
+      }
+      if (result['ok'] == true || result['success'] == true) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('otp_resent'.tr())));
+        setState(() => _isResending = false);
+      } else {
+        setState(() {
+          _otpError =
+              result['error']?.toString() ?? 'error_backend_generic'.tr();
+          _isResending = false;
+        });
+      }
+    } catch (_) {
+      setState(() {
+        _otpError = 'error_backend_generic'.tr();
+        _isResending = false;
+      });
+    }
   }
 
   Widget _otpFields() {
@@ -239,16 +297,24 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: InkWell(
-                                onTap: _resendCode,
-                                child: Text(
-                                  'resend_code'.tr(),
-                                  style: TextStyle(
-                                    color: AppTheme.primary,
-                                    decoration: TextDecoration.underline,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
+                                onTap: _isResending ? null : _resendCode,
+                                child: _isResending
+                                    ? SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        'resend_code'.tr(),
+                                        style: TextStyle(
+                                          color: AppTheme.primary,
+                                          decoration: TextDecoration.underline,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
                               ),
                             ),
                           ),
@@ -262,6 +328,16 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
                       onPressed: _isVerifying ? null : _verifyCode,
                       height: 48,
                       borderRadius: AppTheme.radiusFull,
+                      icon: _isVerifying
+                          ? SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : null,
                     ),
                   ],
                 ),

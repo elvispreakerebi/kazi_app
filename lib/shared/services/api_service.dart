@@ -96,4 +96,39 @@ class ApiService {
       body: {'idToken': idToken, if (name != null) 'name': name},
     );
   }
+
+  Future<Map<String, dynamic>> verifyEmailCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$convexBackend/api/auth/verify-email-code'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'code': code}),
+      );
+      final data = jsonDecode(response.body);
+      data['statusCode'] = response.statusCode;
+      return data;
+    } catch (e) {
+      return {'error': 'error_network', 'statusCode': -1};
+    }
+  }
+
+  Future<Map<String, dynamic>> resendVerification({
+    required String email,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$convexBackend/api/auth/resend-verification'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
+      );
+      final data = jsonDecode(response.body);
+      data['statusCode'] = response.statusCode;
+      return data;
+    } catch (e) {
+      return {'error': 'error_network', 'statusCode': -1};
+    }
+  }
 }
