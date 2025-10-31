@@ -6,9 +6,8 @@ import '../../../components/add_class_container.dart';
 import '../../../components/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
-import '../../../providers/onboarding_class_provider.dart';
+import '../../../providers/class_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../shared/services/api_service.dart';
 
 class OnboardingAddClassPage extends ConsumerStatefulWidget {
   const OnboardingAddClassPage({super.key});
@@ -24,6 +23,7 @@ class _OnboardingAddClassPageState
   bool _initialized = false;
 
   List<Map<String, dynamic>> _classObjs = [];
+  final Set<int> _loadingDeleteIndexes = {};
 
   void _syncControllers(List<Map<String, dynamic>> classes) {
     _nameCtrls.forEach((c) => c.dispose());
@@ -35,7 +35,7 @@ class _OnboardingAddClassPageState
       _nameCtrls.add(TextEditingController(text: c['name'] ?? ''));
       _gradeCtrls.add(TextEditingController(text: c['gradeLevel'] ?? ''));
       _classObjs.add({
-        'id': c['id'],
+        'id': c['id'] ?? c['_id'], // Map both possible backend id keys
         'name': c['name'] ?? '',
         'gradeLevel': c['gradeLevel'] ?? '',
         if (c['academicYear'] != null) 'academicYear': c['academicYear'],
@@ -71,63 +71,86 @@ class _OnboardingAddClassPageState
     super.didChangeDependencies();
     if (_initialized) return;
     Future.microtask(() async {
-      try {
-        final fetched = await ApiService().getClasses();
-        setState(() {
-          _syncControllers(fetched);
-          _initialized = true;
-        });
-        ref.read(onboardingClassProvider.notifier).setClasses(fetched);
-      } catch (e) {
-        // If network error, fallback to route args or provider
-        final routeArgs =
-            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-        final provider = ref.read(onboardingClassProvider.notifier);
-        List<Map<String, dynamic>> baseClasses;
-        if (routeArgs != null && routeArgs['classes'] is List) {
-          baseClasses = (routeArgs['classes'] as List)
-              .map((e) => Map<String, dynamic>.from(e as Map))
-              .toList();
-        } else {
-          baseClasses = provider.getClasses();
-        }
-        setState(() {
-          _syncControllers(baseClasses);
-          _initialized = true;
-        });
-      }
+      await ref.read(classProvider.notifier).fetchClasses();
+      final fresh = ref.read(classProvider).classes;
+      setState(() {
+        _syncControllers(fresh);
+        _initialized = true;
+      });
     });
   }
 
-  void _refreshClassesFromBackend() async {
-    try {
-      final fetched = await ApiService().getClasses();
-      setState(() {
-        _syncControllers(fetched);
-      });
-      ref.read(onboardingClassProvider.notifier).setClasses(fetched);
-    } catch (_) {}
+  void _refreshClassesFromProvider() {
+    final latest = ref.read(classProvider).classes;
+    setState(() {
+      _syncControllers(latest);
+    });
   }
 
   void _handleContinue() async {
-    final notifier = ref.read(onboardingClassProvider.notifier);
-    final inputClasses = List.generate(_nameCtrls.length, (i) {
-      return {
+    final currentProviderClasses = ref.read(classProvider).classes;
+    // Detect new classes
+    final toAdd = <Map<String, dynamic>>[];
+    final toEdit = <Map<String, dynamic>>[];
+    for (var i = 0; i < _nameCtrls.length; i++) {
+      final local = {
         'id': _classObjs[i]['id'],
         'name': _nameCtrls[i].text.trim(),
         'gradeLevel': _gradeCtrls[i].text.trim(),
         if (_classObjs[i]['academicYear'] != null)
           'academicYear': _classObjs[i]['academicYear'],
       };
-    });
-    final result = await notifier.submitClasses(inputClasses, context);
-    if (result != null && result is List) {
-      _refreshClassesFromBackend(); // Refresh after submit to sync all backend ids/changes
-      Navigator.of(context).pushReplacementNamed(
-        '/onboarding-add-subject',
-        arguments: {'classes': result},
-      );
+      if (local['id'] == null || (local['id'] as String).isEmpty) {
+        if (local['name'].isNotEmpty && local['gradeLevel'].isNotEmpty)
+          toAdd.add(local);
+      } else {
+        final prev = currentProviderClasses.firstWhere(
+          (c) => c['id'].toString() == local['id'].toString(),
+          orElse: () => <String, dynamic>{}, // Don't return null!
+        );
+        if (prev.isNotEmpty &&
+            (prev['name'] != local['name'] ||
+                prev['gradeLevel'] != local['gradeLevel'] ||
+                prev['academicYear'] != local['academicYear'])) {
+          toEdit.add(local);
+        }
+      }
     }
+    if (toAdd.isNotEmpty) {
+      await ref.read(classProvider.notifier).addClasses(toAdd, context);
+    }
+    for (final cls in toEdit) {
+      await ref.read(classProvider.notifier).editClass(cls, context);
+    }
+    _refreshClassesFromProvider();
+    Navigator.of(context).pushReplacementNamed(
+      '/onboarding-add-subject',
+      arguments: {'classes': ref.read(classProvider).classes},
+    );
+  }
+
+  void _handleDelete(int idx) async {
+    final id = _classObjs[idx]['id'];
+    print(
+      '[DEBUG] Tapping delete for idx $idx, id=$id, type=${id.runtimeType}',
+    );
+    setState(() {
+      _loadingDeleteIndexes.add(idx);
+    });
+    if (id != null && id.toString().isNotEmpty) {
+      print('[DEBUG] Calling provider.deleteClass for id=$id');
+      await ref
+          .read(classProvider.notifier)
+          .deleteClass(id.toString(), context);
+      print('[DEBUG] Returned from provider.deleteClass');
+      _refreshClassesFromProvider();
+    } else {
+      print('[DEBUG] Local _removeClass for idx $idx');
+      _removeClass(idx);
+    }
+    setState(() {
+      _loadingDeleteIndexes.remove(idx);
+    });
   }
 
   bool get _canContinue {
@@ -139,6 +162,8 @@ class _OnboardingAddClassPageState
     }
     return false;
   }
+
+  bool get _isAnyRowDeleting => _loadingDeleteIndexes.isNotEmpty;
 
   Widget _backButton(BuildContext context) {
     final isIOS =
@@ -229,7 +254,10 @@ class _OnboardingAddClassPageState
                             firstClass: idx == 0,
                             nameController: _nameCtrls[idx],
                             gradeController: _gradeCtrls[idx],
-                            onDelete: idx == 0 ? null : () => _removeClass(idx),
+                            onDelete: idx == 0
+                                ? null
+                                : () => _handleDelete(idx),
+                            isDeleting: _loadingDeleteIndexes.contains(idx),
                           ),
                         ),
                       ),
@@ -283,12 +311,13 @@ class _OnboardingAddClassPageState
                   text: 'continue'.tr(),
                   onPressed:
                       _canContinue &&
-                          !ref.watch(onboardingClassProvider).isLoading
+                          !ref.watch(classProvider).isLoading &&
+                          !_isAnyRowDeleting
                       ? _handleContinue
                       : null,
                   height: 48,
                   borderRadius: AppTheme.radiusFull,
-                  icon: ref.watch(onboardingClassProvider).isLoading
+                  icon: ref.watch(classProvider).isLoading
                       ? SizedBox(
                           width: 22,
                           height: 22,

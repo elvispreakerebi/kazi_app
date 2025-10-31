@@ -12,6 +12,7 @@ class AddClassContainer extends StatelessWidget {
   final String? gradeError;
   final String? namePlaceholder;
   final String? gradePlaceholder;
+  final bool isDeleting;
 
   const AddClassContainer({
     super.key,
@@ -24,6 +25,7 @@ class AddClassContainer extends StatelessWidget {
     this.gradeError,
     this.namePlaceholder,
     this.gradePlaceholder,
+    this.isDeleting = false,
   });
 
   @override
@@ -66,19 +68,25 @@ class AddClassContainer extends StatelessWidget {
             ],
           ),
         ),
-        if (!firstClass)
+        if (!firstClass && onDelete != null)
           Positioned(
             top: 8,
             right: 8,
-            child: IconButton(
-              icon: Icon(
-                Icons.delete_outline_rounded,
-                color: AppTheme.inputDescription,
-              ),
-              tooltip: 'Delete this class',
-              onPressed: onDelete,
-              splashRadius: 20,
-            ),
+            child: isDeleting
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : IconButton(
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      color: AppTheme.inputDescription,
+                    ),
+                    tooltip: 'Delete this class',
+                    onPressed: onDelete,
+                    splashRadius: 20,
+                  ),
           ),
       ],
     );

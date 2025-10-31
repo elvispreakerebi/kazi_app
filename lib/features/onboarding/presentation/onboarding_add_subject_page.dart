@@ -5,13 +5,12 @@ import '../../../components/language_popover.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/app_button.dart';
 import '../../../components/class_card.dart';
-import '../../../providers/onboarding_class_provider.dart';
+import '../../../providers/class_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../shared/services/onboarding_prefs.dart';
 
 class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
   const OnboardingAddSubjectPage({super.key});
-
   @override
   ConsumerState<OnboardingAddSubjectPage> createState() =>
       _OnboardingAddSubjectPageState();
@@ -19,40 +18,20 @@ class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
 
 class _OnboardingAddSubjectPageState
     extends ConsumerState<OnboardingAddSubjectPage> {
-  List<Map<String, dynamic>> _classes = [];
-  bool _initialized = false;
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_initialized) return;
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final provider = ref.read(onboardingClassProvider.notifier);
-    if (args != null && args['classes'] is List) {
-      _classes = (args['classes'] as List)
-          .map((e) => Map<String, dynamic>.from(e as Map))
-          .toList();
-      Future.microtask(() {
-        provider.setClasses(_classes);
-      });
-    } else {
-      _classes = provider.getClasses();
-    }
-    _initialized = true;
+    // Always fetch latest classes from backend for onboarding step
+    Future.microtask(() => ref.read(classProvider.notifier).fetchClasses());
   }
 
   void _backToClasses() {
-    if (!mounted) return;
-    Future.microtask(() {
+    Future.microtask(() async {
+      await ref.read(classProvider.notifier).fetchClasses();
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(
           '/onboarding-add-class',
-          arguments: {
-            'classes': _classes
-                .map((e) => Map<String, dynamic>.from(e))
-                .toList(),
-          },
+          arguments: {'classes': ref.read(classProvider).classes},
         );
       }
     });
@@ -61,8 +40,7 @@ class _OnboardingAddSubjectPageState
   @override
   Widget build(BuildContext context) {
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    // Always pull current classes from provider upon build
-    _classes = ref.watch(onboardingClassProvider.notifier).getClasses();
+    final classes = ref.watch(classProvider).classes;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -125,8 +103,7 @@ class _OnboardingAddSubjectPageState
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Real classes list
-                    ..._classes
+                    ...classes
                         .where(
                           (c) =>
                               (c['name']?.isNotEmpty ?? false) &&
