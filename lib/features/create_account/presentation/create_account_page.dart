@@ -262,7 +262,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 LanguagePopover(parentContext: context),
                 AppButton(
                   text: 'login'.tr(),
-                  onPressed: () {},
+                  onPressed: () =>
+                      Navigator.of(context).pushReplacementNamed('/login'),
                   variant: ButtonVariant.secondary,
                   expanded: false,
                   height: 48,

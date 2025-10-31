@@ -75,7 +75,11 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = false);
       if (result['token'] != null) {
         ApiService().setToken(result['token'] as String);
-        Navigator.of(context).pushReplacementNamed('/home');
+        String name = (result['name'] ?? '').toString();
+        Navigator.of(context).pushReplacementNamed(
+          '/onboarding-welcome',
+          arguments: {'name': name},
+        );
       } else if ((result['error'] ?? '').toString().toLowerCase().contains(
         'verify',
       )) {
@@ -120,24 +124,39 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _header(BuildContext context) {
-    return AppPageHeader(
-      showLogo: true,
-      parentContext: context,
-      actions: [
-        LanguagePopover(parentContext: context),
-        const SizedBox(width: 8),
-        AppButton(
-          text: 'create_account'.tr(),
-          onPressed: () =>
-              Navigator.of(context).pushReplacementNamed('/create-account'),
-          variant: ButtonVariant.secondary,
-          expanded: false,
+  Widget _backButton(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pushReplacementNamed('/welcome'),
+        borderRadius: BorderRadius.circular(100),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Container(
+          width: 48,
           height: 48,
-          borderRadius: AppTheme.radiusFull,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppTheme.secondary,
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            isIOS ? Icons.chevron_left : Icons.arrow_back,
+            color: AppTheme.textDark,
+            size: isIOS ? 22 : 24,
+          ),
         ),
-      ],
+      ),
     );
+  }
+
+  Widget? _backButtonIfNeeded(BuildContext context) {
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final showBack = args != null && args['fromWelcome'] == true;
+    if (!showBack) return null;
+    return _backButton(context);
   }
 
   @override
@@ -148,7 +167,25 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(context),
+            AppPageHeader(
+              backButton: _backButtonIfNeeded(context),
+              showLogo: false,
+              parentContext: context,
+              actions: [
+                LanguagePopover(parentContext: context),
+                const SizedBox(width: 8),
+                AppButton(
+                  text: 'create_account'.tr(),
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pushReplacementNamed('/create-account'),
+                  variant: ButtonVariant.secondary,
+                  expanded: false,
+                  height: 48,
+                  borderRadius: AppTheme.radiusFull,
+                ),
+              ],
+            ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.only(

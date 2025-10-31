@@ -56,7 +56,10 @@ class WelcomePage extends ConsumerWidget {
                         AppButton(
                           text: 'login'.tr(),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).pushNamed(
+                              '/login',
+                              arguments: {'fromWelcome': true},
+                            );
                           },
                           variant: ButtonVariant.primary,
                           borderRadius: AppTheme.radiusFull,
