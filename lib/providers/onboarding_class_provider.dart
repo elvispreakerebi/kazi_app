@@ -14,15 +14,24 @@ class OnboardingClassState {
 }
 
 class OnboardingClassNotifier extends StateNotifier<OnboardingClassState> {
+  List<Map<String, String>> classes = [];
+
   OnboardingClassNotifier() : super(const OnboardingClassState());
 
+  void setClasses(List<Map<String, String>> newClasses) {
+    classes = List<Map<String, String>>.from(newClasses);
+    state = state.copyWith(); // triggers listeners
+  }
+
+  List<Map<String, String>> getClasses() => classes;
+
   Future<List<dynamic>?> submitClasses(
-    List<Map<String, String>> classes,
+    List<Map<String, String>> classesIn,
     BuildContext context,
   ) async {
     // UI/UX: must add at least one class
-    if (classes.isEmpty ||
-        classes.every(
+    if (classesIn.isEmpty ||
+        classesIn.every(
           (c) =>
               (c['name']?.isEmpty ?? true) &&
               (c['gradeLevel']?.isEmpty ?? true),
@@ -39,13 +48,13 @@ class OnboardingClassNotifier extends StateNotifier<OnboardingClassState> {
     try {
       final resp = await ApiService().post(
         '/api/classes/add',
-        body: {"classes": classes},
+        body: {"classes": classesIn},
       );
       if (resp is List) {
         state = state.copyWith(isLoading: false, error: null);
+        setClasses(classesIn);
         return resp;
       }
-      // Fallback: treat any other response (including Map/error) as error
       final msg = (resp is Map && resp['error'] != null)
           ? resp['error'].toString()
           : 'Failed to add classes';

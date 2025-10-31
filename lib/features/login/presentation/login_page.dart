@@ -7,6 +7,7 @@ import '../../../components/language_popover.dart';
 import '../../../components/error_alert.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../shared/services/api_service.dart';
+import '../../../shared/services/onboarding_prefs.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,10 +90,26 @@ class _LoginPageState extends State<LoginPage> {
       if (result['token'] != null) {
         ApiService().setToken(result['token'] as String);
         String name = (result['name'] ?? '').toString();
-        Navigator.of(context).pushReplacementNamed(
-          '/onboarding-welcome',
-          arguments: {'name': name},
-        );
+        final args =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        // Priority: if user just came from OTP verification, always go to onboarding
+        if (args != null && args['fromOtp'] == true) {
+          Navigator.of(context).pushReplacementNamed(
+            '/onboarding-welcome',
+            arguments: {'name': name},
+          );
+          return;
+        }
+        // Otherwise, check if onboarding is complete
+        final onboardingDone = await OnboardingPrefs.isOnboardingComplete();
+        if (onboardingDone) {
+          Navigator.of(context).pushReplacementNamed('/home');
+        } else {
+          Navigator.of(context).pushReplacementNamed(
+            '/onboarding-welcome',
+            arguments: {'name': name},
+          );
+        }
       } else if ((result['error'] ?? '').toString().toLowerCase().contains(
         'verify',
       )) {

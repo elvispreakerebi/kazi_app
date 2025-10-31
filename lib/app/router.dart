@@ -7,6 +7,7 @@ import 'package:kazi_app/features/login/login_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_welcome_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_add_class_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_add_subject_route.dart';
+import 'package:kazi_app/features/home/home_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -27,26 +28,14 @@ class AppRouter {
         return OnboardingAddClassRoute.route(settings);
       case OnboardingAddSubjectRoute.path:
         return OnboardingAddSubjectRoute.route(settings);
-      case '/home':
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const _HomePlaceholder(),
-        );
+      case HomeRoute.path:
+        return HomeRoute.route(settings);
       default:
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const _NotFoundPage(),
         );
     }
-  }
-}
-
-class _HomePlaceholder extends StatelessWidget {
-  const _HomePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Home')));
   }
 }
 

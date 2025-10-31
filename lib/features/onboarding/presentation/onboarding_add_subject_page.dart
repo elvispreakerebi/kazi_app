@@ -1,34 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/language_popover.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/app_button.dart';
 import '../../../components/class_card.dart';
+import '../../../providers/onboarding_class_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../shared/services/onboarding_prefs.dart';
 
-class OnboardingAddSubjectPage extends StatelessWidget {
+class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
   const OnboardingAddSubjectPage({super.key});
+
+  @override
+  ConsumerState<OnboardingAddSubjectPage> createState() =>
+      _OnboardingAddSubjectPageState();
+}
+
+class _OnboardingAddSubjectPageState
+    extends ConsumerState<OnboardingAddSubjectPage> {
+  List<Map<String, String>> _classes = [];
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final provider = ref.read(onboardingClassProvider.notifier);
+    if (args != null && args['classes'] is List) {
+      _classes = (args['classes'] as List)
+          .map((e) => Map<String, String>.from(e as Map))
+          .toList();
+      Future.microtask(() {
+        provider.setClasses(_classes);
+      });
+    } else {
+      _classes = provider.getClasses();
+    }
+    _initialized = true;
+  }
+
+  void _backToClasses() {
+    if (!mounted) return;
+    Future.microtask(() {
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed(
+          '/onboarding-add-class',
+          arguments: {'classes': _classes},
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
-    // TODO: Wire to real backend list of classes from previous step
-    final classes = const [
-      {'name': 'P3 Class', 'subjectCount': 0},
-      {'name': 'P6 Class', 'subjectCount': 0},
-      {'name': 'P5 Class', 'subjectCount': 0},
-    ];
+    // Always pull current classes from provider upon build
+    _classes = ref.watch(onboardingClassProvider.notifier).getClasses();
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             AppPageHeader(
+              backButton: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _backToClasses,
+                  borderRadius: BorderRadius.circular(100),
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.secondary,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Theme.of(context).platform == TargetPlatform.iOS
+                          ? Icons.chevron_left
+                          : Icons.arrow_back,
+                      color: AppTheme.textDark,
+                      size: Theme.of(context).platform == TargetPlatform.iOS
+                          ? 22
+                          : 24,
+                    ),
+                  ),
+                ),
+              ),
               showLogo: true,
               parentContext: context,
               actions: [LanguagePopover(parentContext: context)],
-              progress: 2 / 6,
-              progressText: 'step_2_of_6'.tr(),
+              progress: 2 / 4, // step 2 of 4
+              progressText: 'step_2_of_4'.tr(),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -53,16 +121,22 @@ class OnboardingAddSubjectPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    // Classes list
-                    ...classes.map(
-                      (c) => ClassCard(
-                        className: c['name'] as String,
-                        subjectCount: c['subjectCount'] as int,
-                        onAdd: () {
-                          // TODO: open subject selection dialog
-                        },
-                      ),
-                    ),
+                    // Real classes list
+                    ..._classes
+                        .where(
+                          (c) =>
+                              (c['name']?.isNotEmpty ?? false) &&
+                              (c['gradeLevel']?.isNotEmpty ?? false),
+                        )
+                        .map(
+                          (c) => ClassCard(
+                            className: c['name'] ?? '',
+                            subjectCount: 0,
+                            onAdd: () {
+                              // TODO: open subject selection dialog
+                            },
+                          ),
+                        ),
                   ],
                 ),
               ),
@@ -72,7 +146,10 @@ class OnboardingAddSubjectPage extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 child: AppButton(
                   text: 'continue'.tr(),
-                  onPressed: () {},
+                  onPressed: () async {
+                    await OnboardingPrefs.setOnboardingComplete(true);
+                    Navigator.of(context).pushReplacementNamed('/home');
+                  },
                   height: 48,
                   borderRadius: AppTheme.radiusFull,
                 ),

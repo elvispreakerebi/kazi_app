@@ -18,8 +18,46 @@ class OnboardingAddClassPage extends ConsumerStatefulWidget {
 
 class _OnboardingAddClassPageState
     extends ConsumerState<OnboardingAddClassPage> {
-  final List<TextEditingController> _nameCtrls = [TextEditingController()];
-  final List<TextEditingController> _gradeCtrls = [TextEditingController()];
+  final List<TextEditingController> _nameCtrls = [];
+  final List<TextEditingController> _gradeCtrls = [];
+  bool _initialized = false;
+
+  void _syncControllers(List<Map<String, String>> classes) {
+    _nameCtrls.forEach((c) => c.dispose());
+    _gradeCtrls.forEach((c) => c.dispose());
+    _nameCtrls.clear();
+    _gradeCtrls.clear();
+    for (final c in classes) {
+      _nameCtrls.add(TextEditingController(text: c['name'] ?? ''));
+      _gradeCtrls.add(TextEditingController(text: c['gradeLevel'] ?? ''));
+    }
+    if (_nameCtrls.isEmpty) {
+      _nameCtrls.add(TextEditingController());
+      _gradeCtrls.add(TextEditingController());
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    final routeArgs =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final provider = ref.read(onboardingClassProvider.notifier);
+    List<Map<String, String>> baseClasses;
+    if (routeArgs != null && routeArgs['classes'] is List) {
+      baseClasses = (routeArgs['classes'] as List)
+          .map((e) => Map<String, String>.from(e as Map))
+          .toList();
+      Future.microtask(() {
+        provider.setClasses(baseClasses);
+      });
+    } else {
+      baseClasses = provider.getClasses();
+    }
+    _syncControllers(baseClasses);
+    _initialized = true;
+  }
 
   void _addClass() {
     setState(() {
@@ -39,7 +77,6 @@ class _OnboardingAddClassPageState
 
   void _handleContinue() async {
     final notifier = ref.read(onboardingClassProvider.notifier);
-    // Build input classes
     final inputClasses = List.generate(
       _nameCtrls.length,
       (i) => {
@@ -49,10 +86,10 @@ class _OnboardingAddClassPageState
     );
     final result = await notifier.submitClasses(inputClasses, context);
     if (result != null) {
-      // Success: goto subjects page, pass the list
+      notifier.setClasses(inputClasses);
       Navigator.of(context).pushReplacementNamed(
         '/onboarding-add-subject',
-        arguments: {'classes': result},
+        arguments: {'classes': inputClasses},
       );
     }
   }
@@ -117,7 +154,7 @@ class _OnboardingAddClassPageState
               showLogo: true,
               parentContext: context,
               actions: [LanguagePopover(parentContext: context)],
-              progress: 0.25,
+              progress: 1 / 4, // step 1 of 4
               progressText: 'step_1_of_4'.tr(),
             ),
             Expanded(
@@ -126,7 +163,6 @@ class _OnboardingAddClassPageState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Text block
                     Text(
                       'onboarding_add_class_title'.tr(),
                       style: const TextStyle(
@@ -204,7 +240,6 @@ class _OnboardingAddClassPageState
                 ),
               ),
             ),
-            // Fixed bottom bar
             if (!keyboardVisible)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
