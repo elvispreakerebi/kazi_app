@@ -49,5 +49,11 @@
   "onboarding_welcome_header": "Bienvenue sur Kazi, {name}",
   "onboarding_welcome_desc": "Nous sommes là pour faciliter votre enseignement. Configurons votre profil pour créer instantanément des plans de cours alignés sur le programme et gérer vos élèves efficacement.",
   "onboarding_start_setup": "Commencer la configuration",
-  "onboarding_do_later": "Je ferai cela plus tard"
+  "onboarding_do_later": "Je ferai cela plus tard",
+  "onboarding_add_class_step": "Étape 1 sur 4",
+  "onboarding_add_class_title": "Ajoutez vos classes",
+  "onboarding_add_class_desc": "Commencez par ajouter les classes que vous enseignez. Vous pourrez en ajouter plus tard.",
+  "onboarding_add_another_class": "Ajouter une autre classe",
+  "continue": "Continuer",
+  "step_1_of_4": "Étape 1 sur 4"
 }

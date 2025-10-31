@@ -49,5 +49,11 @@
   "onboarding_welcome_header": "Murakaza neza kuri Kazi, {name}",
   "onboarding_welcome_desc": "Turahari ngo dutume uburezi bworoha. Kora profil yawe kugira ngo ushobore guhita ukoresha gahunda y’amasomo ishyigikiwe n’integanyanyigisho no kuyobora abanyeshuri bawe neza.",
   "onboarding_start_setup": "Tangira itegurwa",
-  "onboarding_do_later": "Nzabikora nyuma"
+  "onboarding_do_later": "Nzabikora nyuma",
+  "onboarding_add_class_step": "Intambwe ya 1 muri 4",
+  "onboarding_add_class_title": "Ongeraho ibyiciro wigisha",
+  "onboarding_add_class_desc": "Tangirira kongeraho ibyiciro by'amasomo wigisha. Uzashobora kongeraho ibindi nyuma.",
+  "onboarding_add_another_class": "Ongeraho ikindi cyiciro",
+  "continue": "Komeza",
+  "step_1_of_4": "Intambwe ya 1 muri 4"
 }

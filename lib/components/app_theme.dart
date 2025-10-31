@@ -14,6 +14,9 @@ class AppTheme {
   static const Color baseInput = Color(0xFFE4E4E7);
   static const Color baseDestructive = Color(0xFFDC2626);
   static const Color background = Color(0xFFFfffff);
+  static const Color addClassContainerBg = Color(
+    0xFFFAFAFA,
+  ); // Add class container bg
 
   // Input colors
   static const Color inputBg = Color(0xFFFFFFFF); // White

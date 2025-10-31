@@ -57,7 +57,11 @@ class OnboardingWelcomePage extends StatelessWidget {
                     // Button section
                     AppButton(
                       text: 'onboarding_start_setup'.tr(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(
+                          context,
+                        ).pushReplacementNamed('/onboarding-add-class');
+                      },
                       height: 48,
                       borderRadius: AppTheme.radiusFull,
                     ),

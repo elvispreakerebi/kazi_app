@@ -88,6 +88,7 @@ class AppPageHeader extends StatelessWidget {
               ],
             ),
           ),
+        // Progress bar + step text to the right
         if (hasBottom)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -118,6 +119,7 @@ class AppPageHeader extends StatelessWidget {
                         color: AppTheme.textDark,
                         fontWeight: FontWeight.w500,
                       ),
+                      textAlign: TextAlign.right,
                     ),
                   ),
               ],

@@ -49,5 +49,11 @@
   "onboarding_welcome_header": "Welcome to Kazi, {name}",
   "onboarding_welcome_desc": "We’re here to make your teaching easier. Let’s set up your profile so you can instantly create curriculum-aligned lesson plans and manage your students effectively.",
   "onboarding_start_setup": "Start setup",
-  "onboarding_do_later": "I'll do this later"
+  "onboarding_do_later": "I'll do this later",
+  "onboarding_add_class_step": "Step 1 of 4",
+  "onboarding_add_class_title": "Add your classes",
+  "onboarding_add_class_desc": "Start by adding the classes you teach. You can add more later",
+  "onboarding_add_another_class": "Add another class",
+  "continue": "Continue",
+  "step_1_of_4": "Step 1 of 4"
 }
