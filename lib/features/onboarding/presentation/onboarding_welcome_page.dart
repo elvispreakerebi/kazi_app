@@ -40,7 +40,7 @@ class OnboardingWelcomePage extends StatelessWidget {
                       'onboarding_welcome_header'.tr(namedArgs: {'name': name}),
                       style: const TextStyle(
                         fontSize: 28,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         color: AppTheme.textDark,
                       ),
                     ),

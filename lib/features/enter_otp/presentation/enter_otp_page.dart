@@ -261,7 +261,7 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
                           'verify_email_title'.tr(),
                           style: const TextStyle(
                             fontSize: 26,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w500,
                             color: AppTheme.textDark,
                           ),
                         ),
