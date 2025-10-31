@@ -31,6 +31,7 @@ import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHa
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
 import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
+import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
 
 const http = httpRouter();
 
@@ -106,6 +107,12 @@ http.route({
   path: "/api/classes/list",
   method: "GET",
   handler: httpAction(getTeacherClassesHandler),
+});
+
+http.route({
+  path: "/api/classes/all",
+  method: "GET",
+  handler: httpAction(getClassesHandler),
 });
 
 http.route({
