@@ -6,14 +6,18 @@ import '../../../components/add_class_container.dart';
 import '../../../components/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
+import '../../../providers/onboarding_class_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OnboardingAddClassPage extends StatefulWidget {
+class OnboardingAddClassPage extends ConsumerStatefulWidget {
   const OnboardingAddClassPage({super.key});
   @override
-  State<OnboardingAddClassPage> createState() => _OnboardingAddClassPageState();
+  ConsumerState<OnboardingAddClassPage> createState() =>
+      _OnboardingAddClassPageState();
 }
 
-class _OnboardingAddClassPageState extends State<OnboardingAddClassPage> {
+class _OnboardingAddClassPageState
+    extends ConsumerState<OnboardingAddClassPage> {
   final List<TextEditingController> _nameCtrls = [TextEditingController()];
   final List<TextEditingController> _gradeCtrls = [TextEditingController()];
 
@@ -31,6 +35,36 @@ class _OnboardingAddClassPageState extends State<OnboardingAddClassPage> {
       _nameCtrls.removeAt(idx);
       _gradeCtrls.removeAt(idx);
     });
+  }
+
+  void _handleContinue() async {
+    final notifier = ref.read(onboardingClassProvider.notifier);
+    // Build input classes
+    final inputClasses = List.generate(
+      _nameCtrls.length,
+      (i) => {
+        "name": _nameCtrls[i].text.trim(),
+        "gradeLevel": _gradeCtrls[i].text.trim(),
+      },
+    );
+    final result = await notifier.submitClasses(inputClasses, context);
+    if (result != null) {
+      // Success: goto subjects page, pass the list
+      Navigator.of(context).pushReplacementNamed(
+        '/onboarding-add-subject',
+        arguments: {'classes': result},
+      );
+    }
+  }
+
+  bool get _canContinue {
+    for (var i = 0; i < _nameCtrls.length; i++) {
+      if (_nameCtrls[i].text.trim().isNotEmpty &&
+          _gradeCtrls[i].text.trim().isNotEmpty) {
+        return true;
+      }
+    }
+    return false;
   }
 
   Widget _backButton(BuildContext context) {
@@ -176,9 +210,23 @@ class _OnboardingAddClassPageState extends State<OnboardingAddClassPage> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 child: AppButton(
                   text: 'continue'.tr(),
-                  onPressed: () {},
+                  onPressed:
+                      _canContinue &&
+                          !ref.watch(onboardingClassProvider).isLoading
+                      ? _handleContinue
+                      : null,
                   height: 48,
                   borderRadius: AppTheme.radiusFull,
+                  icon: ref.watch(onboardingClassProvider).isLoading
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
                 ),
               ),
           ],

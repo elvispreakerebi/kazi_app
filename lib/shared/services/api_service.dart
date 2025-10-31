@@ -14,7 +14,7 @@ class ApiService {
     _jwt = token;
   }
 
-  Future<Map<String, dynamic>> post(
+  Future<dynamic> post(
     String path, {
     Map<String, dynamic>? body,
     Map<String, String>? headers,
@@ -31,13 +31,19 @@ class ApiService {
     if (response.statusCode >= 400) {
       throw Exception('API error: ${response.body}');
     }
-    return jsonDecode(response.body);
+    // PATCH: handle List or Map JSON response
+    final bodyRaw = response.body;
+    final firstNonspace = bodyRaw.trimLeft().isNotEmpty
+        ? bodyRaw.trimLeft()[0]
+        : '{';
+    if (firstNonspace == '[') {
+      return jsonDecode(bodyRaw) as List<dynamic>;
+    } else {
+      return jsonDecode(bodyRaw) as Map<String, dynamic>;
+    }
   }
 
-  Future<Map<String, dynamic>> get(
-    String path, {
-    Map<String, String>? headers,
-  }) async {
+  Future<dynamic> get(String path, {Map<String, String>? headers}) async {
     final response = await http.get(
       Uri.parse('$convexBackend$path'),
       headers: {
@@ -49,20 +55,32 @@ class ApiService {
     if (response.statusCode >= 400) {
       throw Exception('API error: ${response.body}');
     }
-    return jsonDecode(response.body);
+    final bodyRaw = response.body;
+    final firstNonspace = bodyRaw.trimLeft().isNotEmpty
+        ? bodyRaw.trimLeft()[0]
+        : '{';
+    if (firstNonspace == '[') {
+      return jsonDecode(bodyRaw) as List<dynamic>;
+    } else {
+      return jsonDecode(bodyRaw) as Map<String, dynamic>;
+    }
   }
 
   // Auth/login convenience method
   Future<Map<String, dynamic>> login(String email, String password) async {
-    return post(
+    final res = await post(
       '/api/auth/login-account',
       body: {'email': email, 'password': password},
     );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from login endpoint');
   }
 
   // Fetch current profile (GET -- adjust endpoint as needed)
   Future<Map<String, dynamic>> fetchUserProfile() async {
-    return get('/api/teacher/details');
+    final res = await get('/api/teacher/details');
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from fetchUserProfile endpoint');
   }
 
   // Logout just clears the jwt
@@ -91,10 +109,12 @@ class ApiService {
     required String idToken,
     required String? name,
   }) async {
-    return post(
+    final res = await post(
       '/api/auth/google-idtoken-login',
       body: {'idToken': idToken, if (name != null) 'name': name},
     );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from googleIdTokenLogin endpoint');
   }
 
   Future<Map<String, dynamic>> verifyEmailCode({

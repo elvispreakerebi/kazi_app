@@ -6,6 +6,7 @@ import 'package:kazi_app/features/enter_otp/enter_otp_route.dart';
 import 'package:kazi_app/features/login/login_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_welcome_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_add_class_route.dart';
+import 'package:kazi_app/features/onboarding/onboarding_add_subject_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -24,6 +25,8 @@ class AppRouter {
         return OnboardingWelcomeRoute.route(settings);
       case OnboardingAddClassRoute.path:
         return OnboardingAddClassRoute.route(settings);
+      case OnboardingAddSubjectRoute.path:
+        return OnboardingAddSubjectRoute.route(settings);
       case '/home':
         return MaterialPageRoute(
           settings: settings,

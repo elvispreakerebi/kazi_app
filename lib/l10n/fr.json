@@ -55,5 +55,8 @@
   "onboarding_add_class_desc": "Commencez par ajouter les classes que vous enseignez. Vous pourrez en ajouter plus tard.",
   "onboarding_add_another_class": "Ajouter une autre classe",
   "continue": "Continuer",
-  "step_1_of_4": "Étape 1 sur 4"
+  "step_1_of_4": "Étape 1 sur 4",
+  "step_2_of_6": "Étape 2 sur 6",
+  "onboarding_add_subject_title": "Ajouter des matières",
+  "onboarding_add_subject_desc": "Ajoutez une ou plusieurs matières pour chaque classe. Nous utiliserons cela pour générer des leçons alignées sur le programme."
 }

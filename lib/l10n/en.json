@@ -55,5 +55,8 @@
   "onboarding_add_class_desc": "Start by adding the classes you teach. You can add more later",
   "onboarding_add_another_class": "Add another class",
   "continue": "Continue",
-  "step_1_of_4": "Step 1 of 4"
+  "step_1_of_4": "Step 1 of 4",
+  "step_2_of_6": "Step 2 of 6",
+  "onboarding_add_subject_title": "Add subjects",
+  "onboarding_add_subject_desc": "Add one or more subjects for each class. We’ll use this to generate curriculum-aligned lessons."
 }
