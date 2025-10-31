@@ -30,5 +30,12 @@
   "error_email_taken": "Cet e-mail est déjà enregistré.",
   "error_invalid_password": "Email ou mot de passe incorrect.",
   "error_network": "Impossible de se connecter. Vérifiez votre réseau et réessayez.",
-  "or": "Ou"
+  "or": "Ou",
+  "verify_email_title": "Vérifier l’email",
+  "verify_email_desc": "Pour vérifier votre adresse email, saisissez ci-dessous le code à 6 chiffres envoyé à votre adresse e-mail :",
+  "verify_email_button": "Vérifier l’email",
+  "error_invalid_otp": "Code invalide. Veuillez réessayer.",
+  "error_otp_expired": "Le code a expiré",
+  "resend_code": "Renvoyer le code",
+  "otp_resent": "Un nouveau code a été envoyé à votre adresse e-mail."
 }

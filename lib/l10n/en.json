@@ -30,5 +30,12 @@
   "error_email_taken": "This email is already registered.",
   "error_invalid_password": "Invalid email or password.",
   "error_network": "Could not connect. Please check your network and try again.",
-  "or": "Or"
+  "or": "Or",
+  "verify_email_title": "Verify email",
+  "verify_email_desc": "To verify your email, enter below, the 6-digit code sent to your email address:",
+  "verify_email_button": "Verify email",
+  "error_invalid_otp": "Invalid code. Please try again.",
+  "error_otp_expired": "OTP code has expired",
+  "resend_code": "Resend code",
+  "otp_resent": "A new code has been sent to your email."
 }
