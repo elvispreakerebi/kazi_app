@@ -30,9 +30,6 @@ class ClassNotifier extends StateNotifier<ClassState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final classes = await ApiService().getClasses();
-      print(
-        '[DEBUG fetchClasses] classes=$classes',
-      ); // Debug print to check key names (should include _id)
       state = state.copyWith(classes: classes, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -94,15 +91,8 @@ class ClassNotifier extends StateNotifier<ClassState> {
 
   Future<void> deleteClass(String id, BuildContext context) async {
     state = state.copyWith(isLoading: true, error: null);
-    print(
-      '[DEBUG classProvider] deleteClass called with id=$id, type=${id.runtimeType}',
-    );
     try {
-      print(
-        '[DEBUG classProvider] About to call ApiService().deleteClass($id)',
-      );
       await ApiService().deleteClass(id);
-      print('[DEBUG classProvider] Returned from ApiService().deleteClass');
       await fetchClasses();
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());

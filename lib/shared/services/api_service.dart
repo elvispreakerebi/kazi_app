@@ -184,11 +184,7 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> deleteClass(String classId) async {
-    print(
-      '[DEBUG ApiService] deleteClass called with classId=$classId, type=${classId.runtimeType}',
-    );
     final res = await post('/api/classes/delete', body: {'classId': classId});
-    print('[DEBUG ApiService] deleteClass response: $res');
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from deleteClass endpoint');
   }

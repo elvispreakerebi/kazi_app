@@ -59,18 +59,24 @@ class LanguagePopover extends ConsumerWidget {
             ),
             onTap: (menuCtx) async {
               final locale = Locale(item['code']!);
-              ref.read(localeProvider.notifier).state =
-                  locale; // Intentful sync first
-              await parentContext.setLocale(locale); // Await localization
-              WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (ref.read(localeProvider).languageCode != item['code']) {
+                await parentContext.setLocale(locale);
+                ref.read(localeProvider.notifier).state = locale;
+                // Instead of double pushing or trying rootNavigator, just do single route replace
                 final routeName =
                     ModalRoute.of(parentContext)?.settings.name ?? '/';
-                Navigator.of(
-                  parentContext,
-                  rootNavigator: true,
-                ).pushReplacementNamed(routeName);
-                Navigator.of(menuCtx).pop();
-              });
+                if (Navigator.canPop(menuCtx)) Navigator.of(menuCtx).pop();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (Navigator.canPop(parentContext)) {
+                    Navigator.of(parentContext).pushReplacementNamed(routeName);
+                  } else {
+                    // fallback: force rebuild
+                    (parentContext as Element).markNeedsBuild();
+                  }
+                });
+              } else {
+                if (Navigator.canPop(menuCtx)) Navigator.of(menuCtx).pop();
+              }
             },
           ),
         ),
