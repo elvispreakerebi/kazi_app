@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _formError;
   bool _submitted = false;
+  bool _alreadyShowedEmailVerified = false;
 
   @override
   void dispose() {
@@ -33,7 +34,19 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // (removed email verified snackbar logic)
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    // Show success snackbar if coming from OTP verification
+    if (args != null &&
+        args['emailVerified'] == true &&
+        !_alreadyShowedEmailVerified) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('email_verified_message'.tr())));
+      });
+      _alreadyShowedEmailVerified = true;
+    }
   }
 
   String? _validateEmail(String? value) {
@@ -154,6 +167,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget? _backButtonIfNeeded(BuildContext context) {
     final args =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    // Do not show back if fromOtp, else show only if fromWelcome (as per previous logic)
+    if (args != null && args['fromOtp'] == true) return null;
     final showBack = args != null && args['fromWelcome'] == true;
     if (!showBack) return null;
     return _backButton(context);
