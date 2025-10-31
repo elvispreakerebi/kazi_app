@@ -170,4 +170,16 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from editClass endpoint');
   }
+
+  Future<List<Map<String, dynamic>>> getClasses() async {
+    final res = await get('/api/classes/list');
+    if (res is List) return res.cast<Map<String, dynamic>>();
+    throw Exception('Expected List from getClasses endpoint');
+  }
+
+  Future<Map<String, dynamic>> getClassById(String classId) async {
+    final res = await get('/api/classes/get?classId=$classId');
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from getClass endpoint');
+  }
 }

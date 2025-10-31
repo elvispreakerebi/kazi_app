@@ -8,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 import '../../../providers/onboarding_class_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/services/api_service.dart';
 
 class OnboardingAddClassPage extends ConsumerStatefulWidget {
   const OnboardingAddClassPage({super.key});
@@ -69,29 +70,48 @@ class _OnboardingAddClassPageState
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_initialized) return;
-    final routeArgs =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final provider = ref.read(onboardingClassProvider.notifier);
-    List<Map<String, dynamic>> baseClasses;
-    if (routeArgs != null && routeArgs['classes'] is List) {
-      baseClasses = (routeArgs['classes'] as List)
-          .map((e) => Map<String, dynamic>.from(e as Map))
-          .toList();
-      Future.microtask(() {
-        provider.setClasses(baseClasses);
+    Future.microtask(() async {
+      try {
+        final fetched = await ApiService().getClasses();
+        setState(() {
+          _syncControllers(fetched);
+          _initialized = true;
+        });
+        ref.read(onboardingClassProvider.notifier).setClasses(fetched);
+      } catch (e) {
+        // If network error, fallback to route args or provider
+        final routeArgs =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        final provider = ref.read(onboardingClassProvider.notifier);
+        List<Map<String, dynamic>> baseClasses;
+        if (routeArgs != null && routeArgs['classes'] is List) {
+          baseClasses = (routeArgs['classes'] as List)
+              .map((e) => Map<String, dynamic>.from(e as Map))
+              .toList();
+        } else {
+          baseClasses = provider.getClasses();
+        }
+        setState(() {
+          _syncControllers(baseClasses);
+          _initialized = true;
+        });
+      }
+    });
+  }
+
+  void _refreshClassesFromBackend() async {
+    try {
+      final fetched = await ApiService().getClasses();
+      setState(() {
+        _syncControllers(fetched);
       });
-    } else {
-      baseClasses = provider.getClasses();
-    }
-    _syncControllers(baseClasses);
-    _initialized = true;
+      ref.read(onboardingClassProvider.notifier).setClasses(fetched);
+    } catch (_) {}
   }
 
   void _handleContinue() async {
     final notifier = ref.read(onboardingClassProvider.notifier);
-    // Gather latest input values and always preserve 'id'.
     final inputClasses = List.generate(_nameCtrls.length, (i) {
-      // Always use map from _classObjs (which always has id, even after user edit)
       return {
         'id': _classObjs[i]['id'],
         'name': _nameCtrls[i].text.trim(),
@@ -102,35 +122,10 @@ class _OnboardingAddClassPageState
     });
     final result = await notifier.submitClasses(inputClasses, context);
     if (result != null && result is List) {
-      // If addClass returned new backend ids for new classes, update local objects accordingly
-      // If edit only, IDs are unchanged
-      List<Map<String, dynamic>> updated = List.generate(_nameCtrls.length, (
-        i,
-      ) {
-        final original = inputClasses[i];
-        // Try to find the backend match by name/gradeLevel or keep id if preexisting
-        final backend = result.firstWhere(
-          (r) =>
-              (r['name'] == original['name'] &&
-                  r['gradeLevel'] == original['gradeLevel']) &&
-              r['id'] != null,
-          orElse: () => null,
-        );
-        return {
-          'id': backend != null && backend['id'] != null
-              ? backend['id']
-              : original['id'],
-          'name': original['name'],
-          'gradeLevel': original['gradeLevel'],
-          if (original['academicYear'] != null)
-            'academicYear': original['academicYear'],
-        };
-      });
-      notifier.setClasses(updated);
-      _classObjs = updated;
+      _refreshClassesFromBackend(); // Refresh after submit to sync all backend ids/changes
       Navigator.of(context).pushReplacementNamed(
         '/onboarding-add-subject',
-        arguments: {'classes': updated},
+        arguments: {'classes': result},
       );
     }
   }

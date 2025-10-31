@@ -30,6 +30,7 @@ import { regenerateLessonPlanContentHandler } from "./functions/routeHandlers/le
 import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
+import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
 
 const http = httpRouter();
 
@@ -105,6 +106,12 @@ http.route({
   path: "/api/classes/list",
   method: "GET",
   handler: httpAction(getTeacherClassesHandler),
+});
+
+http.route({
+  path: "/api/classes/get",
+  method: "GET",
+  handler: httpAction(getClassHandler),
 });
 
 http.route({
