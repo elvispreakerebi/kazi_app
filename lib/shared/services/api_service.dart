@@ -151,4 +151,23 @@ class ApiService {
       return {'error': 'error_network', 'statusCode': -1};
     }
   }
+
+  Future<Map<String, dynamic>> editClass({
+    required String classId,
+    required String? name,
+    required String? gradeLevel,
+    String? academicYear,
+  }) async {
+    final res = await post(
+      '/api/classes/edit',
+      body: {
+        'classId': classId,
+        if (name != null) 'name': name,
+        if (gradeLevel != null) 'gradeLevel': gradeLevel,
+        if (academicYear != null) 'academicYear': academicYear,
+      },
+    );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from editClass endpoint');
+  }
 }

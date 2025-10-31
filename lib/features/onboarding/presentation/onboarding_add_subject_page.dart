@@ -19,7 +19,7 @@ class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
 
 class _OnboardingAddSubjectPageState
     extends ConsumerState<OnboardingAddSubjectPage> {
-  List<Map<String, String>> _classes = [];
+  List<Map<String, dynamic>> _classes = [];
   bool _initialized = false;
 
   @override
@@ -31,7 +31,7 @@ class _OnboardingAddSubjectPageState
     final provider = ref.read(onboardingClassProvider.notifier);
     if (args != null && args['classes'] is List) {
       _classes = (args['classes'] as List)
-          .map((e) => Map<String, String>.from(e as Map))
+          .map((e) => Map<String, dynamic>.from(e as Map))
           .toList();
       Future.microtask(() {
         provider.setClasses(_classes);
@@ -48,7 +48,11 @@ class _OnboardingAddSubjectPageState
       if (mounted) {
         Navigator.of(context).pushReplacementNamed(
           '/onboarding-add-class',
-          arguments: {'classes': _classes},
+          arguments: {
+            'classes': _classes
+                .map((e) => Map<String, dynamic>.from(e))
+                .toList(),
+          },
         );
       }
     });

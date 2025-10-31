@@ -14,22 +14,22 @@ class OnboardingClassState {
 }
 
 class OnboardingClassNotifier extends StateNotifier<OnboardingClassState> {
-  List<Map<String, String>> classes = [];
+  List<Map<String, dynamic>> classes = [];
 
   OnboardingClassNotifier() : super(const OnboardingClassState());
 
-  void setClasses(List<Map<String, String>> newClasses) {
-    classes = List<Map<String, String>>.from(newClasses);
+  void setClasses(List<Map<String, dynamic>> newClasses) {
+    classes = List<Map<String, dynamic>>.from(newClasses);
     state = state.copyWith(); // triggers listeners
   }
 
-  List<Map<String, String>> getClasses() => classes;
+  List<Map<String, dynamic>> getClasses() => classes;
 
   Future<List<dynamic>?> submitClasses(
-    List<Map<String, String>> classesIn,
+    List<Map<String, dynamic>> classesIn,
     BuildContext context,
   ) async {
-    // UI/UX: must add at least one class
+    // At least one valid class must be present
     if (classesIn.isEmpty ||
         classesIn.every(
           (c) =>
@@ -46,31 +46,69 @@ class OnboardingClassNotifier extends StateNotifier<OnboardingClassState> {
     }
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final resp = await ApiService().post(
-        '/api/classes/add',
-        body: {"classes": classesIn},
-      );
-      if (resp is List) {
-        state = state.copyWith(isLoading: false, error: null);
-        setClasses(classesIn);
-        return resp;
+      // Split new (no id) vs. existing (has id)
+      List<Map<String, dynamic>> toAdd = [];
+      List<Map<String, dynamic>> toEdit = [];
+      for (var c in classesIn) {
+        if (c['id'] != null && "${c['id']}".isNotEmpty) {
+          toEdit.add(c);
+        } else {
+          toAdd.add(c);
+        }
       }
-      final msg = (resp is Map && resp['error'] != null)
-          ? resp['error'].toString()
-          : 'Failed to add classes';
-      state = state.copyWith(isLoading: false, error: msg);
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+      // Add new classes
+      List<dynamic> results = [];
+      if (toAdd.isNotEmpty) {
+        final resp = await ApiService().post(
+          '/api/classes/add',
+          body: {
+            "classes": toAdd
+                .map(
+                  (c) => {
+                    'name': c['name'],
+                    'gradeLevel': c['gradeLevel'],
+                    if (c['academicYear'] != null)
+                      'academicYear': c['academicYear'],
+                  },
+                )
+                .toList(),
+          },
+        );
+        if (resp is List) {
+          for (int i = 0; i < resp.length; i++) {
+            // Attach backend id to new class, fallback on index alignment
+            if (resp[i]['id'] != null) {
+              toAdd[i]['id'] = resp[i]['id'];
+            }
+            results.add(resp[i]);
+          }
+        }
       }
-      return null;
+      // Edit existing classes
+      for (final c in toEdit) {
+        // Only call edit if any value has changed. For simplicity we will always send edit for now.
+        try {
+          final editResp = await ApiService().editClass(
+            classId: c['id'].toString(),
+            name: c['name'],
+            gradeLevel: c['gradeLevel'],
+            academicYear: c['academicYear'],
+          );
+          results.add(editResp);
+        } catch (e) {
+          results.add({'error': e.toString(), 'id': c['id']});
+        }
+      }
+      // Update provider state with ids
+      setClasses([...toAdd, ...toEdit]);
+      state = state.copyWith(isLoading: false, error: null);
+      return results;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to add classes: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add/edit classes: $e')),
+        );
       }
     }
     return null;

@@ -22,19 +22,47 @@ class _OnboardingAddClassPageState
   final List<TextEditingController> _gradeCtrls = [];
   bool _initialized = false;
 
-  void _syncControllers(List<Map<String, String>> classes) {
+  List<Map<String, dynamic>> _classObjs = [];
+
+  void _syncControllers(List<Map<String, dynamic>> classes) {
     _nameCtrls.forEach((c) => c.dispose());
     _gradeCtrls.forEach((c) => c.dispose());
     _nameCtrls.clear();
     _gradeCtrls.clear();
+    _classObjs = [];
     for (final c in classes) {
       _nameCtrls.add(TextEditingController(text: c['name'] ?? ''));
       _gradeCtrls.add(TextEditingController(text: c['gradeLevel'] ?? ''));
+      _classObjs.add({
+        'id': c['id'],
+        'name': c['name'] ?? '',
+        'gradeLevel': c['gradeLevel'] ?? '',
+        if (c['academicYear'] != null) 'academicYear': c['academicYear'],
+      });
     }
     if (_nameCtrls.isEmpty) {
       _nameCtrls.add(TextEditingController());
       _gradeCtrls.add(TextEditingController());
+      _classObjs.add({'id': null, 'name': '', 'gradeLevel': ''});
     }
+  }
+
+  void _addClass() {
+    setState(() {
+      _nameCtrls.add(TextEditingController());
+      _gradeCtrls.add(TextEditingController());
+      _classObjs.add({'id': null, 'name': '', 'gradeLevel': ''});
+    });
+  }
+
+  void _removeClass(int idx) {
+    setState(() {
+      _nameCtrls[idx].dispose();
+      _gradeCtrls[idx].dispose();
+      _nameCtrls.removeAt(idx);
+      _gradeCtrls.removeAt(idx);
+      _classObjs.removeAt(idx);
+    });
   }
 
   @override
@@ -44,10 +72,10 @@ class _OnboardingAddClassPageState
     final routeArgs =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final provider = ref.read(onboardingClassProvider.notifier);
-    List<Map<String, String>> baseClasses;
+    List<Map<String, dynamic>> baseClasses;
     if (routeArgs != null && routeArgs['classes'] is List) {
       baseClasses = (routeArgs['classes'] as List)
-          .map((e) => Map<String, String>.from(e as Map))
+          .map((e) => Map<String, dynamic>.from(e as Map))
           .toList();
       Future.microtask(() {
         provider.setClasses(baseClasses);
@@ -59,37 +87,50 @@ class _OnboardingAddClassPageState
     _initialized = true;
   }
 
-  void _addClass() {
-    setState(() {
-      _nameCtrls.add(TextEditingController());
-      _gradeCtrls.add(TextEditingController());
-    });
-  }
-
-  void _removeClass(int idx) {
-    setState(() {
-      _nameCtrls[idx].dispose();
-      _gradeCtrls[idx].dispose();
-      _nameCtrls.removeAt(idx);
-      _gradeCtrls.removeAt(idx);
-    });
-  }
-
   void _handleContinue() async {
     final notifier = ref.read(onboardingClassProvider.notifier);
-    final inputClasses = List.generate(
-      _nameCtrls.length,
-      (i) => {
-        "name": _nameCtrls[i].text.trim(),
-        "gradeLevel": _gradeCtrls[i].text.trim(),
-      },
-    );
+    // Gather latest input values and always preserve 'id'.
+    final inputClasses = List.generate(_nameCtrls.length, (i) {
+      // Always use map from _classObjs (which always has id, even after user edit)
+      return {
+        'id': _classObjs[i]['id'],
+        'name': _nameCtrls[i].text.trim(),
+        'gradeLevel': _gradeCtrls[i].text.trim(),
+        if (_classObjs[i]['academicYear'] != null)
+          'academicYear': _classObjs[i]['academicYear'],
+      };
+    });
     final result = await notifier.submitClasses(inputClasses, context);
-    if (result != null) {
-      notifier.setClasses(inputClasses);
+    if (result != null && result is List) {
+      // If addClass returned new backend ids for new classes, update local objects accordingly
+      // If edit only, IDs are unchanged
+      List<Map<String, dynamic>> updated = List.generate(_nameCtrls.length, (
+        i,
+      ) {
+        final original = inputClasses[i];
+        // Try to find the backend match by name/gradeLevel or keep id if preexisting
+        final backend = result.firstWhere(
+          (r) =>
+              (r['name'] == original['name'] &&
+                  r['gradeLevel'] == original['gradeLevel']) &&
+              r['id'] != null,
+          orElse: () => null,
+        );
+        return {
+          'id': backend != null && backend['id'] != null
+              ? backend['id']
+              : original['id'],
+          'name': original['name'],
+          'gradeLevel': original['gradeLevel'],
+          if (original['academicYear'] != null)
+            'academicYear': original['academicYear'],
+        };
+      });
+      notifier.setClasses(updated);
+      _classObjs = updated;
       Navigator.of(context).pushReplacementNamed(
         '/onboarding-add-subject',
-        arguments: {'classes': inputClasses},
+        arguments: {'classes': updated},
       );
     }
   }
