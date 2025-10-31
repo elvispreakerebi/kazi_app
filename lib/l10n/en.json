@@ -37,5 +37,12 @@
   "error_invalid_otp": "Invalid code. Please try again.",
   "error_otp_expired": "OTP code has expired",
   "resend_code": "Resend code",
-  "otp_resent": "A new code has been sent to your email."
+  "otp_resent": "A new code has been sent to your email.",
+  "login_welcome_title": "Welcome back!",
+  "login_welcome_desc": "Log in to your account",
+  "login_with_google": "Log in with Google",
+  "email_verified_message": "Email verified! You can now log in.",
+  "reset_password": "Reset password",
+  "reset_password_not_implemented": "Password reset not implemented yet.",
+  "error_email_not_verified": "Your email is not verified. Please check your inbox or resend the OTP."
 }

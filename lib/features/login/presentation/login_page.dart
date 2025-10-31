@@ -6,6 +6,7 @@ import '../../../components/app_input.dart';
 import '../../../components/language_popover.dart';
 import '../../../components/error_alert.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../../shared/services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -70,18 +71,45 @@ class _LoginPageState extends State<LoginPage> {
       _formError = null;
       _isLoading = true;
     });
-    // Client-side validation
     if (_validateEmail(_emailController.text) != null ||
         _validatePassword(_passwordController.text) != null) {
       setState(() => _isLoading = false);
       return;
     }
-    // TODO: Call your ApiService().login/email-password endpoint
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
-    // On success: Navigate to home or show errors
-    // Navigator.of(context).pushReplacementNamed('/home');
-    // On failure: setState(() => _formError = ...);
+    try {
+      final result = await ApiService().login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+      setState(() => _isLoading = false);
+      if (result['token'] != null) {
+        ApiService().setToken(result['token'] as String);
+        Navigator.of(context).pushReplacementNamed('/home');
+      } else if ((result['error'] ?? '').toString().toLowerCase().contains(
+        'verify',
+      )) {
+        setState(() {
+          _formError = 'error_email_not_verified'.tr();
+        });
+      } else if ((result['error'] ?? '').toString().isNotEmpty) {
+        setState(() {
+          _formError = result['error'].toString();
+        });
+      } else if ((result['message'] ?? '').toString().isNotEmpty) {
+        setState(() {
+          _formError = result['message'].toString();
+        });
+      } else {
+        setState(() {
+          _formError = 'error_backend_generic'.tr();
+        });
+      }
+    } catch (_) {
+      setState(() {
+        _isLoading = false;
+        _formError = 'error_backend_generic'.tr();
+      });
+    }
   }
 
   void _loginWithGoogle() async {

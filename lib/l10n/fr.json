@@ -37,5 +37,12 @@
   "error_invalid_otp": "Code invalide. Veuillez réessayer.",
   "error_otp_expired": "Le code a expiré",
   "resend_code": "Renvoyer le code",
-  "otp_resent": "Un nouveau code a été envoyé à votre adresse e-mail."
+  "otp_resent": "Un nouveau code a été envoyé à votre adresse e-mail.",
+  "login_welcome_title": "Bon retour !",
+  "login_welcome_desc": "Connectez-vous à votre compte",
+  "login_with_google": "Connexion avec Google",
+  "email_verified_message": "Email vérifié ! Vous pouvez maintenant vous connecter.",
+  "reset_password": "Réinitialiser le mot de passe",
+  "reset_password_not_implemented": "La réinitialisation du mot de passe n'est pas encore implémentée.",
+  "error_email_not_verified": "Votre email n'est pas vérifié. Veuillez vérifier votre boîte de réception ou renvoyer le code."
 }

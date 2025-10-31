@@ -37,5 +37,12 @@
   "error_invalid_otp": "Ikode winjiye si yo. Ongera ugerageze.",
   "error_otp_expired": "Kode yararangiye. Saba indi.",
   "resend_code": "Saba indi kode",
-  "otp_resent": "Kode nshya yoherejwe kuri imeli yawe."
+  "otp_resent": "Kode nshya yoherejwe kuri imeli yawe.",
+  "login_welcome_title": "Murakaza neza!",
+  "login_welcome_desc": "Injira muri konti yawe",
+  "login_with_google": "Injira ukoresheje Google",
+  "email_verified_message": "Imeli yemejwe! Ushobora kwinjira.",
+  "reset_password": "Subiramo ijambo ry'ibanga",
+  "reset_password_not_implemented": "Gusubiramo ijambo ry'ibanga ntibirashyirwa mu bikorwa.",
+  "error_email_not_verified": "Imeli yawe ntiramenyekana. Reba ubutumwa cyangwa ongera usabe kode."
 }
