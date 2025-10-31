@@ -44,5 +44,10 @@
   "email_verified_message": "Imeli yemejwe! Ushobora kwinjira.",
   "reset_password": "Subiramo ijambo ry'ibanga",
   "reset_password_not_implemented": "Gusubiramo ijambo ry'ibanga ntibirashyirwa mu bikorwa.",
-  "error_email_not_verified": "Imeli yawe ntiramenyekana. Reba ubutumwa cyangwa ongera usabe kode."
+  "error_email_not_verified": "Imeli yawe ntiramenyekana. Reba ubutumwa cyangwa ongera usabe kode.",
+  "onboarding_celebration": "🎊🎊🎊",
+  "onboarding_welcome_header": "Murakaza neza kuri Kazi, {name}",
+  "onboarding_welcome_desc": "Turahari ngo dutume uburezi bworoha. Kora profil yawe kugira ngo ushobore guhita ukoresha gahunda y’amasomo ishyigikiwe n’integanyanyigisho no kuyobora abanyeshuri bawe neza.",
+  "onboarding_start_setup": "Tangira itegurwa",
+  "onboarding_do_later": "Nzabikora nyuma"
 }

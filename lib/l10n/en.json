@@ -44,5 +44,10 @@
   "email_verified_message": "Email verified! You can now log in.",
   "reset_password": "Reset password",
   "reset_password_not_implemented": "Password reset not implemented yet.",
-  "error_email_not_verified": "Your email is not verified. Please check your inbox or resend the OTP."
+  "error_email_not_verified": "Your email is not verified. Please check your inbox or resend the OTP.",
+  "onboarding_celebration": "🎊🎊🎊",
+  "onboarding_welcome_header": "Welcome to Kazi, {name}",
+  "onboarding_welcome_desc": "We’re here to make your teaching easier. Let’s set up your profile so you can instantly create curriculum-aligned lesson plans and manage your students effectively.",
+  "onboarding_start_setup": "Start setup",
+  "onboarding_do_later": "I'll do this later"
 }
