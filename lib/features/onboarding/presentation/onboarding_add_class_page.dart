@@ -8,6 +8,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'dart:io' show Platform;
 import '../../../providers/class_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../components/error_alert.dart';
 
 class OnboardingAddClassPage extends ConsumerStatefulWidget {
   const OnboardingAddClassPage({super.key});
@@ -24,6 +25,7 @@ class _OnboardingAddClassPageState
 
   List<Map<String, dynamic>> _classObjs = [];
   final Set<int> _loadingDeleteIndexes = {};
+  String? _submitError;
 
   void _syncControllers(List<Map<String, dynamic>> classes) {
     _nameCtrls.forEach((c) => c.dispose());
@@ -88,25 +90,31 @@ class _OnboardingAddClassPageState
   }
 
   void _handleContinue() async {
+    setState(() {
+      _submitError = null;
+    });
     final currentProviderClasses = ref.read(classProvider).classes;
-    // Detect new classes
     final toAdd = <Map<String, dynamic>>[];
     final toEdit = <Map<String, dynamic>>[];
+    bool hasAtLeastOne = false;
     for (var i = 0; i < _nameCtrls.length; i++) {
       final local = {
-        'id': _classObjs[i]['id'],
+        'id': _classObjs[i]['id'] ?? _classObjs[i]['_id'],
         'name': _nameCtrls[i].text.trim(),
         'gradeLevel': _gradeCtrls[i].text.trim(),
         if (_classObjs[i]['academicYear'] != null)
           'academicYear': _classObjs[i]['academicYear'],
       };
+      if (local['name'].isNotEmpty && local['gradeLevel'].isNotEmpty) {
+        hasAtLeastOne = true;
+      }
       if (local['id'] == null || (local['id'] as String).isEmpty) {
         if (local['name'].isNotEmpty && local['gradeLevel'].isNotEmpty)
           toAdd.add(local);
       } else {
         final prev = currentProviderClasses.firstWhere(
-          (c) => c['id'].toString() == local['id'].toString(),
-          orElse: () => <String, dynamic>{}, // Don't return null!
+          (c) => (c['id'] ?? c['_id']).toString() == local['id'].toString(),
+          orElse: () => <String, dynamic>{},
         );
         if (prev.isNotEmpty &&
             (prev['name'] != local['name'] ||
@@ -115,6 +123,12 @@ class _OnboardingAddClassPageState
           toEdit.add(local);
         }
       }
+    }
+    if (!hasAtLeastOne) {
+      setState(() {
+        _submitError = 'Please provide at least one class with name and grade.';
+      });
+      return;
     }
     if (toAdd.isNotEmpty) {
       await ref.read(classProvider.notifier).addClasses(toAdd, context);
@@ -131,21 +145,15 @@ class _OnboardingAddClassPageState
 
   void _handleDelete(int idx) async {
     final id = _classObjs[idx]['id'];
-    print(
-      '[DEBUG] Tapping delete for idx $idx, id=$id, type=${id.runtimeType}',
-    );
     setState(() {
       _loadingDeleteIndexes.add(idx);
     });
     if (id != null && id.toString().isNotEmpty) {
-      print('[DEBUG] Calling provider.deleteClass for id=$id');
       await ref
           .read(classProvider.notifier)
           .deleteClass(id.toString(), context);
-      print('[DEBUG] Returned from provider.deleteClass');
       _refreshClassesFromProvider();
     } else {
-      print('[DEBUG] Local _removeClass for idx $idx');
       _removeClass(idx);
     }
     setState(() {
@@ -218,6 +226,14 @@ class _OnboardingAddClassPageState
               progress: 1 / 4, // step 1 of 4
               progressText: 'step_1_of_4'.tr(),
             ),
+            if (_submitError != null && _submitError!.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                child: ErrorAlert(message: _submitError!),
+              ),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
