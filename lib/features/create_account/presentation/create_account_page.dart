@@ -299,7 +299,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                         Text(
                           'welcome_title'.tr(),
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.w500,
                             color: AppTheme.textDark,
                           ),

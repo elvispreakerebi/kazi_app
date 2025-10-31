@@ -175,8 +175,8 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'login_welcome_title'.tr(),
                       style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
                         color: AppTheme.textDark,
                       ),
                     ),
