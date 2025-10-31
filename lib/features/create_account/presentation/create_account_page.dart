@@ -150,6 +150,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
+        Navigator.of(context).pushReplacementNamed(
+          '/enter-otp',
+          arguments: {'email': _emailController.text.trim()},
+        );
         // Optionally: clear form or navigate
       }
     } catch (_) {
