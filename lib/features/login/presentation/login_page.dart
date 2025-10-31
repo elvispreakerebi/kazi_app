@@ -33,16 +33,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Show email verified snackbar once if coming from OTP
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    if (args != null && args['snackbar'] == 'email_verified') {
-      Future.microtask(() {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('email_verified_message'.tr())));
-      });
-    }
+    // (removed email verified snackbar logic)
   }
 
   String? _validateEmail(String? value) {

@@ -94,10 +94,15 @@ class _EnterOtpPageState extends State<EnterOtpPage> {
           _otpError = null;
           _isVerifying = false;
         });
-        // Navigate to login page with snackbar flag
+        // Navigate to onboarding welcome, pass name if available
+        final args =
+            ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+        final name = args != null && args['name'] is String
+            ? args['name'] as String
+            : '';
         Navigator.of(context).pushReplacementNamed(
-          '/login',
-          arguments: {'snackbar': 'email_verified'},
+          '/onboarding-welcome',
+          arguments: {'name': name},
         );
         // Clear fields (optional)
       } else {
