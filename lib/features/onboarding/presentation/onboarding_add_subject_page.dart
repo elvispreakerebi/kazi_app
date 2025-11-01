@@ -11,6 +11,7 @@ import '../../../shared/services/onboarding_prefs.dart';
 import 'package:flutter/services.dart';
 import '../../../components/app_input.dart';
 import '../../../providers/subjects_provider.dart';
+import '../../../components/app_bottom_sheet.dart';
 
 class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
   const OnboardingAddSubjectPage({super.key});
@@ -43,10 +44,7 @@ class _OnboardingAddSubjectPageState
     }
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppTheme.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
-      ),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) {
         return Consumer(
@@ -54,178 +52,133 @@ class _OnboardingAddSubjectPageState
             final subjState = ref.watch(subjectsProvider);
             final isLoading = subjState.isLoadingByClassId[classId] == true;
             final subjects = subjState.subjectsByClassId[classId] ?? [];
+            final subCountText = isLoading
+                ? "Loading subjects..."
+                : "${subjects.length} subjects";
             return StatefulBuilder(
               builder: (innerCtx, modalSetState) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add subjects to $className',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: AppTheme.textDark,
+                return AppBottomSheet(
+                  title: 'Add subjects to $className',
+                  subtitle: subCountText,
+                  body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        children: List.generate(
+                          _subjectCtrls.length,
+                          (idx) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: idx != _subjectCtrls.length - 1 ? 16 : 0,
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          if (isLoading)
-                            Text(
-                              'Loading subjects...',
-                              style: const TextStyle(
-                                color: AppTheme.inputDescription,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            )
-                          else
-                            Text(
-                              '${subjects.length} subjects',
-                              style: const TextStyle(
-                                color: AppTheme.inputDescription,
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Column(
-                            children: List.generate(
-                              _subjectCtrls.length,
-                              (idx) => Padding(
-                                padding: EdgeInsets.only(
-                                  bottom: idx != _subjectCtrls.length - 1
-                                      ? 16
-                                      : 0,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: AppInput(
+                                    label: 'Subject ${idx + 1} name',
+                                    description: 'E.g Mathematics',
+                                    controller: _subjectCtrls[idx],
+                                    prefixIcon: const Icon(
+                                      Icons.menu_book_outlined,
+                                      color: Color(0xFF71717A),
+                                    ),
+                                  ),
                                 ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: AppInput(
-                                        label: 'Subject ${idx + 1} name',
-                                        description: 'E.g Mathematics',
-                                        controller: _subjectCtrls[idx],
-                                        prefixIcon: const Icon(
-                                          Icons.menu_book_outlined,
-                                          color: Color(0xFF71717A),
+                                if (idx > 0)
+                                  SizedBox(
+                                    height: 48,
+                                    child: Center(
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.delete_outline_rounded,
                                         ),
+                                        onPressed: () {
+                                          setState(() {
+                                            _subjectCtrls[idx].dispose();
+                                            _subjectCtrls.removeAt(idx);
+                                          });
+                                          modalSetState(() {});
+                                        },
                                       ),
                                     ),
-                                    if (idx > 0)
-                                      SizedBox(
-                                        height: 48,
-                                        child: Center(
-                                          child: IconButton(
-                                            icon: const Icon(
-                                              Icons.delete_outline_rounded,
-                                            ),
-                                            onPressed: () {
-                                              setState(() {
-                                                _subjectCtrls[idx].dispose();
-                                                _subjectCtrls.removeAt(idx);
-                                              });
-                                              modalSetState(() {});
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  setState(() {
-                                    _subjectCtrls.add(TextEditingController());
-                                  });
-                                  modalSetState(() {});
-                                },
-                                icon: const Icon(
-                                  Icons.add,
-                                  size: 22,
-                                  color: AppTheme.primary,
-                                ),
-                                label: const Text(
-                                  'Add another subject',
-                                  style: TextStyle(
-                                    color: AppTheme.textDark,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(32),
-                                  ),
-                                  side: const BorderSide(
-                                    color: AppTheme.outline,
-                                    width: 1,
-                                  ),
-                                  backgroundColor: AppTheme.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Row(
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Expanded(
-                            child: AppButton(
-                              text: "Close",
-                              onPressed: () {
-                                Navigator.of(sheetContext).pop();
-                              },
-                              variant: ButtonVariant.secondary,
-                              borderRadius: 22,
-                              height: 48,
-                              expanded: true,
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _subjectCtrls.add(TextEditingController());
+                              });
+                              modalSetState(() {});
+                            },
+                            icon: const Icon(
+                              Icons.add,
+                              size: 22,
+                              color: AppTheme.primary,
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AppButton(
-                              text: "Save",
-                              onPressed: () {
-                                Navigator.of(sheetContext).pop();
-                              },
-                              variant: ButtonVariant.primary,
-                              borderRadius: 22,
-                              height: 48,
-                              expanded: true,
+                            label: const Text(
+                              'Add another subject',
+                              style: TextStyle(
+                                color: AppTheme.textDark,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(32),
+                              ),
+                              side: const BorderSide(
+                                color: AppTheme.outline,
+                                width: 1,
+                              ),
+                              backgroundColor: AppTheme.white,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  footer: Row(
+                    children: [
+                      Expanded(
+                        child: AppButton(
+                          text: "Close",
+                          onPressed: () {
+                            Navigator.of(sheetContext).pop();
+                          },
+                          variant: ButtonVariant.secondary,
+                          borderRadius: 22,
+                          height: 48,
+                          expanded: true,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: AppButton(
+                          text: "Save",
+                          onPressed: () {
+                            Navigator.of(sheetContext).pop();
+                          },
+                          variant: ButtonVariant.primary,
+                          borderRadius: 22,
+                          height: 48,
+                          expanded: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             );
