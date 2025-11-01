@@ -34,14 +34,27 @@ class _OnboardingAddSubjectPageState
     BuildContext context,
     Map<String, dynamic> classObj,
   ) async {
-    _subjectCtrls = [TextEditingController()];
-    final className = classObj['name'] ?? '';
     final classId =
         classObj['id']?.toString() ?? classObj['_id']?.toString() ?? '';
+    // Setup subject controllers; pre-fill if editing
+    final subjectsProviderValue = ref.read(subjectsProvider);
+    final currentSubjects = List<Map<String, dynamic>>.from(
+      subjectsProviderValue.subjectsByClassId[classId] ?? [],
+    );
+    _subjectCtrls = currentSubjects.isEmpty
+        ? [TextEditingController()]
+        : List.generate(
+            currentSubjects.length,
+            (i) =>
+                TextEditingController(text: currentSubjects[i]['name'] ?? ""),
+          );
+
+    final className = classObj['name'] ?? '';
     if (classId.isNotEmpty &&
         !ref.read(subjectsProvider).subjectsByClassId.containsKey(classId)) {
       await ref.read(subjectsProvider.notifier).fetchSubjectsForClass(classId);
     }
+    bool saveLoading = false;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -64,9 +77,25 @@ class _OnboardingAddSubjectPageState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Column(
-                        children: List.generate(
-                          _subjectCtrls.length,
-                          (idx) => Padding(
+                        children: List.generate(_subjectCtrls.length, (idx) {
+                          final existingSubject = idx < subjects.length
+                              ? subjects[idx]
+                              : null;
+                          final hasDbId =
+                              existingSubject != null &&
+                              (existingSubject['id'] != null ||
+                                  existingSubject['_id'] != null);
+                          final subjectId = hasDbId
+                              ? (existingSubject['id']?.toString() ??
+                                    existingSubject['_id']?.toString())
+                              : null;
+                          final deleting =
+                              subjectId != null &&
+                              ref
+                                  .watch(subjectsProvider)
+                                  .deletingSubjectIds
+                                  .contains(subjectId);
+                          return Padding(
                             padding: EdgeInsets.only(
                               bottom: idx != _subjectCtrls.length - 1 ? 16 : 0,
                             ),
@@ -88,24 +117,59 @@ class _OnboardingAddSubjectPageState
                                   SizedBox(
                                     height: 48,
                                     child: Center(
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.delete_outline_rounded,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _subjectCtrls[idx].dispose();
-                                            _subjectCtrls.removeAt(idx);
-                                          });
-                                          modalSetState(() {});
-                                        },
-                                      ),
+                                      child: hasDbId
+                                          ? deleting
+                                                ? const SizedBox(
+                                                    width: 24,
+                                                    height: 24,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                          strokeWidth: 2,
+                                                        ),
+                                                  )
+                                                : IconButton(
+                                                    icon: const Icon(
+                                                      Icons
+                                                          .delete_outline_rounded,
+                                                    ),
+                                                    onPressed: () async {
+                                                      await ref
+                                                          .read(
+                                                            subjectsProvider
+                                                                .notifier,
+                                                          )
+                                                          .deleteSubject(
+                                                            classId,
+                                                            subjectId!,
+                                                          );
+                                                      setState(() {
+                                                        _subjectCtrls[idx]
+                                                            .dispose();
+                                                        _subjectCtrls.removeAt(
+                                                          idx,
+                                                        );
+                                                      });
+                                                      modalSetState(() {});
+                                                    },
+                                                  )
+                                          : IconButton(
+                                              icon: const Icon(
+                                                Icons.delete_outline_rounded,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _subjectCtrls[idx].dispose();
+                                                  _subjectCtrls.removeAt(idx);
+                                                });
+                                                modalSetState(() {});
+                                              },
+                                            ),
                                     ),
                                   ),
                               ],
                             ),
-                          ),
-                        ),
+                          );
+                        }),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -167,9 +231,55 @@ class _OnboardingAddSubjectPageState
                       const SizedBox(width: 16),
                       Expanded(
                         child: AppButton(
-                          text: "Save",
-                          onPressed: () {
-                            Navigator.of(sheetContext).pop();
+                          text: saveLoading ? "Saving..." : "Save",
+                          onPressed: () async {
+                            if (saveLoading) return;
+                            modalSetState(() {
+                              saveLoading = true;
+                            });
+                            final List<Future> tasks = [];
+                            for (int i = 0; i < _subjectCtrls.length; i++) {
+                              final name = _subjectCtrls[i].text.trim();
+                              final subj = i < subjects.length
+                                  ? subjects[i]
+                                  : null;
+                              if (subj != null) {
+                                final existingName = (subj['name'] ?? "")
+                                    .toString();
+                                final id =
+                                    subj['id']?.toString() ??
+                                    subj['_id']?.toString();
+                                if (name.isNotEmpty &&
+                                    name != existingName &&
+                                    id != null) {
+                                  tasks.add(
+                                    ref
+                                        .read(subjectsProvider.notifier)
+                                        .updateSubject(classId, id, name),
+                                  );
+                                }
+                              } else {
+                                if (name.isNotEmpty) {
+                                  tasks.add(
+                                    ref
+                                        .read(subjectsProvider.notifier)
+                                        .addSubjects(classId, [
+                                          {'name': name},
+                                        ]),
+                                  );
+                                }
+                              }
+                            }
+                            try {
+                              await Future.wait(tasks);
+                              await ref
+                                  .read(subjectsProvider.notifier)
+                                  .fetchSubjectsForClass(classId);
+                              if (mounted) Navigator.of(sheetContext).pop();
+                            } catch (_) {}
+                            modalSetState(() {
+                              saveLoading = false;
+                            });
                           },
                           variant: ButtonVariant.primary,
                           borderRadius: 22,

@@ -49,26 +49,61 @@ class ClassCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          OutlinedButton.icon(
-            onPressed: onAdd,
-            icon: const Icon(Icons.add, size: 20, color: AppTheme.primary),
-            label: const Text(
-              'Add',
-              style: TextStyle(
-                color: AppTheme.textDark,
-                fontWeight: FontWeight.w500,
-                fontSize: 15,
-              ),
-            ),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              side: const BorderSide(color: AppTheme.outline, width: 1),
-              backgroundColor: AppTheme.white,
-            ),
-          ),
+          subjectCount == 0
+              ? OutlinedButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(
+                    Icons.add,
+                    size: 20,
+                    color: AppTheme.primary,
+                  ),
+                  label: const Text(
+                    'Add',
+                    style: TextStyle(
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    side: const BorderSide(color: AppTheme.outline, width: 1),
+                    backgroundColor: AppTheme.white,
+                  ),
+                )
+              : OutlinedButton.icon(
+                  onPressed: onAdd,
+                  icon: const Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    color: AppTheme.primary,
+                  ),
+                  label: const Text(
+                    'Edit',
+                    style: TextStyle(
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 15,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    side: const BorderSide(color: AppTheme.outline, width: 1),
+                    backgroundColor: AppTheme.white,
+                  ),
+                ),
         ],
       ),
     );

@@ -194,4 +194,39 @@ class ApiService {
     if (res is List) return res.cast<Map<String, dynamic>>();
     throw Exception('Expected List from getClassSubjects endpoint');
   }
+
+  Future<List<Map<String, dynamic>>> addSubjects({
+    required String classId,
+    required List<Map<String, dynamic>> subjects,
+  }) async {
+    final res = await post(
+      '/api/subjects/add',
+      body: {'classId': classId, 'subjects': subjects},
+    );
+    if (res is List) return res.cast<Map<String, dynamic>>();
+    throw Exception('Expected List from addSubjects endpoint');
+  }
+
+  Future<Map<String, dynamic>> deleteSubject({
+    required String subjectId,
+  }) async {
+    final res = await post(
+      '/api/subjects/delete',
+      body: {'subjectId': subjectId},
+    );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from deleteSubject endpoint');
+  }
+
+  Future<Map<String, dynamic>> editSubject({
+    required String subjectId,
+    required String name,
+  }) async {
+    final res = await post(
+      '/api/subjects/edit',
+      body: {'subjectId': subjectId, 'name': name},
+    );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from editSubject endpoint');
+  }
 }
