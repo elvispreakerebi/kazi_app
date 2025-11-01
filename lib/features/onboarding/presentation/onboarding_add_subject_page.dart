@@ -36,25 +36,32 @@ class _OnboardingAddSubjectPageState
   ) async {
     final classId =
         classObj['id']?.toString() ?? classObj['_id']?.toString() ?? '';
-    // Setup subject controllers; pre-fill if editing
-    final subjectsProviderValue = ref.read(subjectsProvider);
-    final currentSubjects = List<Map<String, dynamic>>.from(
-      subjectsProviderValue.subjectsByClassId[classId] ?? [],
+    final className = classObj['name'] ?? '';
+
+    // Always fetch subjects first, so provider state is fresh for this class
+    try {
+      await ref.read(subjectsProvider.notifier).fetchSubjectsForClass(classId);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error fetching subjects: $e')));
+        return;
+      }
+    }
+
+    List<Map<String, dynamic>> subjects = List<Map<String, dynamic>>.from(
+      ref.read(subjectsProvider).subjectsByClassId[classId] ?? [],
     );
-    _subjectCtrls = currentSubjects.isEmpty
+    _subjectCtrls = subjects.isEmpty
         ? [TextEditingController()]
         : List.generate(
-            currentSubjects.length,
-            (i) =>
-                TextEditingController(text: currentSubjects[i]['name'] ?? ""),
+            subjects.length,
+            (i) => TextEditingController(text: subjects[i]['name'] ?? ""),
           );
 
-    final className = classObj['name'] ?? '';
-    if (classId.isNotEmpty &&
-        !ref.read(subjectsProvider).subjectsByClassId.containsKey(classId)) {
-      await ref.read(subjectsProvider.notifier).fetchSubjectsForClass(classId);
-    }
     bool saveLoading = false;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -62,9 +69,10 @@ class _OnboardingAddSubjectPageState
       builder: (sheetContext) {
         return Consumer(
           builder: (context, ref, _) {
+            // Always retrieve current subjects so our subject list is up to date
             final subjState = ref.watch(subjectsProvider);
             final isLoading = subjState.isLoadingByClassId[classId] == true;
-            final subjects = subjState.subjectsByClassId[classId] ?? [];
+            subjects = subjState.subjectsByClassId[classId] ?? [];
             final subCountText = isLoading
                 ? "Loading subjects..."
                 : "${subjects.length} subjects";
@@ -276,7 +284,15 @@ class _OnboardingAddSubjectPageState
                                   .read(subjectsProvider.notifier)
                                   .fetchSubjectsForClass(classId);
                               if (mounted) Navigator.of(sheetContext).pop();
-                            } catch (_) {}
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error saving subjects: $e'),
+                                  ),
+                                );
+                              }
+                            }
                             modalSetState(() {
                               saveLoading = false;
                             });

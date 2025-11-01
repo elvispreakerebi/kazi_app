@@ -6,12 +6,12 @@ class SubjectsState {
   final Map<String, bool> isLoadingByClassId;
   final Map<String, String?> errorByClassId;
   final Set<String> deletingSubjectIds;
-  const SubjectsState({
+  SubjectsState({
     this.subjectsByClassId = const {},
     this.isLoadingByClassId = const {},
     this.errorByClassId = const {},
-    this.deletingSubjectIds = const <String>{},
-  });
+    Set<String>? deletingSubjectIds,
+  }) : deletingSubjectIds = deletingSubjectIds ?? <String>{};
 
   SubjectsState copyWith({
     Map<String, List<Map<String, dynamic>>>? subjectsByClassId,
@@ -29,7 +29,7 @@ class SubjectsState {
 }
 
 class SubjectsNotifier extends StateNotifier<SubjectsState> {
-  SubjectsNotifier() : super(const SubjectsState());
+  SubjectsNotifier() : super(SubjectsState());
 
   Future<void> fetchSubjectsForClass(String classId) async {
     final loadingMap = Map<String, bool>.from(state.isLoadingByClassId);
