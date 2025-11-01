@@ -229,4 +229,10 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from editSubject endpoint');
   }
+
+  Future<Map<String, dynamic>> fetchTeacherOverviewCounts() async {
+    final res = await get('/api/teacher/overview-counts');
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from fetchTeacherOverviewCounts endpoint');
+  }
 }

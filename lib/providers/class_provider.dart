@@ -108,3 +108,55 @@ class ClassNotifier extends StateNotifier<ClassState> {
 final classProvider = StateNotifierProvider<ClassNotifier, ClassState>((ref) {
   return ClassNotifier();
 });
+
+class TeacherOverviewState {
+  final int classesCount;
+  final int subjectsCount;
+  final int lessonPlansCount;
+  final bool isLoading;
+  final String? error;
+  const TeacherOverviewState({
+    this.classesCount = 0,
+    this.subjectsCount = 0,
+    this.lessonPlansCount = 0,
+    this.isLoading = false,
+    this.error,
+  });
+  TeacherOverviewState copyWith({
+    int? classesCount,
+    int? subjectsCount,
+    int? lessonPlansCount,
+    bool? isLoading,
+    String? error,
+  }) => TeacherOverviewState(
+    classesCount: classesCount ?? this.classesCount,
+    subjectsCount: subjectsCount ?? this.subjectsCount,
+    lessonPlansCount: lessonPlansCount ?? this.lessonPlansCount,
+    isLoading: isLoading ?? this.isLoading,
+    error: error ?? this.error,
+  );
+}
+
+class TeacherOverviewNotifier extends StateNotifier<TeacherOverviewState> {
+  TeacherOverviewNotifier() : super(const TeacherOverviewState());
+
+  Future<void> fetchTeacherOverviewCounts() async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final result = await ApiService().fetchTeacherOverviewCounts();
+      state = state.copyWith(
+        classesCount: (result['classes'] ?? 0) as int,
+        subjectsCount: (result['subjects'] ?? 0) as int,
+        lessonPlansCount: (result['lessonPlans'] ?? 0) as int,
+        isLoading: false,
+      );
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+}
+
+final teacherOverviewProvider =
+    StateNotifierProvider<TeacherOverviewNotifier, TeacherOverviewState>((ref) {
+      return TeacherOverviewNotifier();
+    });
