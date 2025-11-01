@@ -25,7 +25,9 @@ class _OnboardingAddSubjectPageState
 
   @override
   void dispose() {
-    for (var c in _subjectCtrls) c.dispose();
+    for (var c in _subjectCtrls) {
+      c.dispose();
+    }
     super.dispose();
   }
 

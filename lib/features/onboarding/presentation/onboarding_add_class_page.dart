@@ -28,8 +28,12 @@ class _OnboardingAddClassPageState
   String? _submitError;
 
   void _syncControllers(List<Map<String, dynamic>> classes) {
-    _nameCtrls.forEach((c) => c.dispose());
-    _gradeCtrls.forEach((c) => c.dispose());
+    for (var c in _nameCtrls) {
+      c.dispose();
+    }
+    for (var c in _gradeCtrls) {
+      c.dispose();
+    }
     _nameCtrls.clear();
     _gradeCtrls.clear();
     _classObjs = [];
@@ -109,8 +113,9 @@ class _OnboardingAddClassPageState
         hasAtLeastOne = true;
       }
       if (local['id'] == null || (local['id'] as String).isEmpty) {
-        if (local['name'].isNotEmpty && local['gradeLevel'].isNotEmpty)
+        if (local['name'].isNotEmpty && local['gradeLevel'].isNotEmpty) {
           toAdd.add(local);
+        }
       } else {
         final prev = currentProviderClasses.firstWhere(
           (c) => (c['id'] ?? c['_id']).toString() == local['id'].toString(),
@@ -205,8 +210,12 @@ class _OnboardingAddClassPageState
 
   @override
   void dispose() {
-    for (final c in _nameCtrls) c.dispose();
-    for (final c in _gradeCtrls) c.dispose();
+    for (final c in _nameCtrls) {
+      c.dispose();
+    }
+    for (final c in _gradeCtrls) {
+      c.dispose();
+    }
     super.dispose();
   }
 
