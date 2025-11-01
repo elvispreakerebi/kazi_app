@@ -188,4 +188,10 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from deleteClass endpoint');
   }
+
+  Future<List<Map<String, dynamic>>> getClassSubjects(String classId) async {
+    final res = await get('/api/subjects/list?classId=$classId');
+    if (res is List) return res.cast<Map<String, dynamic>>();
+    throw Exception('Expected List from getClassSubjects endpoint');
+  }
 }
