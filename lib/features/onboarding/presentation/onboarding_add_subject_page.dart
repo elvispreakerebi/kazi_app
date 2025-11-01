@@ -7,8 +7,6 @@ import '../../../components/app_button.dart';
 import '../../../components/class_card.dart';
 import '../../../providers/class_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../../../shared/services/onboarding_prefs.dart';
-import 'package:flutter/services.dart';
 import '../../../components/app_input.dart';
 import '../../../providers/subjects_provider.dart';
 import '../../../components/app_bottom_sheet.dart';
@@ -435,8 +433,32 @@ class _OnboardingAddSubjectPageState
                 child: AppButton(
                   text: 'continue'.tr(),
                   onPressed: () async {
-                    await OnboardingPrefs.setOnboardingComplete(true);
-                    Navigator.of(context).pushReplacementNamed('/home');
+                    final subjectsState = ref.read(subjectsProvider);
+                    final classes = ref.read(classProvider).classes;
+                    // Check: every class must have at least 1 subject.
+                    bool allClassesHaveSubject = classes.every((c) {
+                      final classId =
+                          c['id']?.toString() ?? c['_id']?.toString() ?? '';
+                      final subjects =
+                          subjectsState.subjectsByClassId[classId] ?? [];
+                      return subjects.isNotEmpty;
+                    });
+                    if (!allClassesHaveSubject) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Please add at least one subject for each class.',
+                            ),
+                          ),
+                        );
+                      }
+                      return;
+                    }
+                    // If check passed, go to scheme of work onboarding
+                    Navigator.of(
+                      context,
+                    ).pushReplacementNamed('/onboarding-add-scheme-of-work');
                   },
                   height: 48,
                   borderRadius: AppTheme.radiusFull,

@@ -5,12 +5,14 @@ class ClassCard extends StatelessWidget {
   final String className;
   final int subjectCount;
   final VoidCallback onAdd;
+  final int? schemeOfWorkCount;
 
   const ClassCard({
     super.key,
     required this.className,
     required this.subjectCount,
     required this.onAdd,
+    this.schemeOfWorkCount,
   });
 
   @override
@@ -38,7 +40,9 @@ class ClassCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$subjectCount subjects',
+                  schemeOfWorkCount != null
+                      ? '$schemeOfWorkCount schemes of work'
+                      : '$subjectCount subjects',
                   style: TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 15,
