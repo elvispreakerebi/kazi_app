@@ -45,56 +45,14 @@ export default defineSchema({
     .index("by_classId", ["classId"])
     .index("by_teacherId", ["teacherId"]),
 
-  curriculum: defineTable({
-    teacherId: v.id("teachers"),
-    createdAt: v.number(),
-    fileId: v.optional(v.id("files")),
-    parsedContent: v.optional(v.any()),
-  }).index("by_teacherId", ["teacherId"]),
-
-  schemeOfWork: defineTable({
-    subjectId: v.id("subjects"),
-    teacherId: v.id("teachers"),
-    storageId: v.id("_storage"), // <-- For Convex file storage
-    // fileId: v.optional(v.id("files")), // (deprecated, keep for legacy only if needed)
-    parsedContent: v.optional(v.any()),
-    uploadedAt: v.number(),
-    currentWeek: v.optional(v.number()),
-    progress: v.optional(v.object({ topicsCovered: v.number(), totalTopics: v.number() })),
-    extractedTopics: v.optional(
-      v.array(
-        v.object({
-          topic: v.string(),
-          week: v.optional(v.number()),
-        })
-      )
-    ),
-  })
-    .index("by_subjectId", ["subjectId"])
-    .index("by_teacherId", ["teacherId"]),
-
   lessonPlans: defineTable({
     subjectId: v.id("subjects"),
     teacherId: v.id("teachers"),
-    schemeId: v.optional(v.id("schemeOfWork")),
     title: v.string(),
     content: v.any(),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
-    status: v.union(
-      v.literal('pending'),
-      v.literal('in_progress'),
-      v.literal('finished')
-    ),
-    lessonDate: v.number(),
   })
     .index("by_subjectId", ["subjectId"])
     .index("by_teacherId", ["teacherId"]),
-
-  files: defineTable({
-    ownerId: v.id("teachers"),
-    path: v.string(),
-    type: v.string(),
-    uploadedAt: v.number(),
-  }).index("by_ownerId", ["ownerId"]),
 });

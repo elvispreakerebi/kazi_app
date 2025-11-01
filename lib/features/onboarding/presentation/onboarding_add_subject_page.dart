@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_input.dart';
 import '../../../providers/subjects_provider.dart';
 import '../../../components/app_bottom_sheet.dart';
+import 'package:kazi_app/features/onboarding/data/onboarding_prefs.dart';
 
 class OnboardingAddSubjectPage extends ConsumerStatefulWidget {
   const OnboardingAddSubjectPage({super.key});
@@ -372,8 +373,8 @@ class _OnboardingAddSubjectPageState
               showLogo: true,
               parentContext: context,
               actions: [LanguagePopover(parentContext: context)],
-              progress: 2 / 4, // step 2 of 4
-              progressText: 'step_2_of_4'.tr(),
+              progress: 2 / 2, // step 2 of 2
+              progressText: 'step_2_of_2'.tr(),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -433,32 +434,10 @@ class _OnboardingAddSubjectPageState
                 child: AppButton(
                   text: 'continue'.tr(),
                   onPressed: () async {
-                    final subjectsState = ref.read(subjectsProvider);
-                    final classes = ref.read(classProvider).classes;
-                    // Check: every class must have at least 1 subject.
-                    bool allClassesHaveSubject = classes.every((c) {
-                      final classId =
-                          c['id']?.toString() ?? c['_id']?.toString() ?? '';
-                      final subjects =
-                          subjectsState.subjectsByClassId[classId] ?? [];
-                      return subjects.isNotEmpty;
-                    });
-                    if (!allClassesHaveSubject) {
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Please add at least one subject for each class.',
-                            ),
-                          ),
-                        );
-                      }
-                      return;
-                    }
-                    // If check passed, go to scheme of work onboarding
+                    await OnboardingPrefs.setOnboardingComplete(true);
                     Navigator.of(
                       context,
-                    ).pushReplacementNamed('/onboarding-add-scheme-of-work');
+                    ).pushReplacementNamed('/onboarding-profile-complete');
                   },
                   height: 48,
                   borderRadius: AppTheme.radiusFull,

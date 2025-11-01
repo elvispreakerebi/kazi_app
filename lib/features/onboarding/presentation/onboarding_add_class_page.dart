@@ -223,8 +223,8 @@ class _OnboardingAddClassPageState
               showLogo: true,
               parentContext: context,
               actions: [LanguagePopover(parentContext: context)],
-              progress: 1 / 4, // step 1 of 4
-              progressText: 'step_1_of_4'.tr(),
+              progress: 1 / 2, // step 1 of 2
+              progressText: 'step_1_of_2'.tr(),
             ),
             if (_submitError != null && _submitError!.isNotEmpty)
               Padding(

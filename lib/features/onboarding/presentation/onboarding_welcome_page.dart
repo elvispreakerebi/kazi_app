@@ -68,7 +68,9 @@ class OnboardingWelcomePage extends StatelessWidget {
                     const SizedBox(height: 8),
                     AppButton(
                       text: 'onboarding_do_later'.tr(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed('/home');
+                      },
                       height: 48,
                       borderRadius: AppTheme.radiusFull,
                       variant: ButtonVariant.secondary,

@@ -8,7 +8,7 @@ import 'package:kazi_app/features/onboarding/onboarding_welcome_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_add_class_route.dart';
 import 'package:kazi_app/features/onboarding/onboarding_add_subject_route.dart';
 import 'package:kazi_app/features/home/home_route.dart';
-import '../features/onboarding/onboarding_add_scheme_of_work_route.dart';
+import '../features/onboarding/onboarding_profile_complete_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -31,8 +31,8 @@ class AppRouter {
         return OnboardingAddSubjectRoute.route(settings);
       case HomeRoute.path:
         return HomeRoute.route(settings);
-      case OnboardingAddSchemeOfWorkRoute.path:
-        return OnboardingAddSchemeOfWorkRoute.route(settings);
+      case OnboardingProfileCompleteRoute.path:
+        return OnboardingProfileCompleteRoute.route(settings);
       default:
         return MaterialPageRoute(
           settings: settings,

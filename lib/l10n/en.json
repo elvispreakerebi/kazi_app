@@ -55,11 +55,10 @@
   "onboarding_add_class_desc": "Start by adding the classes you teach. You can add more later",
   "onboarding_add_another_class": "Add another class",
   "continue": "Continue",
-  "step_1_of_4": "Step 1 of 4",
-  "step_2_of_6": "Step 2 of 6",
+  "step_1_of_2": "Step 1 of 2",
+  "step_2_of_2": "Step 2 of 2",
   "onboarding_add_subject_title": "Add subjects",
   "onboarding_add_subject_desc": "Add one or more subjects for each class. We’ll use this to generate curriculum-aligned lessons.",
-  "step_2_of_4": "Step 2 of 4",
   "onboarding_add_scheme_of_work_title": "Add scheme of work",
   "onboarding_add_scheme_of_work_desc": "For each subject you teach, upload or enter your scheme of work. This helps us align AI-generated lesson plans with your term outline.",
   "step_3_of_4": "Step 3 of 4"
