@@ -12,7 +12,7 @@ class CreateLessonPlanCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 142, // FIX: constrain card Stack height
+        constraints: const BoxConstraints(minHeight: 120),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
@@ -23,52 +23,49 @@ class CreateLessonPlanCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Centered image stack
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Image.asset(
-                  'assets/images/file.png',
-                  height: 80,
-                  fit: BoxFit.contain,
-                  semanticLabel: 'Illustration for lesson plans',
-                ),
+            Center(
+              child: Image.asset(
+                'assets/images/file.png',
+                height: 80,
+                fit: BoxFit.contain,
+                semanticLabel: 'Illustration for lesson plans',
               ),
             ),
-            // Text left bottom
-            Positioned(
-              left: 0,
-              bottom: 8,
-              child: Text(
-                'Create lesson plan',
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppTheme.textDark,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-            // Add (+) button circle right bottom
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: Material(
-                color: AppTheme.white,
-                borderRadius: BorderRadius.circular(9999),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(9999),
-                  onTap: onTap,
-                  child: SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Icon(Icons.add, color: AppTheme.textDark, size: 24),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Create lesson plan',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ),
-              ),
+                Material(
+                  color: AppTheme.white,
+                  borderRadius: BorderRadius.circular(9999),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(9999),
+                    onTap: onTap,
+                    child: const SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Icon(
+                        Icons.add,
+                        color: AppTheme.textDark,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

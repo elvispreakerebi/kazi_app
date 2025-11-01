@@ -5,6 +5,7 @@ import '../../../components/bottom_nav_bar.dart';
 import '../../../components/overview_cards.dart';
 import '../../../components/create_lesson_plan_card.dart';
 import '../../../providers/class_provider.dart';
+import '../../../providers/teacher_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -18,23 +19,18 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(teacherOverviewProvider.notifier).fetchTeacherOverviewCounts();
-    });
+    // Remove teacherOverviewProvider usage. TeacherProvider is auto-init.
   }
 
   @override
   Widget build(BuildContext context) {
-    final overview = ref.watch(teacherOverviewProvider);
-    String classes = (overview.classesCount).toString();
-    String subjects = (overview.subjectsCount).toString();
-    String lessonPlans = (overview.lessonPlansCount).toString();
-    bool hasError = overview.error != null;
-    bool isLoading = overview.isLoading;
-    if (hasError || isLoading) {
-      // On error/empty/loading: always show zeros
-      classes = subjects = lessonPlans = '0';
-    }
+    final teacher = ref.watch(teacherProvider);
+    final isLoading = teacher.isLoading;
+    final hasError = teacher.error != null;
+    final firstName = teacher.firstName ?? '';
+    final classes = teacher.classesCount?.toString() ?? '0';
+    final subjects = teacher.subjectsCount?.toString() ?? '0';
+    final lessonPlans = teacher.lessonPlansCount?.toString() ?? '0';
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -57,12 +53,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Greeting section
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good morning, Julius',
+                          'Good morning, $firstName',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
@@ -113,7 +108,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ],
                     ),
                     const SizedBox(height: 32),
-                    // Create lesson plan card
                     CreateLessonPlanCard(
                       onTap: () {
                         // Navigate or trigger lesson plan creation

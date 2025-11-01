@@ -29,9 +29,11 @@ class OverviewCards extends StatelessWidget {
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: topCards
-                .map((card) => Flexible(child: _OverviewSingleCard(card: card)))
-                .toList(),
+            children: [
+              Flexible(child: _OverviewSingleCard(card: topCards[0])),
+              const SizedBox(width: 8), // 8px gap between cards
+              Flexible(child: _OverviewSingleCard(card: topCards[1])),
+            ],
           ),
         ),
         const SizedBox(height: 8),
