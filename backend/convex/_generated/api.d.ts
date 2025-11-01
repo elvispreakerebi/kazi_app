@@ -61,6 +61,7 @@ import type * as functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHan
 import type * as functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler from "../functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler.js";
+import type * as functions_routeHandlers_schemeOfWorkHandlers_getSchemeFilesByTeacherAndSubjectHandler from "../functions/routeHandlers/schemeOfWorkHandlers/getSchemeFilesByTeacherAndSubjectHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler from "../functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler.js";
 import type * as functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler from "../functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
@@ -72,6 +73,7 @@ import type * as functions_routeHandlers_teachersHandlers_getTeacherDetailsHandl
 import type * as functions_routeHandlers_teachersHandlers_getTeacherOverviewCountsHandler from "../functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler.js";
 import type * as functions_routeHandlers_teachersHandlers_setLanguagePreferenceHandler from "../functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler.js";
 import type * as functions_schemeOfWork_addSchemeOfWork from "../functions/schemeOfWork/addSchemeOfWork.js";
+import type * as functions_schemeOfWork_getSchemeFilesByTeacherAndSubject from "../functions/schemeOfWork/getSchemeFilesByTeacherAndSubject.js";
 import type * as functions_schemeOfWork_getSchemeOfWorkContext from "../functions/schemeOfWork/getSchemeOfWorkContext.js";
 import type * as functions_schemeOfWork_getTopicsBySubject from "../functions/schemeOfWork/getTopicsBySubject.js";
 import type * as functions_schemeOfWork_parseAndExtractTopicsAction from "../functions/schemeOfWork/parseAndExtractTopicsAction.js";
@@ -158,6 +160,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_editLessonPlanContentHandler;
   "functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_generateLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler": typeof functions_routeHandlers_lessonPlansHandlers_regenerateLessonPlanContentHandler;
+  "functions/routeHandlers/schemeOfWorkHandlers/getSchemeFilesByTeacherAndSubjectHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_getSchemeFilesByTeacherAndSubjectHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_getTopicsBySubjectHandler;
   "functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler": typeof functions_routeHandlers_schemeOfWorkHandlers_parseAndExtractTopicsBatchHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
@@ -169,6 +172,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler": typeof functions_routeHandlers_teachersHandlers_getTeacherOverviewCountsHandler;
   "functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler": typeof functions_routeHandlers_teachersHandlers_setLanguagePreferenceHandler;
   "functions/schemeOfWork/addSchemeOfWork": typeof functions_schemeOfWork_addSchemeOfWork;
+  "functions/schemeOfWork/getSchemeFilesByTeacherAndSubject": typeof functions_schemeOfWork_getSchemeFilesByTeacherAndSubject;
   "functions/schemeOfWork/getSchemeOfWorkContext": typeof functions_schemeOfWork_getSchemeOfWorkContext;
   "functions/schemeOfWork/getTopicsBySubject": typeof functions_schemeOfWork_getTopicsBySubject;
   "functions/schemeOfWork/parseAndExtractTopicsAction": typeof functions_schemeOfWork_parseAndExtractTopicsAction;

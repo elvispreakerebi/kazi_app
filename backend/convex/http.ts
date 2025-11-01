@@ -32,6 +32,7 @@ import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHan
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
 import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
 import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
+import { getSchemeFilesByTeacherAndSubjectHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/getSchemeFilesByTeacherAndSubjectHandler";
 
 const http = httpRouter();
 
@@ -206,6 +207,12 @@ http.route({
   path: "/api/schemeOfWork/topics-by-subject",
   method: "POST",
   handler: httpAction(getTopicsBySubjectHandler),
+});
+
+http.route({
+  path: "/api/schemeOfWork/files-by-teacher-subject",
+  method: "POST",
+  handler: httpAction(getSchemeFilesByTeacherAndSubjectHandler),
 });
 
 http.route({
