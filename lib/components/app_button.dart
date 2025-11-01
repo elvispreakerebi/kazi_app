@@ -25,7 +25,7 @@ class AppButton extends StatelessWidget {
     this.variant = ButtonVariant.primary,
     this.icon,
     this.expanded = true,
-    this.height = 48,
+    this.height = 56,
     this.borderRadius = AppTheme.radiusMd,
   });
 

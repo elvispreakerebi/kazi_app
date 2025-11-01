@@ -59,5 +59,8 @@
   "step_2_of_6": "Étape 2 sur 6",
   "onboarding_add_subject_title": "Ajouter des matières",
   "onboarding_add_subject_desc": "Ajoutez une ou plusieurs matières pour chaque classe. Nous utiliserons cela pour générer des leçons alignées sur le programme.",
-  "step_2_of_4": "Étape 2 sur 4"
+  "step_2_of_4": "Étape 2 sur 4",
+  "onboarding_add_scheme_of_work_title": "Ajoutez le programme de travail",
+  "onboarding_add_scheme_of_work_desc": "Pour chaque matière que vous enseignez, importez ou saisissez votre programme de travail. Cela nous aide à aligner les plans de leçons générés par l’IA sur votre programme du trimestre.",
+  "step_3_of_4": "Étape 3 sur 4"
 }

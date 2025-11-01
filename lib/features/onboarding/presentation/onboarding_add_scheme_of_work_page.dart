@@ -66,7 +66,7 @@ class OnboardingAddSchemeOfWorkPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Add scheme of work',
+                      'onboarding_add_scheme_of_work_title'.tr(),
                       style: const TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 20,
@@ -75,7 +75,7 @@ class OnboardingAddSchemeOfWorkPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'For each subject you teach, upload or enter your scheme of work. This helps us align AI-generated lesson plans with your term outline.',
+                      'onboarding_add_scheme_of_work_desc'.tr(),
                       style: const TextStyle(
                         fontSize: 18,
                         color: AppTheme.inputDescription,
@@ -100,7 +100,7 @@ class OnboardingAddSchemeOfWorkPage extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 child: AppButton(
-                  text: 'Continue',
+                  text: 'continue'.tr(),
                   onPressed: () {
                     // TODO: Implement actual navigation
                     ScaffoldMessenger.of(context).showSnackBar(
