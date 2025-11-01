@@ -11,6 +11,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import '../../../shared/services/api_service.dart';
 import '../../../components/error_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
@@ -147,6 +148,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           _formError = null;
           _submitted = false;
         });
+        // Persist JWT if returned (anticipating follow-up verification/auto-login)
+        if (result['token'] != null) {
+          ApiService().setToken(result['token'] as String);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('jwt_token', result['token'] as String);
+        }
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('success_created'.tr())));

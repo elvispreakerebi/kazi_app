@@ -8,6 +8,7 @@ import '../../../components/error_alert.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../../shared/services/api_service.dart';
 import '../../../shared/services/onboarding_prefs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,6 +90,9 @@ class _LoginPageState extends State<LoginPage> {
       setState(() => _isLoading = false);
       if (result['token'] != null) {
         ApiService().setToken(result['token'] as String);
+        // Persist JWT so Home page and splash gets it
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', result['token'] as String);
         String name = (result['name'] ?? '').toString();
         final args =
             ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;

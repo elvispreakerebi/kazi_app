@@ -10,7 +10,7 @@ export const getTeacherOverviewCountsHandler = async (ctx: any, request: Request
     });
   }
   const token = authHeader.split(" ")[1];
-  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction, { token });
+  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
   if (!verify.valid) {
     return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
       status: 401,
@@ -20,7 +20,7 @@ export const getTeacherOverviewCountsHandler = async (ctx: any, request: Request
   const teacherId = verify.teacherId;
 
   // Query for counts
-  const result = await ctx.runQuery(api.functions.teachers.getTeacherOverviewCounts, { teacherId });
+  const result = await ctx.runQuery(api.functions.teachers.getTeacherOverviewCounts.getTeacherOverviewCounts, { teacherId });
   return new Response(JSON.stringify(result), {
     status: 200,
     headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
