@@ -31,6 +31,18 @@ class _HomePageState extends ConsumerState<HomePage> {
     final classes = teacher.classesCount?.toString() ?? '0';
     final subjects = teacher.subjectsCount?.toString() ?? '0';
     final lessonPlans = teacher.lessonPlansCount?.toString() ?? '0';
+
+    String greetingText() {
+      final hour = DateTime.now().hour;
+      if (hour < 12) {
+        return 'Good morning';
+      } else if (hour < 17) {
+        return 'Good afternoon';
+      } else {
+        return 'Good evening';
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -57,7 +69,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Good morning, $firstName',
+                          '${greetingText()}, $firstName',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
