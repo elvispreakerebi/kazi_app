@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_popover_menu.dart';
 import '../../../components/app_button.dart';
@@ -244,12 +245,12 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                 subjState.isLoadingByClassId[widget.classId] == true;
             subjects = subjState.subjectsByClassId[widget.classId] ?? [];
             final subCountText = isLoading
-                ? "Loading subjects..."
-                : "${subjects.length} subjects";
+                ? 'loading_subjects'.tr()
+                : 'subjects_count'.tr(namedArgs: {'count': subjects.length.toString()});
             return StatefulBuilder(
               builder: (innerCtx, modalSetState) {
                 return AppBottomSheet(
-                  title: 'Add subjects to ${widget.className}',
+                  title: 'add_subjects_to_class'.tr(namedArgs: {'className': widget.className}),
                   subtitle: subCountText,
                   body: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,8 +283,8 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                               children: [
                                 Expanded(
                                   child: AppInput(
-                                    label: 'Subject ${idx + 1} name',
-                                    description: 'E.g Mathematics',
+                                    label: 'subject_number_name'.tr(namedArgs: {'number': (idx + 1).toString()}),
+                                    description: 'subject_name_placeholder'.tr(),
                                     controller: _subjectCtrls[idx],
                                     prefixIcon: const Icon(
                                       Icons.menu_book_outlined,
@@ -532,9 +533,9 @@ class _ClassPageState extends ConsumerState<ClassPage> {
   Widget _buildPopoverMenu(BuildContext context) {
     return AppPopoverMenu(
       items: [
-        AppPopoverMenuItem.title('Class actions'),
+        AppPopoverMenuItem.title('class_actions'.tr()),
         AppPopoverMenuItem(
-          label: 'Add subject',
+          label: 'add_subject'.tr(),
           icon: Icons.add,
           onTap: (ctx) {
             Navigator.of(ctx).pop(); // Close popover
@@ -542,7 +543,7 @@ class _ClassPageState extends ConsumerState<ClassPage> {
           },
         ),
         AppPopoverMenuItem(
-          label: 'Edit class',
+          label: 'edit_class'.tr(),
           icon: Icons.edit_outlined,
           onTap: (ctx) {
             Navigator.of(ctx).pop(); // Close popover
@@ -550,7 +551,7 @@ class _ClassPageState extends ConsumerState<ClassPage> {
           },
         ),
         AppPopoverMenuItem(
-          label: 'Delete class',
+          label: 'delete_class'.tr(),
           icon: Icons.delete_outline,
           isDestructive: true,
           onTap: (ctx) {
@@ -598,9 +599,9 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Subjects heading
-                    const Text(
-                      'Subjects',
-                      style: TextStyle(
+                    Text(
+                      'subjects_for_class'.tr(namedArgs: {'className': _currentClassName ?? widget.className}),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.textDark,
@@ -616,7 +617,7 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          'Error loading subjects: $error',
+                          'error_fetching_subjects'.tr().replaceAll('{error}', error ?? ''),
                           style: const TextStyle(color: AppTheme.destructive),
                         ),
                       )
@@ -628,10 +629,10 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                             const SizedBox(height: 32),
                             const EmptyStateIllustration(size: 64),
                             const SizedBox(height: 32),
-                            const Text(
-                              "You've added no subject yet. Click button below to add a subject",
+                            Text(
+                              'no_subjects_for_class'.tr(namedArgs: {'className': _currentClassName ?? widget.className}),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: AppTheme.textDark,
                                 fontWeight: FontWeight.w400,
@@ -640,7 +641,7 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                             ),
                             const SizedBox(height: 32),
                             AppButton(
-                              text: 'Add subject',
+                              text: 'add_subject'.tr(),
                               variant: ButtonVariant.primary,
                               onPressed: () {
                                 _showAddSubjectsSheet(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/lesson_plan_card_item.dart';
@@ -100,7 +101,7 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
           children: [
             AppPageHeader(
               backButton: null, // No back button for root page
-              title: 'Lesson plans',
+              title: 'lesson_plans'.tr(),
               showLogo: false,
               parentContext: context,
               actions: [
@@ -140,9 +141,9 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Lesson plans heading
-                    const Text(
-                      'Lesson plans',
-                      style: TextStyle(
+                    Text(
+                      'lesson_plans'.tr(),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.textDark,
@@ -158,7 +159,7 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          'Error loading lesson plans: ${lessonPlansState.error}',
+                          'error_loading_lesson_plans'.tr().replaceAll('{error}', lessonPlansState.error.toString()),
                           style: const TextStyle(color: AppTheme.destructive),
                         ),
                       )
@@ -172,8 +173,8 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                             const SizedBox(height: 32),
                             Text(
                               hasActiveFilters
-                                  ? "No lesson plans found matching your filters."
-                                  : "You've added no lesson plan yet. Click button below to create a lesson plan",
+                                  ? 'no_lesson_plans_found_filters'.tr()
+                                  : 'no_lesson_plans_yet'.tr(),
                               textAlign: TextAlign.center,
                               style: const TextStyle(
                                 fontSize: 16,
@@ -185,8 +186,8 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                             const SizedBox(height: 32),
                             AppButton(
                               text: hasActiveFilters
-                                  ? 'Clear filters'
-                                  : 'Create lesson plan',
+                                  ? 'clear_filters'.tr()
+                                  : 'create_lesson_plan'.tr(),
                               variant: ButtonVariant.primary,
                               onPressed: () {
                                 if (hasActiveFilters) {

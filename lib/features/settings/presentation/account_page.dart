@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/app_input.dart';
@@ -68,7 +69,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
       if (updates.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No changes to save')),
+            SnackBar(content: Text('no_changes_to_save'.tr())),
           );
         }
         setState(() {
@@ -90,13 +91,13 @@ class _AccountPageState extends ConsumerState<AccountPage> {
         // Clear password field after successful save
         _passwordController.clear();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Account updated successfully')),
+          SnackBar(content: Text('account_updated_success'.tr())),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating account: $e')),
+          SnackBar(content: Text('account_update_error'.tr().replaceAll('{error}', e.toString()))),
         );
       }
     } finally {
@@ -145,7 +146,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           children: [
             AppPageHeader(
               backButton: _backButton(context),
-              title: 'Account',
+              title: 'account'.tr(),
               showLogo: false,
               parentContext: context,
             ),
@@ -155,9 +156,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Below is your account details',
-                      style: TextStyle(
+                    Text(
+                      'below_is_account_details'.tr(),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.textDark,
@@ -173,8 +174,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       child: Column(
                         children: [
                           AppInput(
-                            label: 'Full name',
-                            description: 'E.g Julius Aman',
+                            label: 'full_name'.tr(),
+                            description: 'full_name_placeholder'.tr(),
                             controller: _nameController,
                             prefixIcon: const Icon(
                               Icons.person_outline,
@@ -184,8 +185,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                           ),
                           const SizedBox(height: 20),
                           AppInput(
-                            label: 'Email address',
-                            description: 'E.g a.julius@gmail.com',
+                            label: 'email_address'.tr(),
+                            description: 'email_address_placeholder'.tr(),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             prefixIcon: const Icon(
@@ -196,8 +197,8 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                           ),
                           const SizedBox(height: 20),
                           AppInput(
-                            label: 'Password',
-                            description: 'Enter new password',
+                            label: 'password'.tr(),
+                            description: 'enter_new_password'.tr(),
                             controller: _passwordController,
                             obscureText: !_showPassword,
                             prefixIcon: const Icon(
@@ -209,7 +210,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                               onTap: () =>
                                   setState(() => _showPassword = !_showPassword),
                               child: Text(
-                                _showPassword ? 'Hide password' : 'Show password',
+                                _showPassword ? 'hide_password'.tr() : 'show_password'.tr(),
                                 style: const TextStyle(
                                   fontWeight: FontWeight.normal,
                                   color: AppTheme.inputDescription,
@@ -231,7 +232,7 @@ class _AccountPageState extends ConsumerState<AccountPage> {
               padding: const EdgeInsets.all(16),
               decoration: const BoxDecoration(color: Colors.white),
               child: AppButton(
-                text: _isSaving ? 'Saving...' : 'Save changes',
+                text: _isSaving ? 'saving'.tr() : 'save_changes'.tr(),
                 onPressed: _isSaving ? null : _saveChanges,
                 variant: ButtonVariant.primary,
                 borderRadius: 22,

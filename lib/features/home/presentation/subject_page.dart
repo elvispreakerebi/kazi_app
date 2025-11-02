@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:io' show Platform;
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_popover_menu.dart';
 import '../../../components/app_button.dart';
@@ -258,9 +259,9 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
   Widget _buildPopoverMenu(BuildContext context) {
     return AppPopoverMenu(
       items: [
-        AppPopoverMenuItem.title('Subject actions'),
+        AppPopoverMenuItem.title('subject_actions'.tr()),
         AppPopoverMenuItem(
-          label: 'Create lesson plan',
+          label: 'create_lesson_plan'.tr(),
           icon: Icons.add,
           onTap: (ctx) {
             Navigator.of(ctx).pop(); // Close popover
@@ -268,7 +269,7 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
           },
         ),
         AppPopoverMenuItem(
-          label: 'Edit subject',
+          label: 'edit_subject'.tr(),
           icon: Icons.edit_outlined,
           onTap: (ctx) {
             Navigator.of(ctx).pop(); // Close popover
@@ -276,7 +277,7 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
           },
         ),
         AppPopoverMenuItem(
-          label: 'Delete subject',
+          label: 'delete_subject'.tr(),
           icon: Icons.delete_outline,
           isDestructive: true,
           onTap: (ctx) {
@@ -326,9 +327,9 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Lesson plans heading
-                    const Text(
-                      'Lesson plans',
-                      style: TextStyle(
+                    Text(
+                      'lesson_plans'.tr(),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                         color: AppTheme.textDark,
@@ -344,7 +345,7 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          'Error loading lesson plans: $error',
+                          'error_loading_lesson_plans'.tr().replaceAll('{error}', error ?? ''),
                           style: const TextStyle(color: AppTheme.destructive),
                         ),
                       )
@@ -356,10 +357,10 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                             const SizedBox(height: 32),
                             const EmptyStateIllustration(size: 64),
                             const SizedBox(height: 32),
-                            const Text(
-                              "You've added no lesson plan yet. Click button below to create a lesson plan",
+                            Text(
+                              'no_lesson_plans_for_subject'.tr(),
                               textAlign: TextAlign.center,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: AppTheme.textDark,
                                 fontWeight: FontWeight.w400,
@@ -368,7 +369,7 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                             ),
                             const SizedBox(height: 32),
                             AppButton(
-                              text: 'Create lesson plan',
+                              text: 'create_lesson_plan'.tr(),
                               variant: ButtonVariant.primary,
                               onPressed: () {
                                 _showCreateLessonPlanSheet(context);

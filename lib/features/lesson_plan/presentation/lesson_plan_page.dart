@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'dart:io' show Platform;
 import 'dart:async';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_popover_menu.dart';
 import '../../../components/app_button.dart';
@@ -477,9 +478,9 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   Widget _buildPopoverMenu(BuildContext context) {
     return AppPopoverMenu(
       items: [
-        AppPopoverMenuItem.title('Lesson plan actions'),
+        AppPopoverMenuItem.title('lesson_plan_actions'.tr()),
         AppPopoverMenuItem(
-          label: 'Recreate',
+          label: 'recreate'.tr(),
           icon: Icons.refresh,
           onTap: (ctx) {
             Navigator.of(ctx).pop(); // Close popover
@@ -487,7 +488,7 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
           },
         ),
         AppPopoverMenuItem(
-          label: 'Delete',
+          label: 'delete'.tr(),
           icon: Icons.delete_outline,
           isDestructive: true,
           onTap: (ctx) {
@@ -518,7 +519,7 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
           children: [
             AppPageHeader(
               backButton: _backButton(context),
-              title: _lessonPlanData?['title']?.toString() ?? 'Loading...',
+              title: _lessonPlanData?['title']?.toString() ?? 'loading'.tr(),
               showLogo: false,
               parentContext: context,
               actions: [_buildPopoverMenu(context)],
@@ -529,12 +530,12 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                   : _error != null
                   ? Center(
                       child: Text(
-                        'Error loading lesson plan: $_error',
+                        'error_loading_lesson_plan'.tr().replaceAll('{error}', _error!),
                         style: const TextStyle(color: AppTheme.destructive),
                       ),
                     )
                   : _lessonPlanData == null
-                  ? const Center(child: Text('Lesson plan not found'))
+                  ? Center(child: Text('lesson_plan_not_found'.tr()))
                   : Container(
                       color: Colors.white,
                       child: _isEditMode
@@ -552,10 +553,10 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                                     color: AppTheme.textDark,
                                     height: 1.6,
                                   ),
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     border: InputBorder.none,
-                                    hintText: 'Enter lesson plan content...',
-                                    hintStyle: TextStyle(
+                                    hintText: 'enter_lesson_plan_content'.tr(),
+                                    hintStyle: const TextStyle(
                                       color: AppTheme.inputDescription,
                                     ),
                                   ),
@@ -567,7 +568,7 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                                 padding: const EdgeInsets.all(16),
                                 child: MarkdownBody(
                                   data: _contentController.text.isEmpty
-                                      ? 'No content available'
+                                      ? 'no_content_available'.tr()
                                       : sanitizeMarkdownForRender(
                                           decodeHtmlEntities(
                                             _contentController.text,

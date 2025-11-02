@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'app_theme.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -27,19 +28,19 @@ class BottomNavBar extends StatelessWidget {
         children: [
           _NavItem(
             icon: Icons.home_outlined,
-            label: 'Home',
+            label: 'home'.tr(),
             selected: currentIndex == 0,
             onTap: () => onTap(0),
           ),
           _NavItem(
             icon: Icons.menu_book_outlined,
-            label: 'Lesson plans',
+            label: 'lesson_plans'.tr(),
             selected: currentIndex == 1,
             onTap: () => onTap(1),
           ),
           _NavItem(
             icon: Icons.settings_outlined,
-            label: 'Settings',
+            label: 'settings'.tr(),
             selected: currentIndex == 2,
             onTap: () => onTap(2),
           ),

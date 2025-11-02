@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/settings_list_item.dart';
@@ -9,6 +10,7 @@ import '../../../components/app_bottom_sheet.dart';
 import '../../../components/app_button.dart';
 import '../../../providers/teacher_provider.dart';
 import '../../../shared/services/api_service.dart';
+import '../../../app/app.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
@@ -24,18 +26,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     final teacher = ref.watch(teacherProvider);
     final language = teacher.language ?? 'english';
-    
+
     // Map backend language to display string
     String getLanguageDisplay(String lang) {
       switch (lang.toLowerCase()) {
         case 'english':
-          return 'English';
+          return 'english'.tr();
         case 'french':
-          return 'French';
+          return 'french'.tr();
         case 'kiryanwanda':
-          return 'Kiryanwanda';
+          return 'kiryanwanda'.tr();
         default:
-          return 'English';
+          return 'english'.tr();
       }
     }
 
@@ -46,7 +48,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
           children: [
             AppPageHeader(
               backButton: null, // No back button for root page
-              title: 'Settings',
+              title: 'settings'.tr(),
               showLogo: false,
               parentContext: context,
             ),
@@ -65,10 +67,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         children: [
                           SettingsListItem(
                             icon: Icons.person_outline,
-                            title: 'Account',
-                            description: 'Personal details, password',
+                            title: 'account'.tr(),
+                            description: 'account_description'.tr(),
                             onTap: () {
-                              Navigator.of(context).pushNamed('/settings/account');
+                              Navigator.of(
+                                context,
+                              ).pushNamed('/settings/account');
                             },
                           ),
                           const Divider(
@@ -78,7 +82,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                           SettingsListItem(
                             icon: Icons.language_outlined,
-                            title: 'Language',
+                            title: 'language'.tr(),
                             description: getLanguageDisplay(language),
                             onTap: () {
                               // Show language bottom sheet
@@ -92,7 +96,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           ),
                           SettingsListItem(
                             icon: Icons.logout_outlined,
-                            title: 'Log out',
+                            title: 'log_out'.tr(),
                             description: '',
                             onTap: () {
                               _showLogoutConfirmation(context);
@@ -142,9 +146,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetContext) {
-        return _LanguageBottomSheetContent(
-          currentLanguage: currentLanguage,
-        );
+        return _LanguageBottomSheetContent(currentLanguage: currentLanguage);
       },
     );
   }
@@ -154,21 +156,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Log out'),
-          content: const Text('Are you sure you want to log out?'),
+          title: Text('log_out'.tr()),
+          content: Text('logout_confirmation'.tr()),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text('cancel'.tr()),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
                 _logout();
               },
-              child: const Text(
-                'Log out',
-                style: TextStyle(color: AppTheme.destructive),
+              child: Text(
+                'log_out'.tr(),
+                style: const TextStyle(color: AppTheme.destructive),
               ),
             ),
           ],
@@ -181,22 +183,25 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     try {
       // Clear token
       ApiService().logout();
-      
+
       // Clear SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('jwt_token');
-      
+
       // Navigate to login page
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/login',
-          (route) => false,
-        );
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error logging out: $e')),
+          SnackBar(
+            content: Text(
+              'logout_error'.tr().replaceAll('{error}', e.toString()),
+            ),
+          ),
         );
       }
     }
@@ -224,6 +229,20 @@ class _LanguageBottomSheetContentState
     _selectedLanguage = widget.currentLanguage;
   }
 
+  // Map backend language to locale code
+  String _backendLanguageToLocaleCode(String backendLang) {
+    switch (backendLang.toLowerCase()) {
+      case 'english':
+        return 'en';
+      case 'french':
+        return 'fr';
+      case 'kiryanwanda':
+        return 'rw';
+      default:
+        return 'en';
+    }
+  }
+
   Future<void> _updateLanguage(String language) async {
     if (_isUpdating) return;
 
@@ -249,20 +268,44 @@ class _LanguageBottomSheetContentState
       }
 
       await ApiService().setLanguagePreference(backendLanguage);
-      
+
       // Refresh teacher data
       await ref.read(teacherProvider.notifier).fetchTeacherDetailsAndCounts();
+
+      // Update locale provider and EasyLocalization context
+      final localeCode = _backendLanguageToLocaleCode(backendLanguage);
+      final locale = Locale(localeCode);
+
+      if (ref.read(localeProvider).languageCode != localeCode) {
+        await context.setLocale(locale);
+        ref.read(localeProvider.notifier).state = locale;
+
+        // Force rebuild of all pages by navigating to current route
+        final routeName = ModalRoute.of(context)?.settings.name ?? '/settings';
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (Navigator.canPop(context)) {
+            Navigator.of(context).pushReplacementNamed(routeName);
+          } else {
+            // Fallback: force rebuild
+            (context as Element).markNeedsBuild();
+          }
+        });
+      }
 
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Language updated successfully')),
+          SnackBar(content: Text('language_updated_success'.tr())),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating language: $e')),
+          SnackBar(
+            content: Text(
+              'language_update_error'.tr().replaceAll('{error}', e.toString()),
+            ),
+          ),
         );
       }
     } finally {
@@ -277,13 +320,13 @@ class _LanguageBottomSheetContentState
   @override
   Widget build(BuildContext context) {
     final languages = [
-      {'code': 'english', 'label': 'English'},
-      {'code': 'french', 'label': 'French'},
-      {'code': 'kiryanwanda', 'label': 'Kiryanwanda'},
+      {'code': 'english', 'label': 'english'.tr()},
+      {'code': 'french', 'label': 'french'.tr()},
+      {'code': 'kiryanwanda', 'label': 'kiryanwanda'.tr()},
     ];
 
     return AppBottomSheet(
-      title: 'Language',
+      title: 'language'.tr(),
       body: Column(
         children: [
           ...languages.map((lang) {
@@ -344,7 +387,7 @@ class _LanguageBottomSheetContentState
         children: [
           Expanded(
             child: AppButton(
-              text: 'Close',
+              text: 'close'.tr(),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -357,8 +400,9 @@ class _LanguageBottomSheetContentState
           const SizedBox(width: 16),
           Expanded(
             child: AppButton(
-              text: _isUpdating ? 'Updating...' : 'Save',
-              onPressed: _isUpdating || _selectedLanguage == widget.currentLanguage
+              text: _isUpdating ? 'updating'.tr() : 'save'.tr(),
+              onPressed:
+                  _isUpdating || _selectedLanguage == widget.currentLanguage
                   ? null
                   : () => _updateLanguage(_selectedLanguage!),
               variant: ButtonVariant.primary,

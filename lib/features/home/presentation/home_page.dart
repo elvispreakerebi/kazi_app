@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/bottom_nav_bar.dart';
 import '../../../components/overview_cards.dart';
@@ -71,11 +72,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     String greetingText() {
       final hour = DateTime.now().hour;
       if (hour < 12) {
-        return 'Good morning';
+        return 'good_morning'.tr();
       } else if (hour < 17) {
-        return 'Good afternoon';
+        return 'good_afternoon'.tr();
       } else {
-        return 'Good evening';
+        return 'good_evening'.tr();
       }
     }
 
@@ -114,7 +115,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'Quick overview for today',
+                          'quick_overview_today'.tr(),
                           style: TextStyle(
                             fontSize: 16,
                             color: AppTheme.textDark.withOpacity(0.7),
@@ -127,18 +128,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                           topCards: [
                             OverviewCardData(
                               icon: Icons.school_outlined,
-                              title: 'Classes',
+                              title: 'classes'.tr(),
                               value: classes,
                             ),
                             OverviewCardData(
                               icon: Icons.menu_book_outlined,
-                              title: 'Subjects',
+                              title: 'subjects'.tr(),
                               value: subjects,
                             ),
                           ],
                           fullWidthCard: OverviewCardData(
                             icon: Icons.menu_book,
-                            title: 'Lesson plans',
+                            title: 'lesson_plans'.tr(),
                             value: lessonPlans,
                           ),
                           onClassesTap: () => _showClassesBottomSheet(context),
@@ -152,7 +153,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           Padding(
                             padding: const EdgeInsets.only(top: 12),
                             child: Text(
-                              'Error loading overview. Showing 0s.',
+                              'error_loading_overview'.tr(),
                               style: const TextStyle(
                                 color: Colors.red,
                                 fontSize: 14,
