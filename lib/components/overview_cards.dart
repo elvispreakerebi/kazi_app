@@ -15,10 +15,14 @@ class OverviewCardData {
 class OverviewCards extends StatelessWidget {
   final List<OverviewCardData> topCards;
   final OverviewCardData fullWidthCard;
+  final VoidCallback? onClassesTap;
+  final VoidCallback? onSubjectsTap;
   const OverviewCards({
     super.key,
     required this.topCards,
     required this.fullWidthCard,
+    this.onClassesTap,
+    this.onSubjectsTap,
   });
 
   @override
@@ -30,9 +34,19 @@ class OverviewCards extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Flexible(child: _OverviewSingleCard(card: topCards[0])),
+              Flexible(
+                child: _OverviewSingleCard(
+                  card: topCards[0],
+                  onTap: onClassesTap,
+                ),
+              ),
               const SizedBox(width: 8), // 8px gap between cards
-              Flexible(child: _OverviewSingleCard(card: topCards[1])),
+              Flexible(
+                child: _OverviewSingleCard(
+                  card: topCards[1],
+                  onTap: onSubjectsTap,
+                ),
+              ),
             ],
           ),
         ),
@@ -46,44 +60,52 @@ class OverviewCards extends StatelessWidget {
 
 class _OverviewSingleCard extends StatelessWidget {
   final OverviewCardData card;
-  const _OverviewSingleCard({required this.card});
+  final VoidCallback? onTap;
+  const _OverviewSingleCard({required this.card, this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppTheme.addClassContainerBg,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(22),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 0),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppTheme.addClassContainerBg,
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(card.icon, size: 22, color: AppTheme.inputDescription),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  card.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppTheme.textDark,
+              Row(
+                children: [
+                  Icon(card.icon, size: 22, color: AppTheme.inputDescription),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      card.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: AppTheme.textDark,
+                      ),
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                card.value,
+                style: const TextStyle(
+                  fontSize: 30,
+                  color: AppTheme.textDark,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            card.value,
-            style: const TextStyle(
-              fontSize: 30,
-              color: AppTheme.textDark,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

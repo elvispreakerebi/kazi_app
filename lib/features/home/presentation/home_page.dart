@@ -4,6 +4,7 @@ import '../../../components/app_theme.dart';
 import '../../../components/bottom_nav_bar.dart';
 import '../../../components/overview_cards.dart';
 import '../../../components/create_lesson_plan_card.dart';
+import '../../../components/classes_bottom_sheet.dart';
 import '../../../providers/class_provider.dart';
 import '../../../providers/teacher_provider.dart';
 
@@ -19,7 +20,19 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Remove teacherOverviewProvider usage. TeacherProvider is auto-init.
+    // Fetch classes when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(classProvider.notifier).fetchClasses();
+    });
+  }
+
+  void _showClassesBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const ClassesBottomSheet(),
+    );
   }
 
   @override
@@ -105,6 +118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             title: 'Lesson plans',
                             value: lessonPlans,
                           ),
+                          onClassesTap: () => _showClassesBottomSheet(context),
                         ),
                         if (hasError)
                           Padding(

@@ -1,4 +1,5 @@
 import { api } from "../../../_generated/api";
+import { Id } from "../../../_generated/dataModel";
 
 export const getClassSubjectsCountHandler = async (ctx: any, request: Request) => {
   // Auth
@@ -10,8 +11,14 @@ export const getClassSubjectsCountHandler = async (ctx: any, request: Request) =
     });
   }
   const token = authHeader.split(" ")[1];
-  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction, { token });
+  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
   if (!verify.valid) {
+    return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
+      status: 401,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+    });
+  }
+  if (!verify.teacherId) {
     return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
       status: 401,
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
@@ -35,9 +42,19 @@ export const getClassSubjectsCountHandler = async (ctx: any, request: Request) =
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
     });
   }
-  const result = await ctx.runQuery(api.functions.classes.getClassSubjectsCount, { classId, teacherId });
-  return new Response(JSON.stringify(result), {
-    status: 200,
-    headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
-  });
+  try {
+    const result = await ctx.runQuery(api.functions.classes.getClassSubjectsCount.getClassSubjectsCount, { 
+      classId: classId as Id<"classes">, 
+      teacherId: teacherId as Id<"teachers"> 
+    });
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : String(err) }), {
+      status: 422,
+      headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+    });
+  }
 };

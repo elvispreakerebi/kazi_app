@@ -235,4 +235,15 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from fetchTeacherOverviewCounts endpoint');
   }
+
+  Future<Map<String, dynamic>> getClassSubjectsCount(String classId) async {
+    try {
+      final res = await get('/api/classes/subjects-count?classId=$classId');
+      if (res is Map<String, dynamic>) return res;
+      throw Exception('Expected Map from getClassSubjectsCount endpoint, got: ${res.runtimeType}');
+    } catch (e) {
+      // Re-throw with more context
+      throw Exception('Failed to fetch subject count for class $classId: $e');
+    }
+  }
 }

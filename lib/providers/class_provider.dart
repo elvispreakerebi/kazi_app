@@ -30,7 +30,27 @@ class ClassNotifier extends StateNotifier<ClassState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final classes = await ApiService().getClasses();
-      state = state.copyWith(classes: classes, isLoading: false);
+      // Fetch subject counts for each class
+      final classesWithCounts = await Future.wait(
+        classes.map((cls) async {
+          final classId = cls['id']?.toString() ?? cls['_id']?.toString() ?? '';
+          if (classId.isEmpty) {
+            cls['subjectCount'] = 0;
+            return cls;
+          }
+          try {
+            final countResult = await ApiService().getClassSubjectsCount(classId);
+            final count = countResult['count'];
+            cls['subjectCount'] = count is int ? count : (count is num ? count.toInt() : 0);
+          } catch (e) {
+            // Log error for debugging but don't fail the entire fetch
+            debugPrint('Error fetching subject count for class $classId: $e');
+            cls['subjectCount'] = 0;
+          }
+          return cls;
+        }),
+      );
+      state = state.copyWith(classes: classesWithCounts, isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
