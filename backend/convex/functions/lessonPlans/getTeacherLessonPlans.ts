@@ -17,6 +17,8 @@ export const getTeacherLessonPlans = query({
       createdAt: v.number(),
       updatedAt: v.optional(v.number()),
       subjectName: v.string(),
+      classId: v.id("classes"),
+      className: v.string(),
     })
   ),
   handler: async (ctx, args) => {
@@ -26,13 +28,26 @@ export const getTeacherLessonPlans = query({
       .withIndex("by_teacherId", q => q.eq("teacherId", args.teacherId))
       .collect();
     
-    // Fetch subject information for each lesson plan
+    // Fetch subject and class information for each lesson plan
     const lessonPlansWithSubjects = await Promise.all(
       lessonPlans.map(async (lp) => {
         const subject = await ctx.db.get(lp.subjectId);
+        if (!subject) {
+          return {
+            ...lp,
+            subjectName: '',
+            classId: '' as any,
+            className: '',
+          };
+        }
+        
+        const classDoc = await ctx.db.get(subject.classId);
+        
         return {
           ...lp,
-          subjectName: subject?.name ?? '',
+          subjectName: subject.name ?? '',
+          classId: subject.classId,
+          className: classDoc?.name ?? classDoc?.gradeLevel ?? '',
         };
       })
     );

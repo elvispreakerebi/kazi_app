@@ -6,7 +6,6 @@ import '../../../components/overview_cards.dart';
 import '../../../components/create_lesson_plan_card.dart';
 import '../../../components/classes_bottom_sheet.dart';
 import '../../../components/subjects_bottom_sheet.dart';
-import '../../../components/lesson_plans_bottom_sheet.dart';
 import '../../../providers/class_provider.dart';
 import '../../../providers/teacher_provider.dart';
 
@@ -55,21 +54,6 @@ class _HomePageState extends ConsumerState<HomePage> {
         minChildSize: 0.3,
         maxChildSize: 0.92,
         builder: (context, scrollController) => const SubjectsBottomSheet(),
-      ),
-    );
-  }
-
-  void _showLessonPlansBottomSheet(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 520 / screenHeight,
-        minChildSize: 0.3,
-        maxChildSize: 0.92,
-        builder: (context, scrollController) => const LessonPlansBottomSheet(),
       ),
     );
   }
@@ -160,8 +144,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                           onClassesTap: () => _showClassesBottomSheet(context),
                           onSubjectsTap: () =>
                               _showSubjectsBottomSheet(context),
-                          onLessonPlansTap: () =>
-                              _showLessonPlansBottomSheet(context),
+                          onLessonPlansTap: () {
+                            Navigator.of(context).pushNamed('/lesson-plans');
+                          },
                         ),
                         if (hasError)
                           Padding(
@@ -195,7 +180,17 @@ class _HomePageState extends ConsumerState<HomePage> {
           currentIndex: _navIndex,
           onTap: (idx) {
             setState(() => _navIndex = idx);
-            // Implement navigation
+            if (idx == 0) {
+              // Already on home page
+              Navigator.of(context).popUntil(
+                (route) => route.isFirst || route.settings.name == '/home',
+              );
+            } else if (idx == 1) {
+              // Navigate to lesson plans page
+              Navigator.of(context).pushReplacementNamed('/lesson-plans');
+            } else if (idx == 2) {
+              // TODO: Navigate to settings page
+            }
           },
         ),
       ),

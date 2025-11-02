@@ -155,10 +155,26 @@ class _NewLessonPlanPageState extends ConsumerState<NewLessonPlanPage> {
   Widget _backButton(BuildContext context) {
     final isIOS =
         Theme.of(context).platform == TargetPlatform.iOS || Platform.isIOS;
+    
+    // Check if we came from lesson plans page
+    final routeArgs =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final fromLessonPlansPage = routeArgs?['fromLessonPlansPage'] == true;
+    
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => Navigator.of(context).pop(),
+        onTap: () {
+          if (fromLessonPlansPage) {
+            // If coming from lesson plans page, go back to lesson plans page
+            Navigator.of(context).popUntil(
+              (route) => route.isFirst || route.settings.name == '/lesson-plans',
+            );
+          } else {
+            // Otherwise, just pop normally
+            Navigator.of(context).pop();
+          }
+        },
         borderRadius: BorderRadius.circular(100),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
@@ -227,14 +243,27 @@ class _NewLessonPlanPageState extends ConsumerState<NewLessonPlanPage> {
                       ),
                       child: Column(
                         children: [
-                          AppInput(
-                            label: 'Topic',
-                            description: 'The topic for this lesson',
-                            controller: _topicController,
-                            prefixIcon: const Icon(
-                              Icons.menu_book_outlined,
-                              color: AppTheme.inputDescription,
-                              size: 16,
+                          GestureDetector(
+                            onTap: _showSelectClassSheet,
+                            child: AbsorbPointer(
+                              child: AppInput(
+                                label: 'Class',
+                                description: displayClassName,
+                                controller: TextEditingController(
+                                  text: _selectedClassName ?? classNameFromArgs ?? '',
+                                ),
+                                readOnly: true,
+                                prefixIcon: const Icon(
+                                  Icons.school_outlined,
+                                  color: AppTheme.inputDescription,
+                                  size: 16,
+                                ),
+                                suffixIcon: const Icon(
+                                  Icons.keyboard_arrow_down,
+                                  color: AppTheme.inputDescription,
+                                  size: 20,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -262,27 +291,14 @@ class _NewLessonPlanPageState extends ConsumerState<NewLessonPlanPage> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          GestureDetector(
-                            onTap: _showSelectClassSheet,
-                            child: AbsorbPointer(
-                              child: AppInput(
-                                label: 'Class',
-                                description: displayClassName,
-                                controller: TextEditingController(
-                                  text: _selectedClassName ?? classNameFromArgs ?? '',
-                                ),
-                                readOnly: true,
-                                prefixIcon: const Icon(
-                                  Icons.school_outlined,
-                                  color: AppTheme.inputDescription,
-                                  size: 16,
-                                ),
-                                suffixIcon: const Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: AppTheme.inputDescription,
-                                  size: 20,
-                                ),
-                              ),
+                          AppInput(
+                            label: 'Topic',
+                            description: 'The topic for this lesson',
+                            controller: _topicController,
+                            prefixIcon: const Icon(
+                              Icons.menu_book_outlined,
+                              color: AppTheme.inputDescription,
+                              size: 16,
                             ),
                           ),
                           const SizedBox(height: 20),

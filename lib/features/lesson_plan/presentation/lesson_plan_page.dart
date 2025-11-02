@@ -427,11 +427,12 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
     final isIOS =
         Theme.of(context).platform == TargetPlatform.iOS || Platform.isIOS;
 
-    // Check if we came from new lesson plan page or home page
+    // Check if we came from new lesson plan page, home page, or lesson plans page
     final routeArgs =
         ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final fromNewLessonPlan = routeArgs?['fromNewLessonPlan'] == true;
     final fromHome = routeArgs?['fromHome'] == true;
+    final fromLessonPlansPage = routeArgs?['fromLessonPlansPage'] == true;
 
     return Material(
       color: Colors.transparent,
@@ -442,6 +443,11 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
             Navigator.of(context).popUntil(
               (route) => route.isFirst || route.settings.name == '/home',
             );
+          } else if (fromLessonPlansPage) {
+            // If coming from lesson plans page, go back to lesson plans page
+            Navigator.of(
+              context,
+            ).popUntil((route) => route.settings.name == '/lesson-plans');
           } else {
             // Otherwise, just pop normally
             Navigator.of(context).pop();

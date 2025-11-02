@@ -22,59 +22,69 @@ class ClassListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final content = Row(
+      children: [
+        // Graduation cap icon
+        Icon(
+          Icons.school_outlined,
+          size: 16,
+          color: AppTheme.inputDescription,
+        ),
+        const SizedBox(width: 8),
+        // Class info (name and subject count)
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                className,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.textDark,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _getSubjectText(subjectCount),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.textDark,
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Right arrow icon (only show if onTap is provided)
+        if (onTap != null)
+          Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            child: Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: AppTheme.textDark,
+            ),
+          ),
+      ],
+    );
+
+    if (onTap == null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: content,
+      );
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              // Graduation cap icon
-              Icon(
-                Icons.school_outlined,
-                size: 16,
-                color: AppTheme.inputDescription,
-              ),
-              const SizedBox(width: 8),
-              // Class info (name and subject count)
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      className,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textDark,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _getSubjectText(subjectCount),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.textDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Right arrow icon
-              Container(
-                width: 48,
-                height: 48,
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: AppTheme.textDark,
-                ),
-              ),
-            ],
-          ),
+          child: content,
         ),
       ),
     );

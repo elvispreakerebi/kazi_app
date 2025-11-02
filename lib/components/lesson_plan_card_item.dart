@@ -3,11 +3,13 @@ import 'app_theme.dart';
 
 class LessonPlanCardItem extends StatelessWidget {
   final String title;
+  final String? subjectName; // Optional subject name
   final VoidCallback? onTap;
 
   const LessonPlanCardItem({
     super.key,
     required this.title,
+    this.subjectName,
     this.onTap,
   });
 
@@ -33,17 +35,35 @@ class LessonPlanCardItem extends StatelessWidget {
                 color: AppTheme.inputDescription,
               ),
               const SizedBox(width: 8),
-              // Lesson plan title
+              // Lesson plan info (title and optional subject name)
               Expanded(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.textDark,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.textDark,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    if (subjectName != null && subjectName!.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        subjectName!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppTheme.textDark,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ],
                 ),
               ),
               // Right arrow icon
