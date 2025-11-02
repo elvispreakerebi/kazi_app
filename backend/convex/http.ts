@@ -25,6 +25,9 @@ import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getCl
 import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
 import { getTeacherLessonPlansHandler } from "./functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler";
 import { createLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/createLessonPlanHandler";
+import { getLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler";
+import { editLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler";
+import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
 
 const http = httpRouter();
 
@@ -181,6 +184,24 @@ http.route({
   path: "/api/lessonPlans/create",
   method: "POST",
   handler: httpAction(createLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/get",
+  method: "GET",
+  handler: httpAction(getLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/edit",
+  method: "POST",
+  handler: httpAction(editLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/delete",
+  method: "POST",
+  handler: httpAction(deleteLessonPlanHandler),
 });
 
 export default http;

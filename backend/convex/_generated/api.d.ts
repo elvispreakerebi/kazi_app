@@ -30,7 +30,10 @@ import type * as functions_classes_getClassSubjectsCount from "../functions/clas
 import type * as functions_classes_getClasses from "../functions/classes/getClasses.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
 import type * as functions_lessonPlans_createLessonPlan from "../functions/lessonPlans/createLessonPlan.js";
+import type * as functions_lessonPlans_deleteLessonPlan from "../functions/lessonPlans/deleteLessonPlan.js";
+import type * as functions_lessonPlans_editLessonPlan from "../functions/lessonPlans/editLessonPlan.js";
 import type * as functions_lessonPlans_generateLessonPlanAction from "../functions/lessonPlans/generateLessonPlanAction.js";
+import type * as functions_lessonPlans_getLessonPlan from "../functions/lessonPlans/getLessonPlan.js";
 import type * as functions_lessonPlans_getTeacherLessonPlans from "../functions/lessonPlans/getTeacherLessonPlans.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
@@ -48,6 +51,9 @@ import type * as functions_routeHandlers_classesHandlers_getClassSubjectsCountHa
 import type * as functions_routeHandlers_classesHandlers_getClassesHandler from "../functions/routeHandlers/classesHandlers/getClassesHandler.js";
 import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandler from "../functions/routeHandlers/classesHandlers/getTeacherClassesHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_createLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/createLessonPlanHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_editLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_getLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler from "../functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_deleteSubjectHandler from "../functions/routeHandlers/subjectsHandlers/deleteSubjectHandler.js";
@@ -110,7 +116,10 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/getClasses": typeof functions_classes_getClasses;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
   "functions/lessonPlans/createLessonPlan": typeof functions_lessonPlans_createLessonPlan;
+  "functions/lessonPlans/deleteLessonPlan": typeof functions_lessonPlans_deleteLessonPlan;
+  "functions/lessonPlans/editLessonPlan": typeof functions_lessonPlans_editLessonPlan;
   "functions/lessonPlans/generateLessonPlanAction": typeof functions_lessonPlans_generateLessonPlanAction;
+  "functions/lessonPlans/getLessonPlan": typeof functions_lessonPlans_getLessonPlan;
   "functions/lessonPlans/getTeacherLessonPlans": typeof functions_lessonPlans_getTeacherLessonPlans;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
@@ -128,6 +137,9 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/classesHandlers/getClassesHandler": typeof functions_routeHandlers_classesHandlers_getClassesHandler;
   "functions/routeHandlers/classesHandlers/getTeacherClassesHandler": typeof functions_routeHandlers_classesHandlers_getTeacherClassesHandler;
   "functions/routeHandlers/lessonPlansHandlers/createLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_createLessonPlanHandler;
+  "functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler;
+  "functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_editLessonPlanHandler;
+  "functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_getLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler": typeof functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
   "functions/routeHandlers/subjectsHandlers/deleteSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_deleteSubjectHandler;
