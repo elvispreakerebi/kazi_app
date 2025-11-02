@@ -112,7 +112,7 @@ class _ClassesBottomSheetState extends ConsumerState<ClassesBottomSheet> {
               variant: ButtonVariant.primary,
               onPressed: () {
                 Navigator.of(context).pop();
-                Navigator.of(context).pushNamed('/onboarding-add-class');
+                Navigator.of(context).pushNamed('/new-class');
               },
               height: 48,
               borderRadius: AppTheme.radiusFull,

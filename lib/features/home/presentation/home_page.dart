@@ -24,6 +24,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     // Fetch classes when page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(classProvider.notifier).fetchClasses();
+      ref.read(teacherProvider.notifier).fetchTeacherDetailsAndCounts();
     });
   }
 

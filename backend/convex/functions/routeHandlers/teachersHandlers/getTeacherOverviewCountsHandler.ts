@@ -11,7 +11,7 @@ export const getTeacherOverviewCountsHandler = async (ctx: any, request: Request
   }
   const token = authHeader.split(" ")[1];
   const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
-  if (!verify.valid) {
+  if (!verify.valid || !verify.teacherId) {
     return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
       status: 401,
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
