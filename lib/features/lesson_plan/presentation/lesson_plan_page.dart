@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'dart:io' show Platform;
+import 'dart:async';
 import '../../../components/app_page_header.dart';
 import '../../../components/app_popover_menu.dart';
 import '../../../components/app_button.dart';
@@ -8,14 +10,13 @@ import '../../../components/app_theme.dart';
 import '../../../components/app_bottom_sheet.dart';
 import '../../../shared/services/api_service.dart';
 import '../../../providers/teacher_provider.dart';
+import '../../../core/utils/html_decoder.dart';
+import '../../../core/utils/markdown_sanitizer.dart';
 
 class LessonPlanPage extends ConsumerStatefulWidget {
   final String lessonPlanId;
 
-  const LessonPlanPage({
-    super.key,
-    required this.lessonPlanId,
-  });
+  const LessonPlanPage({super.key, required this.lessonPlanId});
 
   @override
   ConsumerState<LessonPlanPage> createState() => _LessonPlanPageState();
@@ -28,17 +29,45 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   bool _isEditMode = false;
   late TextEditingController _contentController;
   bool _isSaving = false;
+  bool _isTyping = false;
+  Timer? _typingTimer;
 
   @override
   void initState() {
     super.initState();
     _contentController = TextEditingController();
+    _contentController.addListener(_onContentChanged);
     _fetchLessonPlan();
+  }
+
+  void _onContentChanged() {
+    if (_isEditMode) {
+      // Cancel existing timer
+      _typingTimer?.cancel();
+
+      // Show typing indicator
+      if (!_isTyping) {
+        setState(() {
+          _isTyping = true;
+        });
+      }
+
+      // Reset typing indicator after 2 seconds of no typing
+      _typingTimer = Timer(const Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            _isTyping = false;
+          });
+        }
+      });
+    }
   }
 
   @override
   void dispose() {
+    _contentController.removeListener(_onContentChanged);
     _contentController.dispose();
+    _typingTimer?.cancel();
     super.dispose();
   }
 
@@ -66,27 +95,30 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   Future<void> _toggleEditMode() async {
     if (_isEditMode) {
       // Save changes
+      _typingTimer?.cancel();
       await _saveChanges();
     } else {
       // Enter edit mode
       setState(() {
         _isEditMode = true;
+        _isTyping = false;
       });
     }
   }
 
   Future<void> _saveChanges() async {
     final content = _contentController.text.trim();
-    
+
     if (content.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Content cannot be empty')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Content cannot be empty')));
       return;
     }
 
     setState(() {
       _isSaving = true;
+      _isTyping = false;
     });
 
     try {
@@ -94,7 +126,7 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
         lessonPlanId: widget.lessonPlanId,
         content: content,
       );
-      
+
       setState(() {
         _isEditMode = false;
         _isSaving = false;
@@ -110,9 +142,9 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
       setState(() {
         _isSaving = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating lesson plan: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating lesson plan: $e')));
     }
   }
 
@@ -141,7 +173,9 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                     children: [
                       const TextSpan(text: "You're about to delete "),
                       TextSpan(
-                        text: _lessonPlanData?['title']?.toString() ?? 'this lesson plan',
+                        text:
+                            _lessonPlanData?['title']?.toString() ??
+                            'this lesson plan',
                         style: const TextStyle(fontWeight: FontWeight.w600),
                       ),
                       const TextSpan(
@@ -178,18 +212,24 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                         });
 
                         try {
-                          await ApiService().deleteLessonPlan(widget.lessonPlanId);
+                          await ApiService().deleteLessonPlan(
+                            widget.lessonPlanId,
+                          );
                           // Refresh teacher overview counts
                           await ref
                               .read(teacherProvider.notifier)
                               .fetchTeacherDetailsAndCounts();
-                          
+
                           if (mounted) {
                             Navigator.of(sheetContext).pop();
-                            Navigator.of(context).pop(); // Go back to previous page
+                            Navigator.of(
+                              context,
+                            ).pop(); // Go back to previous page
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Lesson plan deleted successfully'),
+                                content: Text(
+                                  'Lesson plan deleted successfully',
+                                ),
                               ),
                             );
                           }
@@ -225,9 +265,7 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   void _showRecreateLessonPlanSheet(BuildContext context) {
     // TODO: Implement recreate functionality
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Recreate functionality coming soon'),
-      ),
+      const SnackBar(content: Text('Recreate functionality coming soon')),
     );
   }
 
@@ -294,144 +332,6 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
     );
   }
 
-  Widget _buildMetadataRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppTheme.textDark,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: AppTheme.textDark,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildObjectivesSection() {
-    final objective = _lessonPlanData?['objective']?.toString() ?? '';
-    
-    if (objective.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    // Parse objectives if they're separated by newlines or bullets
-    final objectives = objective
-        .split('\n')
-        .map((o) => o.trim())
-        .where((o) => o.isNotEmpty)
-        .toList();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 24),
-        Row(
-          children: [
-            const Icon(
-              Icons.flag_outlined,
-              size: 18,
-              color: AppTheme.inputDescription,
-            ),
-            const SizedBox(width: 8),
-            const Text(
-              'Lesson Objectives',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppTheme.textDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'By the end of the lesson, learners should be able to:',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppTheme.textDark,
-            height: 1.5,
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...objectives.map((obj) => Padding(
-              padding: const EdgeInsets.only(left: 16, bottom: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '• ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppTheme.textDark,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      obj.replaceAll(RegExp(r'^[•\-\*]\s*'), ''),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: AppTheme.textDark,
-                        height: 1.5,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppTheme.secondary,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.lightbulb_outline,
-                size: 18,
-                color: AppTheme.inputDescription,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'AI Tip: "Would you like me to simplify objectives for lower-level learners?"',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -450,128 +350,132 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _error != null
-                      ? Center(
-                          child: Text(
-                            'Error loading lesson plan: $_error',
-                            style: const TextStyle(color: AppTheme.destructive),
-                          ),
-                        )
-                      : _lessonPlanData == null
-                          ? const Center(child: Text('Lesson plan not found'))
-                          : SingleChildScrollView(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Metadata section
-                                  Container(
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: AppTheme.addClassContainerBg,
-                                      borderRadius: BorderRadius.circular(22),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        _buildMetadataRow(
-                                          'Subject',
-                                          _lessonPlanData?['subjectName']
-                                                  ?.toString() ??
-                                              '',
-                                        ),
-                                        _buildMetadataRow(
-                                          'Class',
-                                          _lessonPlanData?['className']
-                                                  ?.toString() ??
-                                              '',
-                                        ),
-                                        _buildMetadataRow(
-                                          'Topic',
-                                          _lessonPlanData?['title']?.toString() ?? '',
-                                        ),
-                                      ],
+                  ? Center(
+                      child: Text(
+                        'Error loading lesson plan: $_error',
+                        style: const TextStyle(color: AppTheme.destructive),
+                      ),
+                    )
+                  : _lessonPlanData == null
+                  ? const Center(child: Text('Lesson plan not found'))
+                  : Container(
+                      color: Colors.white,
+                      child: _isEditMode
+                          ? SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: TextField(
+                                  controller: _contentController,
+                                  maxLines: null,
+                                  minLines: 1,
+                                  autofocus: false,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: AppTheme.textDark,
+                                    height: 1.6,
+                                  ),
+                                  decoration: const InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Enter lesson plan content...',
+                                    hintStyle: TextStyle(
+                                      color: AppTheme.inputDescription,
                                     ),
                                   ),
-                                  // Objectives section
-                                  _buildObjectivesSection(),
-                                  // Content section
-                                  const SizedBox(height: 24),
-                                  const Text(
-                                    'Lesson Plan Content',
-                                    style: TextStyle(
+                                ),
+                              ),
+                            )
+                          : SingleChildScrollView(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: MarkdownBody(
+                                  data: _contentController.text.isEmpty
+                                      ? 'No content available'
+                                      : sanitizeMarkdownForRender(
+                                          decodeHtmlEntities(
+                                            _contentController.text,
+                                          ),
+                                        ),
+                                  styleSheet: MarkdownStyleSheet(
+                                    p: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppTheme.textDark,
+                                      height: 1.6,
+                                    ),
+                                    h1: const TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                      height: 1.4,
+                                    ),
+                                    h2: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                      height: 1.4,
+                                    ),
+                                    h3: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                      height: 1.4,
+                                    ),
+                                    h4: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
                                       color: AppTheme.textDark,
+                                      height: 1.4,
                                     ),
+                                    h5: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                      height: 1.4,
+                                    ),
+                                    h6: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                      height: 1.4,
+                                    ),
+                                    listBullet: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400,
+                                      color: AppTheme.textDark,
+                                    ),
+                                    strong: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppTheme.textDark,
+                                    ),
+                                    em: const TextStyle(
+                                      fontSize: 14,
+                                      fontStyle: FontStyle.italic,
+                                      color: AppTheme.textDark,
+                                    ),
+                                    code: const TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'monospace',
+                                      color: AppTheme.textDark,
+                                      backgroundColor: AppTheme.secondary,
+                                    ),
+                                    codeblockDecoration: BoxDecoration(
+                                      color: AppTheme.secondary,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    codeblockPadding: const EdgeInsets.all(16),
                                   ),
-                                  const SizedBox(height: 12),
-                                  Container(
-                                    constraints: const BoxConstraints(
-                                      minHeight: 400,
-                                    ),
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: _isEditMode
-                                          ? Colors.white
-                                          : AppTheme.addClassContainerBg,
-                                      borderRadius: BorderRadius.circular(22),
-                                      border: _isEditMode
-                                          ? Border.all(
-                                              color: AppTheme.inputOutlineFocused,
-                                              width: 1.6,
-                                            )
-                                          : null,
-                                    ),
-                                    child: _isEditMode
-                                        ? TextField(
-                                            controller: _contentController,
-                                            maxLines: null,
-                                            minLines: 20,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: AppTheme.textDark,
-                                              height: 1.6,
-                                            ),
-                                            decoration: const InputDecoration(
-                                              border: InputBorder.none,
-                                              hintText: 'Enter lesson plan content...',
-                                              hintStyle: TextStyle(
-                                                color: AppTheme.inputDescription,
-                                              ),
-                                            ),
-                                          )
-                                        : Text(
-                                            _contentController.text.isEmpty
-                                                ? 'No content available'
-                                                : _contentController.text,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              color: AppTheme.textDark,
-                                              height: 1.6,
-                                            ),
-                                          ),
-                                  ),
-                                  const SizedBox(height: 100), // Space for bottom buttons
-                                ],
+                                ),
                               ),
                             ),
+                    ),
             ),
             // Bottom action bar
             if (!_isLoading && _error == null && _lessonPlanData != null)
               Container(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(
-                      color: AppTheme.outline,
-                      width: 1,
-                    ),
-                  ),
-                ),
+                decoration: const BoxDecoration(color: Colors.white),
                 child: Row(
                   children: [
                     if (!_isEditMode)
@@ -610,15 +514,15 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                                 color: Colors.white,
                               )
                             : _isSaving
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : null,
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                   ],
@@ -630,4 +534,3 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
     );
   }
 }
-
