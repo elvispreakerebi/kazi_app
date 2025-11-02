@@ -8,7 +8,9 @@ import 'empty_state_illustration.dart';
 import '../providers/subjects_provider.dart';
 
 class SubjectsBottomSheet extends ConsumerStatefulWidget {
-  const SubjectsBottomSheet({super.key});
+  final ScrollController? scrollController;
+  
+  const SubjectsBottomSheet({super.key, this.scrollController});
 
   @override
   ConsumerState<SubjectsBottomSheet> createState() => _SubjectsBottomSheetState();
@@ -33,6 +35,7 @@ class _SubjectsBottomSheetState extends ConsumerState<SubjectsBottomSheet> {
 
     return AppBottomSheet(
       title: isEmpty ? 'Select subject' : 'Subjects',
+      scrollController: widget.scrollController,
       body: Column(
         children: [
           if (subjectsState.isLoadingAllSubjects)

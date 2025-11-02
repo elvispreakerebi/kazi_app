@@ -30,29 +30,47 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   void _showClassesBottomSheet(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const ClassesBottomSheet(),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 520 / screenHeight,
+        minChildSize: 0.3,
+        maxChildSize: 0.92,
+        builder: (context, scrollController) => const ClassesBottomSheet(),
+      ),
     );
   }
 
   void _showSubjectsBottomSheet(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const SubjectsBottomSheet(),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 520 / screenHeight,
+        minChildSize: 0.3,
+        maxChildSize: 0.92,
+        builder: (context, scrollController) => const SubjectsBottomSheet(),
+      ),
     );
   }
 
   void _showLessonPlansBottomSheet(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const LessonPlansBottomSheet(),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 520 / screenHeight,
+        minChildSize: 0.3,
+        maxChildSize: 0.92,
+        builder: (context, scrollController) => const LessonPlansBottomSheet(),
+      ),
     );
   }
 

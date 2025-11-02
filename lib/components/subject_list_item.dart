@@ -55,6 +55,17 @@ class SubjectListItem extends StatelessWidget {
                   ],
                 ),
               ),
+              // Right arrow icon
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                child: Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: AppTheme.textDark,
+                ),
+              ),
             ],
           ),
         ),

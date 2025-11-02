@@ -7,6 +7,7 @@ class AppBottomSheet extends StatelessWidget {
   final Widget body;
   final Widget? footer;
   final double? maxHeight;
+  final ScrollController? scrollController;
 
   const AppBottomSheet({
     super.key,
@@ -15,21 +16,23 @@ class AppBottomSheet extends StatelessWidget {
     required this.body,
     this.footer,
     this.maxHeight,
+    this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double maxHeightCap =
-            maxHeight ??
-            (constraints.maxHeight < 800 ? constraints.maxHeight * 0.92 : 800);
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: maxHeightCap,
-            minHeight: 120,
-            minWidth: double.infinity,
-          ),
+    final screenHeight = MediaQuery.of(context).size.height;
+    final double maxHeightCap = maxHeight ?? (screenHeight < 800 ? screenHeight * 0.92 : 800);
+    
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: maxHeightCap,
+        ),
+        child: Container(
           decoration: const BoxDecoration(
             color: AppTheme.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
@@ -63,6 +66,7 @@ class AppBottomSheet extends StatelessWidget {
                   width: double.infinity,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         title,
@@ -89,11 +93,12 @@ class AppBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              // Body: scrollable if content exceeds available space
+              // Body: scrollable area
               Flexible(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: SingleChildScrollView(
+                    controller: scrollController,
                     child: body,
                   ),
                 ),
@@ -108,8 +113,8 @@ class AppBottomSheet extends StatelessWidget {
                 ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
