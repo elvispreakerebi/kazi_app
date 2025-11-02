@@ -5,6 +5,7 @@ import '../../../components/bottom_nav_bar.dart';
 import '../../../components/overview_cards.dart';
 import '../../../components/create_lesson_plan_card.dart';
 import '../../../components/classes_bottom_sheet.dart';
+import '../../../components/subjects_bottom_sheet.dart';
 import '../../../providers/class_provider.dart';
 import '../../../providers/teacher_provider.dart';
 
@@ -32,6 +33,15 @@ class _HomePageState extends ConsumerState<HomePage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const ClassesBottomSheet(),
+    );
+  }
+
+  void _showSubjectsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const SubjectsBottomSheet(),
     );
   }
 
@@ -119,6 +129,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             value: lessonPlans,
                           ),
                           onClassesTap: () => _showClassesBottomSheet(context),
+                          onSubjectsTap: () =>
+                              _showSubjectsBottomSheet(context),
                         ),
                         if (hasError)
                           Padding(

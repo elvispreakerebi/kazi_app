@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
 import '../shared/services/api_service.dart';
 
 class SubjectsState {
@@ -6,11 +7,18 @@ class SubjectsState {
   final Map<String, bool> isLoadingByClassId;
   final Map<String, String?> errorByClassId;
   final Set<String> deletingSubjectIds;
+  final List<Map<String, dynamic>> allSubjectsWithClassNames;
+  final bool isLoadingAllSubjects;
+  final String? errorAllSubjects;
+  
   SubjectsState({
     this.subjectsByClassId = const {},
     this.isLoadingByClassId = const {},
     this.errorByClassId = const {},
     Set<String>? deletingSubjectIds,
+    this.allSubjectsWithClassNames = const [],
+    this.isLoadingAllSubjects = false,
+    this.errorAllSubjects,
   }) : deletingSubjectIds = deletingSubjectIds ?? <String>{};
 
   SubjectsState copyWith({
@@ -18,12 +26,18 @@ class SubjectsState {
     Map<String, bool>? isLoadingByClassId,
     Map<String, String?>? errorByClassId,
     Set<String>? deletingSubjectIds,
+    List<Map<String, dynamic>>? allSubjectsWithClassNames,
+    bool? isLoadingAllSubjects,
+    String? errorAllSubjects,
   }) {
     return SubjectsState(
       subjectsByClassId: subjectsByClassId ?? this.subjectsByClassId,
       isLoadingByClassId: isLoadingByClassId ?? this.isLoadingByClassId,
       errorByClassId: errorByClassId ?? this.errorByClassId,
       deletingSubjectIds: deletingSubjectIds ?? this.deletingSubjectIds,
+      allSubjectsWithClassNames: allSubjectsWithClassNames ?? this.allSubjectsWithClassNames,
+      isLoadingAllSubjects: isLoadingAllSubjects ?? this.isLoadingAllSubjects,
+      errorAllSubjects: errorAllSubjects ?? this.errorAllSubjects,
     );
   }
 }
@@ -159,6 +173,49 @@ class SubjectsNotifier extends StateNotifier<SubjectsState> {
       deleting.remove(subjectId);
       state = state.copyWith(deletingSubjectIds: deleting);
       rethrow;
+    }
+  }
+
+  Future<void> fetchAllSubjectsWithClassNames() async {
+    state = state.copyWith(isLoadingAllSubjects: true, errorAllSubjects: null);
+    try {
+      // Fetch all classes first
+      final classes = await ApiService().getClasses();
+      
+      // Fetch subjects for each class and combine with class names
+      final List<Map<String, dynamic>> allSubjects = [];
+      
+      await Future.wait(
+        classes.map((cls) async {
+          final classId = cls['id']?.toString() ?? cls['_id']?.toString() ?? '';
+          final className = cls['name']?.toString() ?? '';
+          
+          if (classId.isEmpty) return;
+          
+          try {
+            final subjects = await ApiService().getClassSubjects(classId);
+            // Add class name to each subject
+            for (final subject in subjects) {
+              allSubjects.add({
+                ...subject,
+                'className': className,
+              });
+            }
+          } catch (e) {
+            debugPrint('Error fetching subjects for class $className: $e');
+          }
+        }),
+      );
+      
+      state = state.copyWith(
+        allSubjectsWithClassNames: allSubjects,
+        isLoadingAllSubjects: false,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoadingAllSubjects: false,
+        errorAllSubjects: e.toString(),
+      );
     }
   }
 }
