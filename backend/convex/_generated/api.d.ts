@@ -34,6 +34,7 @@ import type * as functions_lessonPlans_deleteLessonPlan from "../functions/lesso
 import type * as functions_lessonPlans_editLessonPlan from "../functions/lessonPlans/editLessonPlan.js";
 import type * as functions_lessonPlans_generateLessonPlanAction from "../functions/lessonPlans/generateLessonPlanAction.js";
 import type * as functions_lessonPlans_getLessonPlan from "../functions/lessonPlans/getLessonPlan.js";
+import type * as functions_lessonPlans_getLessonPlansBySubject from "../functions/lessonPlans/getLessonPlansBySubject.js";
 import type * as functions_lessonPlans_getTeacherLessonPlans from "../functions/lessonPlans/getTeacherLessonPlans.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
@@ -54,6 +55,7 @@ import type * as functions_routeHandlers_lessonPlansHandlers_createLessonPlanHan
 import type * as functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_editLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_getLessonPlanHandler from "../functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_getLessonPlansBySubjectHandler from "../functions/routeHandlers/lessonPlansHandlers/getLessonPlansBySubjectHandler.js";
 import type * as functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler from "../functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_deleteSubjectHandler from "../functions/routeHandlers/subjectsHandlers/deleteSubjectHandler.js";
@@ -120,6 +122,7 @@ declare const fullApi: ApiFromModules<{
   "functions/lessonPlans/editLessonPlan": typeof functions_lessonPlans_editLessonPlan;
   "functions/lessonPlans/generateLessonPlanAction": typeof functions_lessonPlans_generateLessonPlanAction;
   "functions/lessonPlans/getLessonPlan": typeof functions_lessonPlans_getLessonPlan;
+  "functions/lessonPlans/getLessonPlansBySubject": typeof functions_lessonPlans_getLessonPlansBySubject;
   "functions/lessonPlans/getTeacherLessonPlans": typeof functions_lessonPlans_getTeacherLessonPlans;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
@@ -140,6 +143,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_deleteLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_editLessonPlanHandler;
   "functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler": typeof functions_routeHandlers_lessonPlansHandlers_getLessonPlanHandler;
+  "functions/routeHandlers/lessonPlansHandlers/getLessonPlansBySubjectHandler": typeof functions_routeHandlers_lessonPlansHandlers_getLessonPlansBySubjectHandler;
   "functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler": typeof functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
   "functions/routeHandlers/subjectsHandlers/deleteSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_deleteSubjectHandler;

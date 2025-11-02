@@ -5,22 +5,34 @@ class LessonPlansState {
   final List<Map<String, dynamic>> allLessonPlansWithSubjectNames;
   final bool isLoading;
   final String? error;
+  final Map<String, List<Map<String, dynamic>>> lessonPlansBySubjectId;
+  final Map<String, bool> isLoadingBySubjectId;
+  final Map<String, String?> errorBySubjectId;
   
   LessonPlansState({
     this.allLessonPlansWithSubjectNames = const [],
     this.isLoading = false,
     this.error,
+    this.lessonPlansBySubjectId = const {},
+    this.isLoadingBySubjectId = const {},
+    this.errorBySubjectId = const {},
   });
 
   LessonPlansState copyWith({
     List<Map<String, dynamic>>? allLessonPlansWithSubjectNames,
     bool? isLoading,
     String? error,
+    Map<String, List<Map<String, dynamic>>>? lessonPlansBySubjectId,
+    Map<String, bool>? isLoadingBySubjectId,
+    Map<String, String?>? errorBySubjectId,
   }) {
     return LessonPlansState(
       allLessonPlansWithSubjectNames: allLessonPlansWithSubjectNames ?? this.allLessonPlansWithSubjectNames,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
+      lessonPlansBySubjectId: lessonPlansBySubjectId ?? this.lessonPlansBySubjectId,
+      isLoadingBySubjectId: isLoadingBySubjectId ?? this.isLoadingBySubjectId,
+      errorBySubjectId: errorBySubjectId ?? this.errorBySubjectId,
     );
   }
 }
@@ -40,6 +52,36 @@ class LessonPlansNotifier extends StateNotifier<LessonPlansState> {
       state = state.copyWith(
         isLoading: false,
         error: e.toString(),
+      );
+    }
+  }
+
+  Future<void> fetchLessonPlansForSubject(String subjectId) async {
+    final loadingMap = Map<String, bool>.from(state.isLoadingBySubjectId);
+    loadingMap[subjectId] = true;
+    state = state.copyWith(isLoadingBySubjectId: loadingMap);
+    
+    try {
+      final lessonPlans = await ApiService().getLessonPlansBySubject(subjectId);
+      final plansMap = Map<String, List<Map<String, dynamic>>>.from(
+        state.lessonPlansBySubjectId,
+      );
+      plansMap[subjectId] = lessonPlans;
+      loadingMap[subjectId] = false;
+      final errorMap = Map<String, String?>.from(state.errorBySubjectId);
+      errorMap[subjectId] = null;
+      state = state.copyWith(
+        lessonPlansBySubjectId: plansMap,
+        isLoadingBySubjectId: loadingMap,
+        errorBySubjectId: errorMap,
+      );
+    } catch (e) {
+      final errorMap = Map<String, String?>.from(state.errorBySubjectId);
+      errorMap[subjectId] = e.toString();
+      loadingMap[subjectId] = false;
+      state = state.copyWith(
+        isLoadingBySubjectId: loadingMap,
+        errorBySubjectId: errorMap,
       );
     }
   }

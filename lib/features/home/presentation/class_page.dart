@@ -675,7 +675,22 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                                 subjectName: subjectName,
                                 lessonPlanCount: lessonPlanCount,
                                 onTap: () {
-                                  // TODO: Navigate to subject details page
+                                  final subjectId =
+                                      subject['id']?.toString() ??
+                                      subject['_id']?.toString() ??
+                                      '';
+                                  if (subjectId.isNotEmpty) {
+                                    Navigator.of(context).pushNamed(
+                                      '/subject',
+                                      arguments: {
+                                        'subjectId': subjectId,
+                                        'subjectName': subjectName,
+                                        'classId': widget.classId,
+                                        'fromHome':
+                                            false, // Coming from class page
+                                      },
+                                    );
+                                  }
                                 },
                               ),
                             );

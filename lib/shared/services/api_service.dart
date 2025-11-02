@@ -252,4 +252,39 @@ class ApiService {
     if (res is List) return res.cast<Map<String, dynamic>>();
     throw Exception('Expected List from getTeacherLessonPlans endpoint');
   }
+
+  Future<List<Map<String, dynamic>>> getLessonPlansBySubject(String subjectId) async {
+    final res = await get('/api/lessonPlans/by-subject?subjectId=$subjectId');
+    if (res is List) return res.cast<Map<String, dynamic>>();
+    throw Exception('Expected List from getLessonPlansBySubject endpoint');
+  }
+
+  Future<Map<String, dynamic>> getLessonPlan(String lessonPlanId) async {
+    final res = await get('/api/lessonPlans/get?lessonPlanId=$lessonPlanId');
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from getLessonPlan endpoint');
+  }
+
+  Future<Map<String, dynamic>> editLessonPlan({
+    required String lessonPlanId,
+    String? title,
+    String? content,
+  }) async {
+    final res = await post(
+      '/api/lessonPlans/edit',
+      body: {
+        'lessonPlanId': lessonPlanId,
+        if (title != null) 'title': title,
+        if (content != null) 'content': content,
+      },
+    );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from editLessonPlan endpoint');
+  }
+
+  Future<Map<String, dynamic>> deleteLessonPlan(String lessonPlanId) async {
+    final res = await post('/api/lessonPlans/delete', body: {'lessonPlanId': lessonPlanId});
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from deleteLessonPlan endpoint');
+  }
 }

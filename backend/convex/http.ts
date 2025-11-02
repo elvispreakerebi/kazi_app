@@ -28,6 +28,7 @@ import { createLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHa
 import { getLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler";
 import { editLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler";
 import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
+import { getLessonPlansBySubjectHandler } from "./functions/routeHandlers/lessonPlansHandlers/getLessonPlansBySubjectHandler";
 
 const http = httpRouter();
 
@@ -202,6 +203,12 @@ http.route({
   path: "/api/lessonPlans/delete",
   method: "POST",
   handler: httpAction(deleteLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/by-subject",
+  method: "GET",
+  handler: httpAction(getLessonPlansBySubjectHandler),
 });
 
 export default http;

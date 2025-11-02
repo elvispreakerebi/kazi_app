@@ -10,6 +10,7 @@ import 'package:kazi_app/features/onboarding/onboarding_add_subject_route.dart';
 import 'package:kazi_app/features/home/home_route.dart';
 import 'package:kazi_app/features/home/new_class_route.dart';
 import 'package:kazi_app/features/home/class_route.dart';
+import 'package:kazi_app/features/home/subject_route.dart';
 import '../features/onboarding/onboarding_profile_complete_route.dart';
 
 class AppRouter {
@@ -37,6 +38,8 @@ class AppRouter {
         return NewClassRoute.route(settings);
       case ClassRoute.path:
         return ClassRoute.route(settings);
+      case SubjectRoute.path:
+        return SubjectRoute.route(settings);
       case OnboardingProfileCompleteRoute.path:
         return OnboardingProfileCompleteRoute.route(settings);
       default:

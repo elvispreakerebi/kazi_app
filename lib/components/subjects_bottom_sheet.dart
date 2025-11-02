@@ -106,6 +106,11 @@ class _SubjectsBottomSheetState extends ConsumerState<SubjectsBottomSheet> {
                     final subjectData = entry.value;
                     final subjectName = subjectData['name']?.toString() ?? '';
                     final className = subjectData['className']?.toString() ?? '';
+                    final subjectId = subjectData['id']?.toString() ?? 
+                                     subjectData['_id']?.toString() ?? '';
+                    // Find classId from the subject data or fetch it
+                    // We need to get classId - let's check if it's in the data
+                    final classId = subjectData['classId']?.toString() ?? '';
 
                     return Column(
                       children: [
@@ -113,7 +118,18 @@ class _SubjectsBottomSheetState extends ConsumerState<SubjectsBottomSheet> {
                           subjectName: subjectName,
                           className: className,
                           onTap: () {
-                            // TODO: Navigate to subject details if needed
+                            if (subjectId.isNotEmpty && classId.isNotEmpty) {
+                              Navigator.of(context).pop(); // Close bottom sheet
+                              Navigator.of(context).pushNamed(
+                                '/subject',
+                                arguments: {
+                                  'subjectId': subjectId,
+                                  'subjectName': subjectName,
+                                  'classId': classId,
+                                  'fromHome': true, // Indicate coming from home page
+                                },
+                              );
+                            }
                           },
                         ),
                         if (index < subjectsState.allSubjectsWithClassNames.length - 1)

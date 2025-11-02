@@ -199,6 +199,7 @@ class SubjectsNotifier extends StateNotifier<SubjectsState> {
               allSubjects.add({
                 ...subject,
                 'className': className,
+                'classId': classId, // Add classId for navigation
               });
             }
           } catch (e) {
