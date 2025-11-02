@@ -18,6 +18,7 @@ export const getLessonPlan = query({
     updatedAt: v.optional(v.number()),
     subjectName: v.string(),
     className: v.string(),
+    classId: v.id("classes"),
   }),
   handler: async (ctx, args) => {
     const lessonPlan = await ctx.db.get(args.lessonPlanId);
@@ -46,6 +47,7 @@ export const getLessonPlan = query({
       updatedAt: lessonPlan.updatedAt,
       subjectName: subject.name ?? '',
       className: classDoc?.name ?? classDoc?.gradeLevel ?? '',
+      classId: subject.classId,
     };
   },
 });

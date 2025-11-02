@@ -263,9 +263,163 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   }
 
   void _showRecreateLessonPlanSheet(BuildContext context) {
-    // TODO: Implement recreate functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Recreate functionality coming soon')),
+    bool recreateLoading = false;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (innerCtx, modalSetState) {
+            return AppBottomSheet(
+              title: 'Recreate lesson plan',
+              body: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: RichText(
+                  text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      color: AppTheme.textDark,
+                      height: 1.75,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text:
+                            'This will create a new lesson plan with the same topic and objective. The current lesson plan will remain unchanged. Continue?',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              footer: Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      text: "Close",
+                      onPressed: () {
+                        Navigator.of(sheetContext).pop();
+                      },
+                      variant: ButtonVariant.secondary,
+                      borderRadius: 22,
+                      height: 48,
+                      expanded: true,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: AppButton(
+                      text: recreateLoading
+                          ? "Creating..."
+                          : "Recreate lesson plan",
+                      onPressed: () async {
+                        if (recreateLoading) return;
+
+                        // Get required data from current lesson plan
+                        final classId = _lessonPlanData?['classId']?.toString();
+                        final subjectId = _lessonPlanData?['subjectId']
+                            ?.toString();
+                        final topic = _lessonPlanData?['title']?.toString();
+                        final objective = _lessonPlanData?['objective']
+                            ?.toString();
+
+                        if (classId == null ||
+                            subjectId == null ||
+                            topic == null) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Unable to recreate: missing lesson plan data',
+                                ),
+                              ),
+                            );
+                          }
+                          Navigator.of(sheetContext).pop();
+                          return;
+                        }
+
+                        modalSetState(() {
+                          recreateLoading = true;
+                        });
+
+                        try {
+                          final newLessonPlan = await ApiService()
+                              .createLessonPlan(
+                                classId: classId,
+                                subjectId: subjectId,
+                                topic: topic,
+                                objective: objective?.isEmpty ?? true
+                                    ? null
+                                    : objective,
+                              );
+
+                          // Refresh teacher overview counts
+                          await ref
+                              .read(teacherProvider.notifier)
+                              .fetchTeacherDetailsAndCounts();
+
+                          if (mounted) {
+                            final newLessonPlanId =
+                                newLessonPlan['id']?.toString() ??
+                                newLessonPlan['_id']?.toString() ??
+                                '';
+
+                            Navigator.of(sheetContext).pop();
+
+                            if (newLessonPlanId.isNotEmpty) {
+                              // Navigate to the new lesson plan
+                              Navigator.of(context).pushReplacementNamed(
+                                '/lesson-plan',
+                                arguments: {'lessonPlanId': newLessonPlanId},
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Lesson plan recreated successfully',
+                                  ),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Lesson plan created but unable to navigate',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Error recreating lesson plan: $e',
+                                ),
+                              ),
+                            );
+                          }
+                        } finally {
+                          modalSetState(() {
+                            recreateLoading = false;
+                          });
+                        }
+                      },
+                      variant: ButtonVariant.primary,
+                      borderRadius: 22,
+                      height: 48,
+                      expanded: true,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
