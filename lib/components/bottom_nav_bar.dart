@@ -32,8 +32,8 @@ class BottomNavBar extends StatelessWidget {
             onTap: () => onTap(0),
           ),
           _NavItem(
-            icon: Icons.school_outlined,
-            label: 'Classes',
+            icon: Icons.menu_book_outlined,
+            label: 'Lesson plans',
             selected: currentIndex == 1,
             onTap: () => onTap(1),
           ),

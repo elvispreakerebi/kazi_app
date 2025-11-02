@@ -22,7 +22,7 @@ import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesH
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
 import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
-import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
+import { getTeacherLessonPlansHandler } from "./functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler";
 
 const http = httpRouter();
 
@@ -167,5 +167,12 @@ http.route({
   method: "PATCH",
   handler: httpAction(setLanguagePreferenceHandler),
 })
+
+// Lesson Plans Routes
+http.route({
+  path: "/api/lessonPlans/list",
+  method: "GET",
+  handler: httpAction(getTeacherLessonPlansHandler),
+});
 
 export default http;

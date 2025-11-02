@@ -246,4 +246,10 @@ class ApiService {
       throw Exception('Failed to fetch subject count for class $classId: $e');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getTeacherLessonPlans() async {
+    final res = await get('/api/lessonPlans/list');
+    if (res is List) return res.cast<Map<String, dynamic>>();
+    throw Exception('Expected List from getTeacherLessonPlans endpoint');
+  }
 }

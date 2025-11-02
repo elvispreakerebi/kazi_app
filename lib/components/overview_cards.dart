@@ -17,12 +17,14 @@ class OverviewCards extends StatelessWidget {
   final OverviewCardData fullWidthCard;
   final VoidCallback? onClassesTap;
   final VoidCallback? onSubjectsTap;
+  final VoidCallback? onLessonPlansTap;
   const OverviewCards({
     super.key,
     required this.topCards,
     required this.fullWidthCard,
     this.onClassesTap,
     this.onSubjectsTap,
+    this.onLessonPlansTap,
   });
 
   @override
@@ -52,7 +54,10 @@ class OverviewCards extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // Full width card: Lesson plans
-        _OverviewSingleCard(card: fullWidthCard),
+        _OverviewSingleCard(
+          card: fullWidthCard,
+          onTap: onLessonPlansTap,
+        ),
       ],
     );
   }

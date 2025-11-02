@@ -29,6 +29,7 @@ import type * as functions_classes_getClass from "../functions/classes/getClass.
 import type * as functions_classes_getClassSubjectsCount from "../functions/classes/getClassSubjectsCount.js";
 import type * as functions_classes_getClasses from "../functions/classes/getClasses.js";
 import type * as functions_classes_getTeacherClasses from "../functions/classes/getTeacherClasses.js";
+import type * as functions_lessonPlans_getTeacherLessonPlans from "../functions/lessonPlans/getTeacherLessonPlans.js";
 import type * as functions_routeHandlers_authHandlers_createAccountHandler from "../functions/routeHandlers/authHandlers/createAccountHandler.js";
 import type * as functions_routeHandlers_authHandlers_googleIdTokenLoginHandler from "../functions/routeHandlers/authHandlers/googleIdTokenLoginHandler.js";
 import type * as functions_routeHandlers_authHandlers_loginAccountHandler from "../functions/routeHandlers/authHandlers/loginAccountHandler.js";
@@ -44,6 +45,7 @@ import type * as functions_routeHandlers_classesHandlers_getClassHandler from ".
 import type * as functions_routeHandlers_classesHandlers_getClassSubjectsCountHandler from "../functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler.js";
 import type * as functions_routeHandlers_classesHandlers_getClassesHandler from "../functions/routeHandlers/classesHandlers/getClassesHandler.js";
 import type * as functions_routeHandlers_classesHandlers_getTeacherClassesHandler from "../functions/routeHandlers/classesHandlers/getTeacherClassesHandler.js";
+import type * as functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler from "../functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_addSubjectsHandler from "../functions/routeHandlers/subjectsHandlers/addSubjectsHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_deleteSubjectHandler from "../functions/routeHandlers/subjectsHandlers/deleteSubjectHandler.js";
 import type * as functions_routeHandlers_subjectsHandlers_editSubjectHandler from "../functions/routeHandlers/subjectsHandlers/editSubjectHandler.js";
@@ -103,6 +105,7 @@ declare const fullApi: ApiFromModules<{
   "functions/classes/getClassSubjectsCount": typeof functions_classes_getClassSubjectsCount;
   "functions/classes/getClasses": typeof functions_classes_getClasses;
   "functions/classes/getTeacherClasses": typeof functions_classes_getTeacherClasses;
+  "functions/lessonPlans/getTeacherLessonPlans": typeof functions_lessonPlans_getTeacherLessonPlans;
   "functions/routeHandlers/authHandlers/createAccountHandler": typeof functions_routeHandlers_authHandlers_createAccountHandler;
   "functions/routeHandlers/authHandlers/googleIdTokenLoginHandler": typeof functions_routeHandlers_authHandlers_googleIdTokenLoginHandler;
   "functions/routeHandlers/authHandlers/loginAccountHandler": typeof functions_routeHandlers_authHandlers_loginAccountHandler;
@@ -118,6 +121,7 @@ declare const fullApi: ApiFromModules<{
   "functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler": typeof functions_routeHandlers_classesHandlers_getClassSubjectsCountHandler;
   "functions/routeHandlers/classesHandlers/getClassesHandler": typeof functions_routeHandlers_classesHandlers_getClassesHandler;
   "functions/routeHandlers/classesHandlers/getTeacherClassesHandler": typeof functions_routeHandlers_classesHandlers_getTeacherClassesHandler;
+  "functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler": typeof functions_routeHandlers_lessonPlansHandlers_getTeacherLessonPlansHandler;
   "functions/routeHandlers/subjectsHandlers/addSubjectsHandler": typeof functions_routeHandlers_subjectsHandlers_addSubjectsHandler;
   "functions/routeHandlers/subjectsHandlers/deleteSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_deleteSubjectHandler;
   "functions/routeHandlers/subjectsHandlers/editSubjectHandler": typeof functions_routeHandlers_subjectsHandlers_editSubjectHandler;
