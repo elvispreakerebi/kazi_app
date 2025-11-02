@@ -22,7 +22,9 @@ import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesH
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
 import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
+import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
 import { getTeacherLessonPlansHandler } from "./functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler";
+import { createLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/createLessonPlanHandler";
 
 const http = httpRouter();
 
@@ -173,6 +175,12 @@ http.route({
   path: "/api/lessonPlans/list",
   method: "GET",
   handler: httpAction(getTeacherLessonPlansHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/create",
+  method: "POST",
+  handler: httpAction(createLessonPlanHandler),
 });
 
 export default http;
