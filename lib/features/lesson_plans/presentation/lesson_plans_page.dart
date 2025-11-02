@@ -273,7 +273,8 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                 context,
               ).popUntil((route) => route.settings.name == '/lesson-plans');
             } else if (idx == 2) {
-              // TODO: Navigate to settings page
+              // Navigate to settings page
+              Navigator.of(context).pushReplacementNamed('/settings');
             }
           },
         ),

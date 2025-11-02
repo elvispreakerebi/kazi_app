@@ -306,4 +306,45 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from createLessonPlan endpoint');
   }
+
+  Future<Map<String, dynamic>> editTeacherAccount({
+    String? name,
+    String? email,
+    String? password,
+  }) async {
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (email != null) body['email'] = email;
+    if (password != null) body['password'] = password;
+
+    final res = await http.patch(
+      Uri.parse('$convexBackend/api/teacher/edit-account'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (_jwt != null) 'Authorization': 'Bearer $_jwt',
+      },
+      body: jsonEncode(body),
+    );
+    if (res.statusCode >= 400) {
+      throw Exception('API error: ${res.body}');
+    }
+    final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+    return decoded;
+  }
+
+  Future<Map<String, dynamic>> setLanguagePreference(String language) async {
+    final res = await http.patch(
+      Uri.parse('$convexBackend/api/teacher/language-preference'),
+      headers: {
+        'Content-Type': 'application/json',
+        if (_jwt != null) 'Authorization': 'Bearer $_jwt',
+      },
+      body: jsonEncode({'language': language}),
+    );
+    if (res.statusCode >= 400) {
+      throw Exception('API error: ${res.body}');
+    }
+    final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+    return decoded;
+  }
 }

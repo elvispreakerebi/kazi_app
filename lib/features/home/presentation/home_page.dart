@@ -189,7 +189,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               // Navigate to lesson plans page
               Navigator.of(context).pushReplacementNamed('/lesson-plans');
             } else if (idx == 2) {
-              // TODO: Navigate to settings page
+              // Navigate to settings page
+              Navigator.of(context).pushReplacementNamed('/settings');
             }
           },
         ),
