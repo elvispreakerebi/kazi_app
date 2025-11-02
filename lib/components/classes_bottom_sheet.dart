@@ -4,6 +4,7 @@ import 'app_bottom_sheet.dart';
 import 'app_button.dart';
 import 'app_theme.dart';
 import 'class_list_item.dart';
+import 'empty_state_illustration.dart';
 import '../providers/class_provider.dart';
 
 class ClassesBottomSheet extends ConsumerStatefulWidget {
@@ -26,9 +27,12 @@ class _ClassesBottomSheetState extends ConsumerState<ClassesBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final classState = ref.watch(classProvider);
+    final isEmpty = !classState.isLoading && 
+                     classState.error == null && 
+                     classState.classes.isEmpty;
 
     return AppBottomSheet(
-      title: 'Classes',
+      title: isEmpty ? 'Select class' : 'Classes',
       body: Column(
         children: [
           if (classState.isLoading)
@@ -44,12 +48,42 @@ class _ClassesBottomSheetState extends ConsumerState<ClassesBottomSheet> {
                 style: const TextStyle(color: AppTheme.destructive),
               ),
             )
-          else if (classState.classes.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Text(
-                'No classes found',
-                style: TextStyle(color: AppTheme.inputDescription),
+          else if (isEmpty)
+            // Empty state
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 32),
+                  const EmptyStateIllustration(size: 64),
+                  const SizedBox(height: 32),
+                  const Text(
+                    "You've added no class yet. Click button below to add a class",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.w400,
+                      height: 1.75,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  AppButton(
+                    text: 'Add class',
+                    variant: ButtonVariant.primary,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/new-class');
+                    },
+                    height: 48,
+                    borderRadius: AppTheme.radiusFull,
+                    icon: const Icon(
+                      Icons.add,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             )
           else
@@ -94,32 +128,34 @@ class _ClassesBottomSheetState extends ConsumerState<ClassesBottomSheet> {
             ),
         ],
       ),
-      footer: Row(
-        children: [
-          Expanded(
-            child: AppButton(
-              text: 'Close',
-              variant: ButtonVariant.outline,
-              onPressed: () => Navigator.of(context).pop(),
-              height: 48,
-              borderRadius: AppTheme.radiusFull,
+      footer: isEmpty
+          ? null
+          : Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    text: 'Close',
+                    variant: ButtonVariant.outline,
+                    onPressed: () => Navigator.of(context).pop(),
+                    height: 48,
+                    borderRadius: AppTheme.radiusFull,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton(
+                    text: 'Add class',
+                    variant: ButtonVariant.primary,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed('/new-class');
+                    },
+                    height: 48,
+                    borderRadius: AppTheme.radiusFull,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: AppButton(
-              text: 'Add class',
-              variant: ButtonVariant.primary,
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed('/new-class');
-              },
-              height: 48,
-              borderRadius: AppTheme.radiusFull,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app_bottom_sheet.dart';
+import 'app_button.dart';
 import 'app_theme.dart';
 import 'subject_list_item.dart';
+import 'empty_state_illustration.dart';
 import '../providers/subjects_provider.dart';
 
 class SubjectsBottomSheet extends ConsumerStatefulWidget {
@@ -25,9 +27,12 @@ class _SubjectsBottomSheetState extends ConsumerState<SubjectsBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final subjectsState = ref.watch(subjectsProvider);
+    final isEmpty = !subjectsState.isLoadingAllSubjects && 
+                     subjectsState.errorAllSubjects == null && 
+                     subjectsState.allSubjectsWithClassNames.isEmpty;
 
     return AppBottomSheet(
-      title: 'Subjects',
+      title: isEmpty ? 'Select subject' : 'Subjects',
       body: Column(
         children: [
           if (subjectsState.isLoadingAllSubjects)
@@ -43,12 +48,43 @@ class _SubjectsBottomSheetState extends ConsumerState<SubjectsBottomSheet> {
                 style: const TextStyle(color: AppTheme.destructive),
               ),
             )
-          else if (subjectsState.allSubjectsWithClassNames.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(32),
-              child: Text(
-                'No subjects found',
-                style: TextStyle(color: AppTheme.inputDescription),
+          else if (isEmpty)
+            // Empty state
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
+                children: [
+                  const SizedBox(height: 32),
+                  const EmptyStateIllustration(size: 64),
+                  const SizedBox(height: 32),
+                  const Text(
+                    "You've added no subject yet. Click button below to add a subject",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.textDark,
+                      fontWeight: FontWeight.w400,
+                      height: 1.75,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  AppButton(
+                    text: 'Add subject',
+                    variant: ButtonVariant.primary,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // TODO: Navigate to add subject page or show instruction
+                      // For now, just close the bottom sheet
+                    },
+                    height: 48,
+                    borderRadius: AppTheme.radiusFull,
+                    icon: const Icon(
+                      Icons.add,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             )
           else
