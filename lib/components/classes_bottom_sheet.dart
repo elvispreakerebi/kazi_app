@@ -110,8 +110,16 @@ class _ClassesBottomSheetState extends ConsumerState<ClassesBottomSheet> {
                           className: className,
                           subjectCount: subjectCount,
                           onTap: () {
-                            // TODO: Navigate to class details or subjects page
+                            final classId = classData['id']?.toString() ?? 
+                                           classData['_id']?.toString() ?? '';
                             Navigator.of(context).pop();
+                            Navigator.of(context).pushNamed(
+                              '/class',
+                              arguments: {
+                                'classId': classId,
+                                'className': className,
+                              },
+                            );
                           },
                         ),
                         if (index < classState.classes.length - 1)
