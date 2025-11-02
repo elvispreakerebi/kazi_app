@@ -99,6 +99,7 @@ class ClassNotifier extends StateNotifier<ClassState> {
         academicYear: cls['academicYear'],
       );
       await fetchClasses();
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       if (context.mounted) {
@@ -114,6 +115,7 @@ class ClassNotifier extends StateNotifier<ClassState> {
     try {
       await ApiService().deleteClass(id);
       await fetchClasses();
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
       if (context.mounted) {

@@ -21,12 +21,12 @@ class AppBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double heightCap =
+        final double maxHeightCap =
             maxHeight ??
             (constraints.maxHeight < 800 ? constraints.maxHeight * 0.92 : 800);
         return Container(
           constraints: BoxConstraints(
-            maxHeight: heightCap,
+            maxHeight: maxHeightCap,
             minHeight: 120,
             minWidth: double.infinity,
           ),
@@ -35,7 +35,7 @@ class AppBottomSheet extends StatelessWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.max,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Handlebar
               Padding(
@@ -89,11 +89,13 @@ class AppBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              // Body: always scrollable
-              Expanded(
+              // Body: scrollable if content exceeds available space
+              Flexible(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: SingleChildScrollView(child: body),
+                  child: SingleChildScrollView(
+                    child: body,
+                  ),
                 ),
               ),
               if (footer != null)
