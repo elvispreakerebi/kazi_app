@@ -179,7 +179,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     const SizedBox(height: 32),
                     CreateLessonPlanCard(
                       onTap: () {
-                        // Navigate or trigger lesson plan creation
+                        Navigator.of(context).pushNamed('/new-lesson-plan');
                       },
                     ),
                   ],

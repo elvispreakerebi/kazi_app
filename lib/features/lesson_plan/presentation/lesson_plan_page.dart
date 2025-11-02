@@ -426,10 +426,27 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
   Widget _backButton(BuildContext context) {
     final isIOS =
         Theme.of(context).platform == TargetPlatform.iOS || Platform.isIOS;
+
+    // Check if we came from new lesson plan page or home page
+    final routeArgs =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final fromNewLessonPlan = routeArgs?['fromNewLessonPlan'] == true;
+    final fromHome = routeArgs?['fromHome'] == true;
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => Navigator.of(context).pop(),
+        onTap: () {
+          if (fromNewLessonPlan || fromHome) {
+            // If coming from new lesson plan page or home page, go back to home
+            Navigator.of(context).popUntil(
+              (route) => route.isFirst || route.settings.name == '/home',
+            );
+          } else {
+            // Otherwise, just pop normally
+            Navigator.of(context).pop();
+          }
+        },
         borderRadius: BorderRadius.circular(100),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
