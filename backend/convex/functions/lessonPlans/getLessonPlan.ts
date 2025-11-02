@@ -13,9 +13,11 @@ export const getLessonPlan = query({
     teacherId: v.id("teachers"),
     title: v.string(),
     content: v.any(),
+    objective: v.optional(v.string()),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
     subjectName: v.string(),
+    className: v.string(),
   }),
   handler: async (ctx, args) => {
     const lessonPlan = await ctx.db.get(args.lessonPlanId);
@@ -25,6 +27,12 @@ export const getLessonPlan = query({
     
     // Fetch subject information
     const subject = await ctx.db.get(lessonPlan.subjectId);
+    if (!subject) {
+      throw new Error("Subject not found");
+    }
+    
+    // Fetch class information
+    const classDoc = await ctx.db.get(subject.classId);
     
     return {
       _id: lessonPlan._id,
@@ -33,9 +41,11 @@ export const getLessonPlan = query({
       teacherId: lessonPlan.teacherId,
       title: lessonPlan.title,
       content: lessonPlan.content,
+      objective: lessonPlan.objective,
       createdAt: lessonPlan.createdAt,
       updatedAt: lessonPlan.updatedAt,
-      subjectName: subject?.name ?? '',
+      subjectName: subject.name ?? '',
+      className: classDoc?.name ?? classDoc?.gradeLevel ?? '',
     };
   },
 });

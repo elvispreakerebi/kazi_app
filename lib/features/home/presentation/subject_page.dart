@@ -187,11 +187,32 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
   }
 
   void _showCreateLessonPlanSheet(BuildContext context) {
-    // TODO: Implement create lesson plan bottom sheet
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Create lesson plan functionality coming soon'),
-      ),
+    final topicController = TextEditingController();
+    final objectiveController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return _CreateLessonPlanBottomSheetContent(
+          topicController: topicController,
+          objectiveController: objectiveController,
+          subjectId: widget.subjectId,
+          classId: widget.classId,
+          onSuccess: () {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Lesson plan created successfully'),
+                  ),
+                );
+              }
+            });
+          },
+        );
+      },
     );
   }
 
@@ -378,7 +399,16 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                               child: LessonPlanCardItem(
                                 title: title,
                                 onTap: () {
-                                  // TODO: Navigate to lesson plan details page
+                                  final lessonPlanId =
+                                      lessonPlan['id']?.toString() ??
+                                      lessonPlan['_id']?.toString() ??
+                                      '';
+                                  if (lessonPlanId.isNotEmpty) {
+                                    Navigator.of(context).pushNamed(
+                                      '/lesson-plan',
+                                      arguments: {'lessonPlanId': lessonPlanId},
+                                    );
+                                  }
                                 },
                               ),
                             );
@@ -512,6 +542,173 @@ class _EditSubjectBottomSheetContentState
               borderRadius: 22,
               height: 48,
               expanded: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CreateLessonPlanBottomSheetContent extends ConsumerStatefulWidget {
+  final TextEditingController topicController;
+  final TextEditingController objectiveController;
+  final String subjectId;
+  final String classId;
+  final VoidCallback onSuccess;
+
+  const _CreateLessonPlanBottomSheetContent({
+    required this.topicController,
+    required this.objectiveController,
+    required this.subjectId,
+    required this.classId,
+    required this.onSuccess,
+  });
+
+  @override
+  ConsumerState<_CreateLessonPlanBottomSheetContent> createState() =>
+      _CreateLessonPlanBottomSheetContentState();
+}
+
+class _CreateLessonPlanBottomSheetContentState
+    extends ConsumerState<_CreateLessonPlanBottomSheetContent> {
+  bool _createLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBottomSheet(
+      title: 'Create lesson plan',
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppTheme.addClassContainerBg,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Column(
+              children: [
+                AppInput(
+                  label: 'Topic',
+                  description:
+                      'E.g Punctuation: Using Commas in Complex Sentences',
+                  controller: widget.topicController,
+                  prefixIcon: const Icon(
+                    Icons.menu_book_outlined,
+                    color: AppTheme.inputDescription,
+                    size: 16,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                AppInput(
+                  label: 'Objective',
+                  description:
+                      'E.g Students will be able to use commas correctly in complex sentences',
+                  controller: widget.objectiveController,
+                  maxLines: 3,
+                  minLines: 3,
+                  prefixIcon: const Icon(
+                    Icons.flag_outlined,
+                    color: AppTheme.inputDescription,
+                    size: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      footer: Row(
+        children: [
+          Expanded(
+            child: AppButton(
+              text: "Close",
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              variant: ButtonVariant.secondary,
+              borderRadius: 22,
+              height: 48,
+              expanded: true,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: AppButton(
+              text: _createLoading ? "Creating..." : "Create",
+              onPressed: () async {
+                if (_createLoading) return;
+                final topic = widget.topicController.text.trim();
+                final objective = widget.objectiveController.text.trim();
+
+                if (topic.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please fill in the topic')),
+                  );
+                  return;
+                }
+
+                if (!mounted) return;
+                setState(() {
+                  _createLoading = true;
+                });
+
+                try {
+                  final lessonPlanId = await ref
+                      .read(lessonPlansProvider.notifier)
+                      .createLessonPlan(
+                        classId: widget.classId,
+                        subjectId: widget.subjectId,
+                        topic: topic,
+                        objective: objective.isEmpty ? null : objective,
+                      );
+                  // Refresh teacher overview counts
+                  await ref
+                      .read(teacherProvider.notifier)
+                      .fetchTeacherDetailsAndCounts();
+
+                  if (!mounted) return;
+
+                  // Close bottom sheet first
+                  Navigator.of(context).pop();
+
+                  // Navigate to lesson plan detail page
+                  if (lessonPlanId.isNotEmpty) {
+                    Navigator.of(context).pushNamed(
+                      '/lesson-plan',
+                      arguments: {'lessonPlanId': lessonPlanId},
+                    );
+                  } else {
+                    // Fallback to success callback if navigation fails
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      widget.onSuccess();
+                    });
+                  }
+                } catch (e) {
+                  if (!mounted) return;
+                  setState(() {
+                    _createLoading = false;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error creating lesson plan: $e')),
+                  );
+                }
+              },
+              variant: ButtonVariant.primary,
+              borderRadius: 22,
+              height: 48,
+              expanded: true,
+              icon: _createLoading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : null,
             ),
           ),
         ],

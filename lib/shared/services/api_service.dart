@@ -287,4 +287,23 @@ class ApiService {
     if (res is Map<String, dynamic>) return res;
     throw Exception('Expected Map from deleteLessonPlan endpoint');
   }
+
+  Future<Map<String, dynamic>> createLessonPlan({
+    required String classId,
+    required String subjectId,
+    required String topic,
+    String? objective,
+  }) async {
+    final res = await post(
+      '/api/lessonPlans/create',
+      body: {
+        'classId': classId,
+        'subjectId': subjectId,
+        'topic': topic,
+        if (objective != null && objective.isNotEmpty) 'objective': objective,
+      },
+    );
+    if (res is Map<String, dynamic>) return res;
+    throw Exception('Expected Map from createLessonPlan endpoint');
+  }
 }

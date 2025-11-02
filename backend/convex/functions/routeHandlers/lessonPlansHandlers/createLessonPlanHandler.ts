@@ -19,7 +19,7 @@ export const createLessonPlanHandler = async (ctx: any, req: Request) => {
     return new Response(JSON.stringify({ error: "Invalid JSON body." }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
 
-  const { classId, subjectId, topic } = body;
+  const { classId, subjectId, topic, objective } = body;
 
   if (!classId || !subjectId || !topic) {
     return new Response(JSON.stringify({ error: "Missing required fields: classId, subjectId, and topic are required." }), { status: 400, headers: { "Content-Type": "application/json" } });
@@ -31,6 +31,7 @@ export const createLessonPlanHandler = async (ctx: any, req: Request) => {
       classId: classId as Id<"classes">,
       subjectId: subjectId as Id<"subjects">,
       topic: topic as string,
+      objective: objective as string | undefined,
     });
     return new Response(JSON.stringify(lessonPlan), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {

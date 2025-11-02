@@ -85,6 +85,28 @@ class LessonPlansNotifier extends StateNotifier<LessonPlansState> {
       );
     }
   }
+
+  Future<String> createLessonPlan({
+    required String classId,
+    required String subjectId,
+    required String topic,
+    String? objective,
+  }) async {
+    try {
+      final result = await ApiService().createLessonPlan(
+        classId: classId,
+        subjectId: subjectId,
+        topic: topic,
+        objective: objective,
+      );
+      // Refresh lesson plans for the subject after creation
+      await fetchLessonPlansForSubject(subjectId);
+      // Return the lesson plan ID for navigation
+      return result['_id']?.toString() ?? '';
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
 
 final lessonPlansProvider = StateNotifierProvider<LessonPlansNotifier, LessonPlansState>(

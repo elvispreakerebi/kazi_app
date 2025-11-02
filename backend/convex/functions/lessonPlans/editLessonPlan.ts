@@ -7,6 +7,7 @@ export const editLessonPlan = mutation({
     lessonPlanId: v.id("lessonPlans"),
     title: v.optional(v.string()),
     content: v.optional(v.string()),
+    objective: v.optional(v.string()),
   },
   returns: v.object({
     ok: v.boolean(),
@@ -23,14 +24,17 @@ export const editLessonPlan = mutation({
     }
     
     // Prepare updates
-    const updates: Partial<{ title: string; content: any; updatedAt: number }> = {};
+    const updates: Partial<{ title: string; content: any; objective?: string; updatedAt: number }> = {};
     if (args.title !== undefined) {
       updates.title = args.title;
     }
     if (args.content !== undefined) {
       updates.content = args.content;
     }
-    if (args.title !== undefined || args.content !== undefined) {
+    if (args.objective !== undefined) {
+      updates.objective = args.objective;
+    }
+    if (args.title !== undefined || args.content !== undefined || args.objective !== undefined) {
       updates.updatedAt = Date.now();
     }
     

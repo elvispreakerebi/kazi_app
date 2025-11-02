@@ -12,10 +12,10 @@ export const editLessonPlanHandler = async (ctx: any, req: Request) => {
     return new Response(JSON.stringify({ error: verify.error || "Unauthorized." }), { status: 401, headers: { "Content-Type": "application/json" } });
   }
   
-  let lessonPlanId, title, content;
+  let lessonPlanId, title, content, objective;
   try {
     const body = await req.json();
-    ({ lessonPlanId, title, content } = body);
+    ({ lessonPlanId, title, content, objective } = body);
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON body." }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
@@ -30,6 +30,7 @@ export const editLessonPlanHandler = async (ctx: any, req: Request) => {
       lessonPlanId: lessonPlanId as Id<"lessonPlans">,
       ...(title !== undefined ? { title } : {}),
       ...(content !== undefined ? { content } : {}),
+      ...(objective !== undefined ? { objective } : {}),
     });
     return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
   } catch (err) {

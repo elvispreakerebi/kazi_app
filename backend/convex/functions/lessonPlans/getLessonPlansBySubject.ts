@@ -14,6 +14,7 @@ export const getLessonPlansBySubject = query({
       teacherId: v.id("teachers"),
       title: v.string(),
       content: v.any(),
+      objective: v.optional(v.string()),
       createdAt: v.number(),
       updatedAt: v.optional(v.number()),
     })

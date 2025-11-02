@@ -3,7 +3,8 @@
 import { action } from "../../_generated/server";
 import { v } from "convex/values";
 import { api } from "../../_generated/api";
-import { Dedalus } from "dedalus-labs";
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
 import type { Id } from "../../_generated/dataModel";
 
 export const generateLessonPlanAction = action({
@@ -12,6 +13,7 @@ export const generateLessonPlanAction = action({
     classId: v.id("classes"),
     subjectId: v.id("subjects"),
     topic: v.string(),
+    objective: v.optional(v.string()),
   },
   returns: v.object({
     _id: v.id("lessonPlans"),
@@ -20,6 +22,7 @@ export const generateLessonPlanAction = action({
     teacherId: v.id("teachers"),
     title: v.string(),
     content: v.string(),
+    objective: v.optional(v.string()),
     createdAt: v.number(),
   }),
   handler: async (ctx, args) => {
@@ -52,13 +55,14 @@ export const generateLessonPlanAction = action({
     const className: string = classDoc.name || classDoc.gradeLevel || "(not specified)";
     const subjectName: string = subjectDoc.name || "(not specified)";
 
-    // Build prompt for Dedalus Labs
+    // Build prompt for AI SDK
     const prompt: string = [
       "You are an expert lesson plan generator for African primary schools, specifically for Rwanda.",
       "Generate a comprehensive, clear, and actionable lesson plan for the following:",
       `Class: ${className}`,
       `Subject: ${subjectName}`,
       `Topic: ${args.topic}`,
+      ...(args.objective ? [`Objective: ${args.objective}`] : []),
       "",
       "Generate a plan with these sections:",
       "1. Lesson Title (Topic)",
@@ -76,28 +80,16 @@ export const generateLessonPlanAction = action({
       "Return the sections as a Markdown-formatted string.",
     ].join("\n");
 
-    // Generate lesson plan using Dedalus Labs with streaming
-    const client = new Dedalus();
-
-    const stream = await client.chat.create({
-      model: "openai/gpt-4.1",
-      input: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      mcp_servers: ["windsor/brave-search-mcp"],
-      stream: true,
+    // Generate lesson plan using Vercel AI SDK with streaming
+    const result = streamText({
+      model: openai("gpt-4o"), // Using gpt-4o which is more stable and widely available
+      prompt: prompt,
     });
 
     // Accumulate streaming content
     let lessonPlanContent: string = "";
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || "";
-      if (content) {
-        lessonPlanContent += content;
-      }
+    for await (const textPart of result.textStream) {
+      lessonPlanContent += textPart;
     }
 
     if (!lessonPlanContent) {
@@ -110,6 +102,7 @@ export const generateLessonPlanAction = action({
       subjectId: args.subjectId,
       title: args.topic,
       content: lessonPlanContent,
+      objective: args.objective,
     }) as {
       _id: Id<"lessonPlans">;
       _creationTime: number;
@@ -117,10 +110,10 @@ export const generateLessonPlanAction = action({
       teacherId: Id<"teachers">;
       title: string;
       content: string;
+      objective?: string;
       createdAt: number;
     };
 
     return lessonPlan;
   },
 });
-

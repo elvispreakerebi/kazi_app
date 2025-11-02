@@ -7,6 +7,7 @@ export const createLessonPlan = mutation({
     subjectId: v.id("subjects"),
     title: v.string(),
     content: v.string(),
+    objective: v.optional(v.string()),
   },
   returns: v.object({
     _id: v.id("lessonPlans"),
@@ -15,6 +16,7 @@ export const createLessonPlan = mutation({
     teacherId: v.id("teachers"),
     title: v.string(),
     content: v.string(),
+    objective: v.optional(v.string()),
     createdAt: v.number(),
   }),
   handler: async (ctx, args) => {
@@ -30,6 +32,7 @@ export const createLessonPlan = mutation({
       teacherId: args.teacherId,
       title: args.title,
       content: args.content,
+      objective: args.objective,
       createdAt: now,
     });
 
@@ -45,8 +48,10 @@ export const createLessonPlan = mutation({
       teacherId: lessonPlan.teacherId,
       title: lessonPlan.title,
       content: lessonPlan.content as string,
+      objective: lessonPlan.objective,
       createdAt: lessonPlan.createdAt,
     };
   },
 });
+
 
