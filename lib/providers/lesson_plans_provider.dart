@@ -101,6 +101,8 @@ class LessonPlansNotifier extends StateNotifier<LessonPlansState> {
       );
       // Refresh lesson plans for the subject after creation
       await fetchLessonPlansForSubject(subjectId);
+      // Also refresh all lesson plans with subject names for the lesson plans page
+      await fetchAllLessonPlansWithSubjectNames();
       // Return the lesson plan ID for navigation
       return result['_id']?.toString() ?? '';
     } catch (e) {

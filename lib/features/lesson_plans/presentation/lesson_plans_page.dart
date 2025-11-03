@@ -33,6 +33,13 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
     });
   }
 
+  // Refresh lesson plans when returning to this page
+  void _refreshLessonPlans() {
+    ref
+        .read(lessonPlansProvider.notifier)
+        .fetchAllLessonPlansWithSubjectNames();
+  }
+
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
@@ -189,16 +196,19 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                                   ? 'clear_filters'.tr()
                                   : 'create_lesson_plan'.tr(),
                               variant: ButtonVariant.primary,
-                              onPressed: () {
+                              onPressed: () async {
                                 if (hasActiveFilters) {
                                   setState(() {
                                     _filterSubjectId = null;
                                     _filterClassId = null;
                                   });
                                 } else {
-                                  Navigator.of(
+                                  // Navigate to new lesson plan page and refresh when returning
+                                  await Navigator.of(
                                     context,
                                   ).pushNamed('/new-lesson-plan');
+                                  // Refresh lesson plans when returning
+                                  _refreshLessonPlans();
                                 }
                               },
                               height: 48,
@@ -236,15 +246,18 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
                               child: LessonPlanCardItem(
                                 title: title,
                                 subjectName: subjectName,
-                                onTap: () {
+                                onTap: () async {
                                   if (lessonPlanId.isNotEmpty) {
-                                    Navigator.of(context).pushNamed(
+                                    // Navigate to lesson plan detail and refresh when returning
+                                    await Navigator.of(context).pushNamed(
                                       '/lesson-plan',
                                       arguments: {
                                         'lessonPlanId': lessonPlanId,
                                         'fromLessonPlansPage': true,
                                       },
                                     );
+                                    // Refresh lesson plans when returning from detail page
+                                    _refreshLessonPlans();
                                   }
                                 },
                               ),
@@ -281,11 +294,14 @@ class _LessonPlansPageState extends ConsumerState<LessonPlansPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed(
+        onPressed: () async {
+          // Navigate to new lesson plan page and refresh when returning
+          await Navigator.of(context).pushNamed(
             '/new-lesson-plan',
             arguments: {'fromLessonPlansPage': true},
           );
+          // Refresh lesson plans when returning from new lesson plan page
+          _refreshLessonPlans();
         },
         backgroundColor: AppTheme.primary,
         child: const Icon(Icons.add, color: Colors.white, size: 24),
