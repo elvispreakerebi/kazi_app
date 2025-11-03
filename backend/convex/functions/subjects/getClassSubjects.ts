@@ -11,6 +11,7 @@ export const getClassSubjects = query({
     const subjects = await ctx.db
       .query("subjects")
       .withIndex("by_classId", q => q.eq("classId", args.classId))
+      .order("desc")
       .collect();
     // Cross-check teacher
     return subjects.filter((s) => s.teacherId === args.teacherId);

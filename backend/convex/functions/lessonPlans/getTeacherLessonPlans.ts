@@ -26,6 +26,7 @@ export const getTeacherLessonPlans = query({
     const lessonPlans = await ctx.db
       .query("lessonPlans")
       .withIndex("by_teacherId", q => q.eq("teacherId", args.teacherId))
+      .order("desc")
       .collect();
     
     // Fetch subject and class information for each lesson plan

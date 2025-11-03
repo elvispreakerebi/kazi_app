@@ -9,7 +9,7 @@ export const getClasses = query({
     const classes = await ctx.db
       .query("classes")
       .withIndex("by_teacherId", q => q.eq("teacherId", args.teacherId))
-      .order("asc")
+      .order("desc")
       .collect();
     return classes;
   },
