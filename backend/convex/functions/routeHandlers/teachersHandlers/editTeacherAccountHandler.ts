@@ -10,7 +10,7 @@ export const editTeacherAccountHandler = async (ctx: any, request: Request) => {
     });
   }
   const token = authHeader.split(" ")[1];
-  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction, { token });
+  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
   if (!verify.valid) {
     return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
       status: 401,
@@ -39,7 +39,7 @@ export const editTeacherAccountHandler = async (ctx: any, request: Request) => {
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
     });
   }
-  const result = await ctx.runMutation(api.functions.teachers.editTeacherAccount, {
+  const result = await ctx.runMutation(api.functions.teachers.editTeacherAccount.editTeacherAccount, {
     teacherId,
     name,
     email,

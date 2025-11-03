@@ -9,7 +9,7 @@ export const setLanguagePreferenceHandler = async (ctx: any, request: Request) =
     });
   }
   const token = authHeader.split(" ")[1];
-  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction, { token });
+  const verify = await ctx.runAction(api.functions.auth.verifyTokenAction.verifyTokenAction, { token });
   if (!verify.valid) {
     return new Response(JSON.stringify({ error: "Invalid or expired token." }), {
       status: 401,
@@ -33,7 +33,7 @@ export const setLanguagePreferenceHandler = async (ctx: any, request: Request) =
       headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
     });
   }
-  const result = await ctx.runMutation(api.functions.teachers.setLanguagePreference, {
+  const result = await ctx.runMutation(api.functions.teachers.setLanguagePreference.setLanguagePreference, {
     teacherId,
     language,
   });
