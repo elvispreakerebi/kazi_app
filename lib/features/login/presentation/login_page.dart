@@ -104,15 +104,34 @@ class _LoginPageState extends State<LoginPage> {
           );
           return;
         }
-        // Otherwise, check if onboarding is complete
-        final onboardingDone = await OnboardingPrefs.isOnboardingComplete();
-        if (onboardingDone) {
-          Navigator.of(context).pushReplacementNamed('/home');
-        } else {
-          Navigator.of(context).pushReplacementNamed(
-            '/onboarding-welcome',
-            arguments: {'name': name},
-          );
+        // Check if user has existing data (classes, subjects, or lesson plans)
+        // If they have data, skip onboarding and go to home
+        try {
+          final counts = await ApiService().fetchTeacherOverviewCounts();
+          final hasData = (counts['classes'] ?? 0) > 0 ||
+              (counts['subjects'] ?? 0) > 0 ||
+              (counts['lessonPlans'] ?? 0) > 0;
+          if (hasData) {
+            // User has existing data, go to home
+            Navigator.of(context).pushReplacementNamed('/home');
+          } else {
+            // New user with no data, go to onboarding
+            Navigator.of(context).pushReplacementNamed(
+              '/onboarding-welcome',
+              arguments: {'name': name},
+            );
+          }
+        } catch (e) {
+          // If API call fails, fallback to checking local preference
+          final onboardingDone = await OnboardingPrefs.isOnboardingComplete();
+          if (onboardingDone) {
+            Navigator.of(context).pushReplacementNamed('/home');
+          } else {
+            Navigator.of(context).pushReplacementNamed(
+              '/onboarding-welcome',
+              arguments: {'name': name},
+            );
+          }
         }
       } else if ((result['error'] ?? '').toString().toLowerCase().contains(
         'verify',
