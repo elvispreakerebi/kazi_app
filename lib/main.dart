@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:convex_flutter/convex_flutter.dart';
+import 'core/constants/backend.dart';
+import 'app/router.dart';
+import 'features/splash/splash_route.dart';
 
-void main() {
+late ConvexClient convexClient;
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  convexClient = await ConvexClient.init(
+    deploymentUrl: convexBackend,
+    clientId: "kazi-app-v1.0-demo1",
+  );
+  print('Connected to Convex backend!');
   runApp(const KaziApp());
 }
 
@@ -11,27 +23,10 @@ class KaziApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kazi App',
+      theme: ThemeData(fontFamily: 'Inter'),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: SplashRoute.path,
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
-      ),
-      home: const HomeScreen(),
-    );
-  }
-}
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text('Kazi App'),
-      ),
     );
   }
 }
