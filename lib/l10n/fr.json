@@ -190,5 +190,17 @@
   "subject_number_name": "Nom de la matière {number}",
   "loading_subjects": "Chargement des matières...",
   "no_lesson_plans_for_subject": "Aucun plan de leçon ajouté pour cette matière. Cliquez sur le bouton ci-dessous pour créer un plan de leçon",
-  "subjects_count": "{count} matières"
+  "subjects_count": "{count} matières",
+  "download": "Télécharger",
+  "download_lesson_plan": "Télécharger le plan de leçon",
+  "select_download_format": "Sélectionner le format de téléchargement",
+  "download_as_pdf": "Télécharger en PDF",
+  "pdf_format_description": "Format de document portable",
+  "download_as_docx": "Télécharger en DOCX",
+  "docx_format_description": "Document Microsoft Word",
+  "download_as_docs": "Télécharger en DOCS",
+  "docs_format_description": "Document texte (peut être importé dans Google Docs)",
+  "generating_file": "Génération du fichier...",
+  "file_downloaded_success": "Fichier téléchargé avec succès",
+  "error_downloading_file": "Erreur lors du téléchargement du fichier : {error}"
 }

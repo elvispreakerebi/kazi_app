@@ -190,5 +190,17 @@
   "subject_number_name": "Izina ry'isomo {number}",
   "loading_subjects": "Bifungura amasomo...",
   "no_lesson_plans_for_subject": "Nta gahunda y'amasomo yongeyeho y'iri somo. Kanda buto hasi kugira ngo ukore gahunda y'amasomo",
-  "subjects_count": "{count} amasomo"
+  "subjects_count": "{count} amasomo",
+  "download": "Kuramo",
+  "download_lesson_plan": "Kuramo gahunda y'amasomo",
+  "select_download_format": "Hitamo ubwoko bwa dosiye",
+  "download_as_pdf": "Kuramo nk'inyandiko PDF",
+  "pdf_format_description": "Ubwoko bw'inyandiko bwemewe",
+  "download_as_docx": "Kuramo nk'inyandiko DOCX",
+  "docx_format_description": "Inyandiko y'Umutwe wa Microsoft",
+  "download_as_docs": "Kuramo nk'inyandiko DOCS",
+  "docs_format_description": "Inyandiko y'inyuguti (irashobora kwongerwa mu Google Docs)",
+  "generating_file": "Ikora dosiye...",
+  "file_downloaded_success": "Dosiye yarakiwe neza",
+  "error_downloading_file": "Ikosa mu gukuramo dosiye: {error}"
 }

@@ -9,6 +9,7 @@ import '../../../components/app_popover_menu.dart';
 import '../../../components/app_button.dart';
 import '../../../components/app_theme.dart';
 import '../../../components/app_bottom_sheet.dart';
+import '../../../components/download_lesson_plan_bottom_sheet.dart';
 import '../../../shared/services/api_service.dart';
 import '../../../providers/teacher_provider.dart';
 import '../../../core/utils/html_decoder.dart';
@@ -147,6 +148,30 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
         context,
       ).showSnackBar(SnackBar(content: Text('Error updating lesson plan: $e')));
     }
+  }
+
+  void _showDownloadBottomSheet(BuildContext context) {
+    if (_lessonPlanData == null) return;
+
+    final title = _lessonPlanData!['title']?.toString() ?? '';
+    final content = _contentController.text.isEmpty
+        ? 'no_content_available'.tr()
+        : sanitizeMarkdownForRender(
+            decodeHtmlEntities(_contentController.text),
+          );
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return DownloadLessonPlanBottomSheet(
+          title: title,
+          content: content,
+          parentContext: context, // Pass parent context for ScaffoldMessenger
+        );
+      },
+    );
   }
 
   void _showDeleteLessonPlanSheet(BuildContext context) {
@@ -659,19 +684,19 @@ class _LessonPlanPageState extends ConsumerState<LessonPlanPage> {
                     if (!_isEditMode)
                       Expanded(
                         child: AppButton(
-                          text: 'Save as PDF',
+                          text: 'download'.tr(),
                           onPressed: () {
-                            // TODO: Implement PDF export
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('PDF export coming soon'),
-                              ),
-                            );
+                            _showDownloadBottomSheet(context);
                           },
                           variant: ButtonVariant.secondary,
                           borderRadius: 22,
                           height: 48,
                           expanded: true,
+                          icon: const Icon(
+                            Icons.download,
+                            size: 16,
+                            color: AppTheme.textDark,
+                          ),
                         ),
                       ),
                     if (!_isEditMode) const SizedBox(width: 16),

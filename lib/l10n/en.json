@@ -189,5 +189,17 @@
   "subject_number_name": "Subject {number} name",
   "loading_subjects": "Loading subjects...",
   "no_lesson_plans_for_subject": "No lesson plans added yet for this subject. Click button below to create a lesson plan",
-  "subjects_count": "{count} subjects"
+  "subjects_count": "{count} subjects",
+  "download": "Download",
+  "download_lesson_plan": "Download lesson plan",
+  "select_download_format": "Select download format",
+  "download_as_pdf": "Download as PDF",
+  "pdf_format_description": "Portable Document Format",
+  "download_as_docx": "Download as DOCX",
+  "docx_format_description": "Microsoft Word Document",
+  "download_as_docs": "Download as DOCS",
+  "docs_format_description": "Text document (can be imported to Google Docs)",
+  "generating_file": "Generating file...",
+  "file_downloaded_success": "File downloaded successfully",
+  "error_downloading_file": "Error downloading file: {error}"
 }
