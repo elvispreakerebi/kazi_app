@@ -345,7 +345,7 @@ class _SubjectPageState extends ConsumerState<SubjectPage> {
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          'error_loading_lesson_plans'.tr().replaceAll('{error}', error ?? ''),
+                          'error_loading_lesson_plans'.tr().replaceAll('{error}', error),
                           style: const TextStyle(color: AppTheme.destructive),
                         ),
                       )

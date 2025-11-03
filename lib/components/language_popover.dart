@@ -63,10 +63,12 @@ class LanguagePopover extends ConsumerWidget {
                 await parentContext.setLocale(locale);
                 ref.read(localeProvider.notifier).state = locale;
                 // Instead of double pushing or trying rootNavigator, just do single route replace
+                if (!parentContext.mounted) return;
                 final routeName =
                     ModalRoute.of(parentContext)?.settings.name ?? '/';
                 if (Navigator.canPop(menuCtx)) Navigator.of(menuCtx).pop();
                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (!parentContext.mounted) return;
                   if (Navigator.canPop(parentContext)) {
                     Navigator.of(parentContext).pushReplacementNamed(routeName);
                   } else {

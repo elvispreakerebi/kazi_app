@@ -617,7 +617,7 @@ class _ClassPageState extends ConsumerState<ClassPage> {
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          'error_fetching_subjects'.tr().replaceAll('{error}', error ?? ''),
+                          'error_fetching_subjects'.tr().replaceAll('{error}', error),
                           style: const TextStyle(color: AppTheme.destructive),
                         ),
                       )

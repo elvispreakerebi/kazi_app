@@ -46,7 +46,7 @@ class ClassCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 15,
-                    color: AppTheme.inputDescription.withOpacity(0.95),
+                    color: AppTheme.inputDescription.withValues(alpha: 0.95),
                   ),
                 ),
               ],

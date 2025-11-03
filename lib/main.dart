@@ -17,7 +17,7 @@ void main() async {
     deploymentUrl: convexBackend,
     clientId: "kazi-app-v1.0-demo1",
   );
-  print('Connected to Convex backend!');
+  debugPrint('Connected to Convex backend!');
 
   runApp(
     ProviderScope(

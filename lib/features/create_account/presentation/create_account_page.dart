@@ -26,10 +26,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _showPassword = false;
   bool _termsChecked = true;
-  final bool _isLoading = false;
   String? _formError;
   bool _submitted = false;
-  final _formKey = GlobalKey<FormState>();
   bool _isLoadingEmail = false;
   bool _isLoadingGoogle = false;
 
@@ -154,13 +152,15 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('jwt_token', result['token'] as String);
         }
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
-        Navigator.of(context).pushReplacementNamed(
-          '/enter-otp',
-          arguments: {'email': _emailController.text.trim()},
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('success_created'.tr())),
+          );
+          Navigator.of(context).pushReplacementNamed(
+            '/enter-otp',
+            arguments: {'email': _emailController.text.trim()},
+          );
+        }
         // Optionally: clear form or navigate
       }
     } catch (_) {
@@ -208,9 +208,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         setState(() {
           _formError = null;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('success_created'.tr())));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('success_created'.tr())),
+          );
+        }
         // navigate, or clear form, or show onboarding complete
       }
     } catch (e) {

@@ -118,7 +118,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           'quick_overview_today'.tr(),
                           style: TextStyle(
                             fontSize: 16,
-                            color: AppTheme.textDark.withOpacity(0.7),
+                            color: AppTheme.textDark.withValues(alpha: 0.7),
                           ),
                         ),
                         const SizedBox(height: 16),

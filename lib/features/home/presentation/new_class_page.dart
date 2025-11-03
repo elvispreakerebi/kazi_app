@@ -199,7 +199,7 @@ class _NewClassPageState extends ConsumerState<NewClassPage> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppTheme.destructive.withOpacity(0.1),
+                            color: AppTheme.destructive.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(

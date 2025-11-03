@@ -61,9 +61,9 @@ class _ErrorAlertState extends State<ErrorAlert>
         margin: widget.margin,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.inputOutlineError.withOpacity(0.09),
+          color: AppTheme.inputOutlineError.withValues(alpha: 0.09),
           border: Border.all(
-            color: AppTheme.inputOutlineError.withOpacity(0.4),
+            color: AppTheme.inputOutlineError.withValues(alpha: 0.4),
             width: 1.2,
           ),
           borderRadius: BorderRadius.circular(widget.borderRadius),
