@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'onboarding_screen1.dart';
 
 void main() => runApp(const KaziApp());
 
@@ -9,14 +10,7 @@ class KaziApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kazi App',
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Kazi App',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ),
+      home: const OnboardingScreen1(),
       debugShowCheckedModeBanner: false,
     );
   }
