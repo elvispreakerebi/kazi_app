@@ -17,19 +17,18 @@ import { deleteSubjectHandler } from "./functions/routeHandlers/subjectsHandlers
 import { editSubjectHandler } from "./functions/routeHandlers/subjectsHandlers/editSubjectHandler";
 import { getClassSubjectsHandler } from "./functions/routeHandlers/subjectsHandlers/getClassSubjectsHandler";
 import { getTeacherDetailsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherDetailsHandler";
-import { generateUploadUrlHandler } from "./functions/routeHandlers/fileHandlers/generateUploadUrlHandler";
-import { parseAndExtractTopicsBatchHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/parseAndExtractTopicsBatchHandler";
-import { uploadCurriculumHandler } from "./functions/routeHandlers/fileHandlers/uploadCurriculumHandler";
-import { parseAndExtractCurriculumHandler } from "./functions/routeHandlers/fileHandlers/parseAndExtractCurriculumHandler";
-import { getTopicsBySubjectHandler } from "./functions/routeHandlers/schemeOfWorkHandlers/getTopicsBySubjectHandler";
-import { generateLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/generateLessonPlanHandler";
 import { getTeacherOverviewCountsHandler } from "./functions/routeHandlers/teachersHandlers/getTeacherOverviewCountsHandler";
 import { getClassSubjectsCountHandler } from "./functions/routeHandlers/classesHandlers/getClassSubjectsCountHandler";
-import { editLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanContentHandler";
-import { regenerateLessonPlanContentHandler } from "./functions/routeHandlers/lessonPlansHandlers/regenerateLessonPlanContentHandler";
-import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
 import { editTeacherAccountHandler } from "./functions/routeHandlers/teachersHandlers/editTeacherAccountHandler";
 import { setLanguagePreferenceHandler } from "./functions/routeHandlers/teachersHandlers/setLanguagePreferenceHandler";
+import { getClassHandler } from "./functions/routeHandlers/classesHandlers/getClassHandler";
+import { getClassesHandler } from "./functions/routeHandlers/classesHandlers/getClassesHandler";
+import { getTeacherLessonPlansHandler } from "./functions/routeHandlers/lessonPlansHandlers/getTeacherLessonPlansHandler";
+import { createLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/createLessonPlanHandler";
+import { getLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/getLessonPlanHandler";
+import { editLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/editLessonPlanHandler";
+import { deleteLessonPlanHandler } from "./functions/routeHandlers/lessonPlansHandlers/deleteLessonPlanHandler";
+import { getLessonPlansBySubjectHandler } from "./functions/routeHandlers/lessonPlansHandlers/getLessonPlansBySubjectHandler";
 
 const http = httpRouter();
 
@@ -108,6 +107,18 @@ http.route({
 });
 
 http.route({
+  path: "/api/classes/all",
+  method: "GET",
+  handler: httpAction(getClassesHandler),
+});
+
+http.route({
+  path: "/api/classes/get",
+  method: "GET",
+  handler: httpAction(getClassHandler),
+});
+
+http.route({
   path: "/api/classes/subjects-count",
   method: "GET",
   handler: httpAction(getClassSubjectsCountHandler),
@@ -161,61 +172,43 @@ http.route({
   path: "/api/teacher/language-preference",
   method: "PATCH",
   handler: httpAction(setLanguagePreferenceHandler),
+})
+
+// Lesson Plans Routes
+http.route({
+  path: "/api/lessonPlans/list",
+  method: "GET",
+  handler: httpAction(getTeacherLessonPlansHandler),
 });
 
 http.route({
-  path: "/api/file/generate-upload-url",
+  path: "/api/lessonPlans/create",
   method: "POST",
-  handler: httpAction(generateUploadUrlHandler),
+  handler: httpAction(createLessonPlanHandler),
 });
 
-// File Routes
 http.route({
-  path: "/api/file/upload-curriculum",
+  path: "/api/lessonPlans/get",
+  method: "GET",
+  handler: httpAction(getLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/edit",
   method: "POST",
-  handler: httpAction(uploadCurriculumHandler),
+  handler: httpAction(editLessonPlanHandler),
 });
 
 http.route({
-  path: "/api/file/parse-curriculum",
+  path: "/api/lessonPlans/delete",
   method: "POST",
-  handler: httpAction(parseAndExtractCurriculumHandler),
-});
-
-http.route({
-  path: "/api/schemeOfWork/parse-and-extract-batch",
-  method: "POST",
-  handler: httpAction(parseAndExtractTopicsBatchHandler),
-});
-
-http.route({
-  path: "/api/schemeOfWork/topics-by-subject",
-  method: "POST",
-  handler: httpAction(getTopicsBySubjectHandler),
-});
-
-http.route({
-  path: "/api/lessonPlan/generate",
-  method: "POST",
-  handler: httpAction(generateLessonPlanHandler),
-});
-
-http.route({
-  path: "/api/lessonPlan/edit-content",
-  method: "PATCH",
-  handler: httpAction(editLessonPlanContentHandler),
-});
-
-http.route({
-  path: "/api/lessonPlan/regenerate-content",
-  method: "PATCH",
-  handler: httpAction(regenerateLessonPlanContentHandler),
-});
-
-http.route({
-  path: "/api/lessonPlan/delete",
-  method: "DELETE",
   handler: httpAction(deleteLessonPlanHandler),
+});
+
+http.route({
+  path: "/api/lessonPlans/by-subject",
+  method: "GET",
+  handler: httpAction(getLessonPlansBySubjectHandler),
 });
 
 export default http;

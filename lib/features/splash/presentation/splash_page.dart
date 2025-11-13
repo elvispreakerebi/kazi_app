@@ -2,15 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../shared/services/api_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../app/app.dart'; // for localeProvider
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
+  ConsumerState<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -28,7 +30,24 @@ class _SplashPageState extends State<SplashPage> {
       ApiService().setToken(token);
       try {
         await ApiService().fetchUserProfile();
-        nextRoute = '/home'; // Token is valid; route to home
+        // Check if user has existing data to determine if they should skip onboarding
+        try {
+          final counts = await ApiService().fetchTeacherOverviewCounts();
+          final hasData = (counts['classes'] ?? 0) > 0 ||
+              (counts['subjects'] ?? 0) > 0 ||
+              (counts['lessonPlans'] ?? 0) > 0;
+          if (hasData) {
+            nextRoute = '/home'; // User has data, go to home
+          } else {
+            // New user with no data, check local preference
+            final onboardingDone = await prefs.getBool('onboarding_complete') ?? false;
+            nextRoute = onboardingDone ? '/home' : '/welcome';
+          }
+        } catch (_) {
+          // If counts API fails, fallback to checking local preference
+          final onboardingDone = await prefs.getBool('onboarding_complete') ?? false;
+          nextRoute = onboardingDone ? '/home' : '/welcome';
+        }
       } catch (_) {
         ApiService().logout(); // Token invalid/expired
       }
@@ -40,6 +59,12 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<Locale>(localeProvider, (prev, next) {
+      if (mounted && prev != null && next != prev) {
+        Navigator.of(context).pushReplacementNamed('/welcome');
+      }
+    });
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,

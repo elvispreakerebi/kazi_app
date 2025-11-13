@@ -1,44 +1,68 @@
 "use node";
+
 import { action } from "../../_generated/server";
 import { v } from "convex/values";
 import { api } from "../../_generated/api";
-import { openai } from '@ai-sdk/openai';
-import { streamObject } from 'ai';
-import { z, ZodObject } from 'zod';
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import type { Id } from "../../_generated/dataModel";
 
 export const generateLessonPlanAction = action({
   args: {
     teacherId: v.id("teachers"),
+    classId: v.id("classes"),
     subjectId: v.id("subjects"),
-    weekObj: v.object({ topic: v.string(), week: v.optional(v.number()) }),
-    lessonDate: v.number(),
-    classId: v.optional(v.id("classes")),
+    topic: v.string(),
+    objective: v.optional(v.string()),
   },
-  handler: async (ctx, args): Promise<{ lessonPlanId: string; lessonPlan: { content: string; title?: string; objectives?: string[] } }> => {
-    // Convex generated types sometimes lag - use ts-expect-error for now if your editor shows red underline
-    // If you run `npx convex dev` and restart your IDE, these errors can usually be removed.
-    // @ts-expect-error Convex function typing workaround
-    const schemeContent = await ctx.runQuery(api.functions.schemeOfWork.getSchemeOfWorkContext, {
+  returns: v.object({
+    _id: v.id("lessonPlans"),
+    _creationTime: v.number(),
+    subjectId: v.id("subjects"),
+    teacherId: v.id("teachers"),
+    title: v.string(),
+    content: v.string(),
+    objective: v.optional(v.string()),
+    createdAt: v.number(),
+  }),
+  handler: async (ctx, args) => {
+    // Fetch class and subject details
+    const classDoc = await ctx.runQuery(api.functions.classes.getClass.getClass, {
+      teacherId: args.teacherId,
+      classId: args.classId,
+    }) as {
+      _id: Id<"classes">;
+      _creationTime: number;
+      teacherId: Id<"teachers">;
+      name: string;
+      gradeLevel: string;
+      academicYear?: string;
+      createdAt: number;
+    };
+    
+    const subjectDoc = await ctx.runQuery(api.functions.subjects.getSubjectById.getSubjectById, {
+      teacherId: args.teacherId,
       subjectId: args.subjectId,
-      teacherId: args.teacherId,
-    });
-    // @ts-expect-error Convex function typing workaround
-    const curriculumContent = await ctx.runQuery(api.functions.curriculum.getCurriculumContext, {
-      teacherId: args.teacherId,
-    });
+    }) as {
+      _id: Id<"subjects">;
+      _creationTime: number;
+      classId: Id<"classes">;
+      teacherId: Id<"teachers">;
+      name: string;
+      createdAt: number;
+    };
 
+    const className: string = classDoc.name || classDoc.gradeLevel || "(not specified)";
+    const subjectName: string = subjectDoc.name || "(not specified)";
+
+    // Build prompt for AI SDK
     const prompt: string = [
-      "You are an expert lesson plan generator for African primary schools.",
+      "You are an expert lesson plan generator for African primary schools, specifically for Rwanda.",
       "Generate a comprehensive, clear, and actionable lesson plan for the following:",
-      `Class: ${args.classId || "(not specified)"}`,
-      `SubjectId: [${args.subjectId}]`,
-      `Week: ${args.weekObj.week ?? "(not specified)"}`,
-      `Topic: ${args.weekObj.topic}`,
-      `Lesson date (YYYY-MM-DD): ${new Date(args.lessonDate).toLocaleDateString("en-CA")}`,
-      "",
-      "Use the following (if present) for guidance/context.",
-      `Scheme of Work: ${schemeContent ? `\n${schemeContent}` : "(not available)"}`,
-      `Curriculum: ${curriculumContent ? `\n${curriculumContent}` : "(not available)"}`,
+      `Class: ${className}`,
+      `Subject: ${subjectName}`,
+      `Topic: ${args.topic}`,
+      ...(args.objective ? [`Objective: ${args.objective}`] : []),
       "",
       "Generate a plan with these sections:",
       "1. Lesson Title (Topic)",
@@ -52,41 +76,44 @@ export const generateLessonPlanAction = action({
       "9. Extensions or Remediation (optional, for fast or struggling learners)",
       "10. AI Assistant Suggestions (offer 1-2 quick ideas for teacher support: e.g. differentiation tip, engagement boost)",
       "",
-      "Always make your output teacher-friendly, locally relevant, and efficient for the classroom. Use clear formatting.",
+      "Always make your output teacher-friendly, locally relevant to Rwanda, and efficient for the classroom. Use clear formatting.",
       "Return the sections as a Markdown-formatted string.",
     ].join("\n");
 
-    const schema: ZodObject<any> = z.object({
-      content: z.string(),
-      title: z.string().optional(),
-      objectives: z.array(z.string()).optional(),
+    // Generate lesson plan using Vercel AI SDK with streaming
+    const result = streamText({
+      model: openai("gpt-4o"), // Using gpt-4o which is more stable and widely available
+      prompt: prompt,
     });
-    const model = openai('gpt-4o');
-    const { partialObjectStream } = streamObject({
-      model,
-      prompt,
-      schema,
-    });
-    let content = '';
-    let title: string | undefined = undefined;
-    let objectives: string[] | undefined = undefined;
-    for await (const partial of partialObjectStream) {
-      if (typeof partial.content === 'string') content = partial.content;
-      if (typeof partial.title === 'string') title = partial.title;
-      if (Array.isArray(partial.objectives)) objectives = partial.objectives;
+
+    // Accumulate streaming content
+    let lessonPlanContent: string = "";
+    for await (const textPart of result.textStream) {
+      lessonPlanContent += textPart;
     }
-    // @ts-expect-error Convex internal function typing workaround
-    const insertedId: string = await ctx.runMutation(api.functions.internal.upsertLessonPlan, {
-      subjectId: args.subjectId,
+
+    if (!lessonPlanContent) {
+      throw new Error("Failed to generate lesson plan content");
+    }
+
+    // Save lesson plan to database
+    const lessonPlan = await ctx.runMutation(api.functions.lessonPlans.createLessonPlan.createLessonPlan, {
       teacherId: args.teacherId,
-      schemeId: undefined,
-      title: title || args.weekObj.topic,
-      content,
-      createdAt: Date.now(),
-      updatedAt: undefined,
-      status: "pending",
-      lessonDate: args.lessonDate,
-    });
-    return { lessonPlanId: insertedId, lessonPlan: { content, title, objectives } };
+      subjectId: args.subjectId,
+      title: args.topic,
+      content: lessonPlanContent,
+      objective: args.objective,
+    }) as {
+      _id: Id<"lessonPlans">;
+      _creationTime: number;
+      subjectId: Id<"subjects">;
+      teacherId: Id<"teachers">;
+      title: string;
+      content: string;
+      objective?: string;
+      createdAt: number;
+    };
+
+    return lessonPlan;
   },
 });

@@ -3,15 +3,25 @@ import { v } from "convex/values";
 
 export const deleteLessonPlan = mutation({
   args: {
-    lessonPlanId: v.id("lessonPlans"),
     teacherId: v.id("teachers"),
+    lessonPlanId: v.id("lessonPlans"),
   },
+  returns: v.object({
+    ok: v.boolean(),
+  }),
   handler: async (ctx, args) => {
-    const plan = await ctx.db.get(args.lessonPlanId);
-    if (!plan || plan.teacherId !== args.teacherId) {
-      throw new Error("Lesson plan not found or not owned by this teacher.");
+    const teacher = await ctx.db.get(args.teacherId);
+    if (!teacher || !teacher.verified) {
+      throw new Error("Not authorized.");
     }
+    
+    const lessonPlan = await ctx.db.get(args.lessonPlanId);
+    if (!lessonPlan || lessonPlan.teacherId !== args.teacherId) {
+      throw new Error("Lesson plan not found or not owned.");
+    }
+    
     await ctx.db.delete(args.lessonPlanId);
-    return { deleted: true };
+    return { ok: true };
   },
 });
+

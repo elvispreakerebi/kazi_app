@@ -12,7 +12,9 @@ final authStateProvider = StateProvider<String?>(
 final userProfileProvider = StateProvider<UserProfile?>((ref) => null);
 
 /// Language state (for localization)
-final languageProvider = StateProvider<String>((ref) => 'english');
+final languageProvider = StateProvider<String>(
+  (ref) => 'en',
+); // default is English
 
 /// Example UserProfile model (adjust fields as needed)
 class UserProfile {
@@ -33,6 +35,8 @@ class UserProfile {
     language: json['language'] ?? 'english',
   );
 }
+
+final localeProvider = StateProvider<Locale>((ref) => const Locale('en'));
 
 // Login state for async login process
 class LoginState {

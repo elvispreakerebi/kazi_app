@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:kazi_app/features/splash/splash_route.dart';
 import 'package:kazi_app/features/welcome/welcome_route.dart';
+import 'package:kazi_app/features/create_account/create_account_route.dart';
+import 'package:kazi_app/features/enter_otp/enter_otp_route.dart';
+import 'package:kazi_app/features/login/login_route.dart';
+import 'package:kazi_app/features/onboarding/onboarding_welcome_route.dart';
+import 'package:kazi_app/features/onboarding/onboarding_add_class_route.dart';
+import 'package:kazi_app/features/onboarding/onboarding_add_subject_route.dart';
+import 'package:kazi_app/features/home/home_route.dart';
+import 'package:kazi_app/features/home/new_class_route.dart';
+import 'package:kazi_app/features/home/class_route.dart';
+import 'package:kazi_app/features/home/subject_route.dart';
+import 'package:kazi_app/features/home/new_lesson_plan_route.dart';
+import 'package:kazi_app/features/lesson_plan/lesson_plan_route.dart';
+import 'package:kazi_app/features/lesson_plans/lesson_plans_route.dart';
+import 'package:kazi_app/features/settings/settings_route.dart';
+import 'package:kazi_app/features/settings/account_route.dart';
+import '../features/onboarding/onboarding_profile_complete_route.dart';
 
 class AppRouter {
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -9,26 +25,44 @@ class AppRouter {
         return SplashRoute.route(settings);
       case WelcomeRoute.path:
         return WelcomeRoute.route(settings);
-      case '/home':
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const _HomePlaceholder(),
-        );
+      case CreateAccountRoute.path:
+        return CreateAccountRoute.route(settings);
+      case EnterOtpRoute.path:
+        return EnterOtpRoute.route(settings);
+      case LoginRoute.path:
+        return LoginRoute.route(settings);
+      case OnboardingWelcomeRoute.path:
+        return OnboardingWelcomeRoute.route(settings);
+      case OnboardingAddClassRoute.path:
+        return OnboardingAddClassRoute.route(settings);
+      case OnboardingAddSubjectRoute.path:
+        return OnboardingAddSubjectRoute.route(settings);
+      case HomeRoute.path:
+        return HomeRoute.route(settings);
+      case NewClassRoute.path:
+        return NewClassRoute.route(settings);
+      case ClassRoute.path:
+        return ClassRoute.route(settings);
+      case SubjectRoute.path:
+        return SubjectRoute.route(settings);
+      case NewLessonPlanRoute.path:
+        return NewLessonPlanRoute.route(settings);
+      case LessonPlanRoute.path:
+        return LessonPlanRoute.route(settings);
+      case LessonPlansRoute.path:
+        return LessonPlansRoute.route(settings);
+      case SettingsRoute.path:
+        return SettingsRoute.route(settings);
+      case AccountRoute.path:
+        return AccountRoute.route(settings);
+      case OnboardingProfileCompleteRoute.path:
+        return OnboardingProfileCompleteRoute.route(settings);
       default:
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const _NotFoundPage(),
         );
     }
-  }
-}
-
-class _HomePlaceholder extends StatelessWidget {
-  const _HomePlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Home')));
   }
 }
 
